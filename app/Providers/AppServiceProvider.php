@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function register(): void {}
+
+    public function boot(): void
+    {
+        $this->configureRateLimiting();
+    }
+
+    protected function configureRateLimiting(): void
+    {
+        RateLimiter::for('consulta-publica', function (Request $request) {
+            return Limit::perMinute(10)->by($request->ip())
+                ->response(fn() => response()->json(
+                    ['message' => 'Demasiadas consultas. Espera un momento antes de intentar de nuevo.'], 429
+                ));
+        });
+
+        RateLimiter::for('verificacion-publica', function (Request $request) {
+            return Limit::perMinute(10)->by($request->ip())
+                ->response(fn() => response()->json(
+                    ['message' => 'Demasiadas verificaciones. Espera un momento antes de intentar de nuevo.'], 429
+                ));
+        });
+    }
+}

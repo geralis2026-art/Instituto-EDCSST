@@ -1,0 +1,61 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class CertificadoRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'codigo_unico' => $this->input('codigo_unico')
+                ? strtoupper(trim((string) $this->input('codigo_unico')))
+                : null,
+            'activo' => $this->boolean('activo'),
+        ]);
+    }
+
+    public function rules(): array
+    {
+        $certificadoId = $this->route('certificado')?->id;
+        $pdfRule = $certificadoId ? 'nullable' : 'required';
+
+        return [
+            'capacitado_id' => 'required|exists:capacitados,id',
+            'curso_id' => 'required|exists:cursos,id',
+            'codigo_unico' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('certificados', 'codigo_unico')->ignore($certificadoId),
+            ],
+            'fecha_emision' => 'required|date',
+            'intensidad_horaria' => 'required|integer|min:1|max:10000',
+            'archivo_pdf' => [$pdfRule, 'file', 'mimes:pdf', 'max:10240'],
+            'activo' => 'boolean',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'capacitado_id.required' => 'El capacitado es requerido.',
+            'capacitado_id.exists' => 'El capacitado seleccionado no es valido.',
+            'curso_id.required' => 'El curso es requerido.',
+            'curso_id.exists' => 'El curso seleccionado no es valido.',
+            'codigo_unico.unique' => 'Este codigo de certificado ya existe.',
+            'fecha_emision.required' => 'La fecha de emision es requerida.',
+            'intensidad_horaria.required' => 'La intensidad horaria es requerida.',
+            'archivo_pdf.required' => 'Debes cargar el PDF del certificado.',
+            'archivo_pdf.mimes' => 'El archivo debe ser un PDF.',
+            'archivo_pdf.max' => 'El PDF no puede pesar mas de 10 MB.',
+        ];
+    }
+}
