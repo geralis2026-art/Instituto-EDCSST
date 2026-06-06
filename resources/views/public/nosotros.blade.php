@@ -10,9 +10,9 @@
     <div class="absolute inset-0 pointer-events-none"
          style="background: radial-gradient(ellipse at 70% 50%, rgba(245,158,11,0.1) 0%, transparent 60%)"></div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <span class="badge-gold mb-5 inline-block">Quiénes somos</span>
-        <h1 class="text-4xl sm:text-5xl font-bold mb-6">Instituto EDCSST</h1>
-        <p class="text-xl text-blue-200 max-w-3xl mx-auto leading-relaxed">
+        <span class="badge-gold mb-5 inline-block hero-1">Quiénes somos</span>
+        <h1 class="text-4xl sm:text-5xl font-bold mb-6 hero-2">Instituto EDCSST</h1>
+        <p class="text-xl text-blue-200 max-w-3xl mx-auto leading-relaxed hero-3">
             Educación para el Desarrollo y la Calidad en Seguridad y Salud en el Trabajo. Formamos profesionales con certificación verificable desde Villavicencio, Meta.
         </p>
     </div>
@@ -24,7 +24,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
             {{-- Misión: card dorado --}}
-            <div class="text-center p-8 rounded-2xl shadow-md border-t-4 border-amber-400"
+            <div class="text-center p-8 rounded-2xl shadow-md border-t-4 border-amber-400 reveal delay-1"
                  style="background: linear-gradient(160deg, #FFFBEB, #FEF3C7)">
                 <div class="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-5 shadow-md"
                      style="background: linear-gradient(135deg, #F59E0B, #D4A017)">
@@ -37,7 +37,7 @@
             </div>
 
             {{-- Visión: card azul --}}
-            <div class="text-center p-8 rounded-2xl shadow-md border-t-4 border-blue-500 bg-blue-50">
+            <div class="text-center p-8 rounded-2xl shadow-md border-t-4 border-blue-500 bg-blue-50 reveal delay-2">
                 <div class="w-14 h-14 bg-blue-700 rounded-xl flex items-center justify-center mx-auto mb-5 shadow-md">
                     <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                 </div>
@@ -48,7 +48,7 @@
             </div>
 
             {{-- Valores: card dorado --}}
-            <div class="text-center p-8 rounded-2xl shadow-md border-t-4 border-amber-400"
+            <div class="text-center p-8 rounded-2xl shadow-md border-t-4 border-amber-400 reveal delay-3"
                  style="background: linear-gradient(160deg, #FFFBEB, #FEF3C7)">
                 <div class="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-5 shadow-md"
                      style="background: linear-gradient(135deg, #F59E0B, #D4A017)">
@@ -69,7 +69,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-            <div>
+            <div class="reveal-left">
                 <span class="text-amber-600 font-semibold text-sm uppercase tracking-wider">Nuestra historia</span>
                 <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mt-2 mb-6">
                     Comprometidos con la formación profesional
@@ -85,9 +85,9 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-2 gap-5">
+            <div class="grid grid-cols-2 gap-5 reveal-right">
                 <div class="bg-amber-50 p-6 rounded-xl shadow-sm border border-amber-100 text-center">
-                    <div class="text-4xl font-bold text-amber-600 mb-1">100%</div>
+                    <div class="text-4xl font-bold text-amber-600 mb-1 counter" data-target="100" data-suffix="%">100%</div>
                     <div class="text-sm text-gray-600">Certificados digitales verificables</div>
                 </div>
                 <div class="bg-amber-50 p-6 rounded-xl shadow-sm border border-amber-100 text-center">
@@ -111,7 +111,7 @@
 {{-- POR QUÉ ELEGIRNOS --}}
 <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
+        <div class="text-center mb-12 reveal">
             <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 section-title-center">¿Por qué elegirnos?</h2>
             <p class="text-gray-600 max-w-2xl mx-auto">Razones que nos diferencian y respaldan la confianza de nuestros capacitados y empresas aliadas.</p>
         </div>
@@ -125,7 +125,7 @@
                 ['icon' => 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', 'titulo' => 'Seguridad de datos', 'texto' => 'La información de nuestros capacitados se gestiona con los más altos estándares de seguridad y privacidad.', 'color' => 'amber'],
                 ['icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'titulo' => 'Soporte continuo', 'texto' => 'Contáctanos por correo, teléfono o WhatsApp. Respondemos a la brevedad para resolver cualquier inquietud.', 'color' => 'blue'],
             ] as $item)
-            <div class="flex items-start bg-gray-50 p-6 rounded-xl border border-gray-100 hover:shadow-sm transition card-gold-hover">
+            <div class="flex items-start bg-gray-50 p-6 rounded-xl border border-gray-100 hover:shadow-sm transition card-gold-hover reveal delay-{{ min(($loop->index % 3) + 1, 6) }}">
                 <div class="w-11 h-11 {{ $item['color'] === 'amber' ? 'bg-amber-100' : 'bg-blue-100' }} rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 {{ $item['color'] === 'amber' ? 'text-amber-600' : 'text-blue-700' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}"/>
@@ -147,7 +147,7 @@
          style="background: linear-gradient(90deg, transparent, #F59E0B, transparent)"></div>
     <div class="absolute inset-0 pointer-events-none"
          style="background: radial-gradient(ellipse at 80% 50%, rgba(245,158,11,0.08) 0%, transparent 60%)"></div>
-    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal">
         <h2 class="text-3xl sm:text-4xl font-bold mb-4">¿Listo para capacitarte?</h2>
         <p class="text-lg text-blue-200 mb-8">Revisa nuestro catálogo de cursos o contáctanos para más información.</p>
         <div class="flex flex-wrap gap-4 justify-center">

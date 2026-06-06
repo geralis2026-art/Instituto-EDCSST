@@ -8,11 +8,13 @@
 {{-- ============ HERO / BANNER PRINCIPAL ============ --}}
 <section class="relative bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 text-white overflow-hidden">
 
-    {{-- Elementos decorativos dorados --}}
-    <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full pointer-events-none"
+    {{-- Elementos decorativos dorados flotantes --}}
+    <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full pointer-events-none float-a"
          style="background: radial-gradient(circle, rgba(245,158,11,0.18) 0%, transparent 70%)"></div>
-    <div class="absolute bottom-0 -left-16 w-72 h-72 rounded-full pointer-events-none"
+    <div class="absolute bottom-0 -left-16 w-72 h-72 rounded-full pointer-events-none float-b"
          style="background: radial-gradient(circle, rgba(212,160,23,0.12) 0%, transparent 70%)"></div>
+    <div class="absolute top-1/4 left-1/4 w-48 h-48 rounded-full pointer-events-none float-c"
+         style="background: radial-gradient(circle, rgba(245,158,11,0.07) 0%, transparent 70%)"></div>
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-1 opacity-10 pointer-events-none"
          style="background: linear-gradient(90deg, transparent, #F59E0B, transparent)"></div>
 
@@ -21,19 +23,19 @@
 
             {{-- Texto del hero --}}
             <div>
-                <span class="badge-gold mb-5 inline-block">
+                <span class="badge-gold mb-5 inline-block hero-1">
                     Capacitación profesional
                 </span>
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 hero-2">
                     Forma tu futuro con<br>
                     <span style="background: linear-gradient(90deg, #F59E0B, #D4A017); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                         certificaciones reales
                     </span>
                 </h1>
-                <p class="text-lg sm:text-xl text-blue-100 mb-8 leading-relaxed">
+                <p class="text-lg sm:text-xl text-blue-100 mb-8 leading-relaxed hero-3">
                     En el Instituto EDCSST capacitamos profesionales con certificados verificables digitalmente. Educación práctica para el mundo laboral actual.
                 </p>
-                <div class="flex flex-wrap gap-4">
+                <div class="flex flex-wrap gap-4 hero-4">
                     <a href="{{ route('consulta') }}" class="inline-flex items-center px-6 py-3 bg-white text-blue-900 font-semibold rounded-lg hover:bg-amber-50 transition shadow-lg">
                         Consultar mi certificado
                         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
@@ -46,7 +48,7 @@
             </div>
 
             {{-- Card decorativo de certificado --}}
-            <div class="hidden lg:block">
+            <div class="hidden lg:block hero-card">
                 <div class="relative">
                     {{-- Sombra decorativa dorada --}}
                     <div class="absolute inset-0 rounded-3xl transform rotate-2"
@@ -85,7 +87,7 @@
 <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <div class="text-center mb-12">
+        <div class="text-center mb-12 reveal">
             <span class="badge-gold mb-3 inline-block">Oferta académica</span>
             <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 section-title-center">Nuestros cursos destacados</h2>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto mt-4">
@@ -96,7 +98,7 @@
         @if($cursosDestacados->count() > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($cursosDestacados as $curso)
-                    <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden border border-gray-100 group card-gold-hover">
+                    <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden border border-gray-100 group card-gold-hover reveal delay-{{ min($loop->index + 1, 6) }}">
                         {{-- Imagen del curso --}}
                         <div class="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 relative overflow-hidden">
                             @if($curso->imagen)
@@ -124,7 +126,7 @@
                 @endforeach
             </div>
 
-            <div class="text-center mt-10">
+            <div class="text-center mt-10 reveal">
                 <a href="{{ route('catalogo') }}" class="inline-flex items-center px-6 py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition">
                     Ver todos los cursos
                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
@@ -140,7 +142,7 @@
 <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
+            <div class="reveal-left">
                 <span class="text-amber-600 font-semibold text-sm uppercase tracking-wider">Sobre nosotros</span>
                 <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mt-2 mb-6">
                     Educación de calidad con<br>certificación verificable
@@ -154,7 +156,7 @@
 
                 <div class="grid grid-cols-2 gap-4 mt-6">
                     <div class="p-5 rounded-xl shadow-md text-center" style="background: linear-gradient(135deg, #F59E0B, #D4A017)">
-                        <div class="text-3xl font-bold text-white">100%</div>
+                        <div class="text-3xl font-bold text-white counter" data-target="100" data-suffix="%">100%</div>
                         <div class="text-sm text-amber-100 font-medium mt-1">Certificados digitales</div>
                     </div>
                     <div class="p-5 rounded-xl shadow-md text-center bg-blue-900">
@@ -164,7 +166,7 @@
                 </div>
             </div>
 
-            <div class="space-y-4">
+            <div class="space-y-4 reveal-right">
                 <div class="flex items-start bg-amber-50 border border-amber-100 p-5 rounded-xl hover:shadow-sm transition">
                     <div class="w-12 h-12 icon-gold rounded-lg flex items-center justify-center flex-shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
@@ -204,7 +206,7 @@
          style="background: linear-gradient(135deg, transparent 60%, rgba(245,158,11,0.08))"></div>
     <div class="absolute top-0 left-0 right-0 h-1"
          style="background: linear-gradient(90deg, transparent, #F59E0B, transparent)"></div>
-    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal">
         <span class="badge-gold mb-4 inline-block">¿Tienes preguntas?</span>
         <h2 class="text-3xl sm:text-4xl font-bold mb-4">Estamos aquí para ayudarte</h2>
         <p class="text-lg text-blue-200 mb-8">

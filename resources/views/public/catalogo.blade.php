@@ -31,7 +31,7 @@
             @foreach($categorias as $categoria)
                 <div class="mb-12 last:mb-0">
                     {{-- Encabezado de categoría --}}
-                    <div class="flex items-center justify-between mb-6 pb-3 border-b-2 border-amber-400">
+                    <div class="flex items-center justify-between mb-6 pb-3 border-b-2 border-amber-400 reveal">
                         <div>
                             <h2 class="text-2xl font-bold text-blue-900 section-title">{{ $categoria->nombre }}</h2>
                             @if($categoria->descripcion)
@@ -46,7 +46,7 @@
                     {{-- Cursos de esa categoría --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach($categoria->cursos as $curso)
-                            <article class="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 group">
+                            <article class="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 group card-gold-hover reveal delay-{{ min(($loop->index % 6) + 1, 6) }}">
                                 {{-- Imagen --}}
                                 <div class="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 relative overflow-hidden">
                                     @if($curso->imagen)
