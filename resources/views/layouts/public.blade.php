@@ -11,13 +11,60 @@
     {{-- Tailwind compilado por Vite --}}
     <x-app-assets />
 
+    <style>
+        :root { --gold: #F59E0B; --gold-dark: #D97706; --gold-light: #FEF3C7; }
+
+        /* Títulos de sección con subrayado dorado */
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 3rem;
+            height: 3px;
+            background: var(--gold);
+            border-radius: 2px;
+            margin-top: 0.5rem;
+        }
+        .section-title-center::after {
+            content: '';
+            display: block;
+            width: 3rem;
+            height: 3px;
+            background: var(--gold);
+            border-radius: 2px;
+            margin: 0.5rem auto 0;
+        }
+
+        /* Tarjetas con borde izquierdo dorado al hacer hover */
+        .card-gold-hover {
+            border-left: 3px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .card-gold-hover:hover { border-left-color: var(--gold); }
+
+        /* Botón con acento dorado */
+        .btn-gold {
+            background: var(--gold);
+            color: #fff;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
+        }
+        .btn-gold:hover { background: var(--gold-dark); }
+
+        /* Links del footer con hover dorado */
+        footer a:hover { color: var(--gold) !important; }
+
+        /* Logo con anillo dorado */
+        .logo-ring { box-shadow: 0 0 0 2px var(--gold); }
+    </style>
+
     {{-- Estilos adicionales por página --}}
     @stack('styles')
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased">
 
     {{-- ============ NAVBAR PÚBLICO ============ --}}
-    <nav class="bg-white shadow-sm sticky top-0 z-40 border-b border-gray-200">
+    <nav class="bg-white shadow-sm sticky top-0 z-40 border-b-2 border-amber-400">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
 
@@ -33,19 +80,18 @@
 
                 {{-- Menú desktop --}}
                 <div class="hidden md:flex items-center space-x-1">
-                    <a href="{{ route('home') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('home') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
+                    <a href="{{ route('home') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('home') ? 'text-amber-600 bg-amber-50 border-b-2 border-amber-500' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
                         Inicio
                     </a>
-                    {{-- MVP: Catálogo oculto --}}
-                    {{-- <a href="{{ route('catalogo') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('catalogo') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Cursos</a> --}}
-                    <a href="{{ route('consulta') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('consulta') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
+                    <a href="{{ route('nosotros') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('nosotros') ? 'text-amber-600 bg-amber-50 border-b-2 border-amber-500' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Nosotros</a>
+                    <a href="{{ route('catalogo') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('catalogo') ? 'text-amber-600 bg-amber-50 border-b-2 border-amber-500' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Cursos</a>
+                    <a href="{{ route('consulta') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('consulta') ? 'text-amber-600 bg-amber-50 border-b-2 border-amber-500' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
                         Consultar Certificado
                     </a>
-                    <a href="{{ route('verificar') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('verificar') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
+                    <a href="{{ route('verificar') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('verificar') ? 'text-amber-600 bg-amber-50 border-b-2 border-amber-500' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
                         Verificar
                     </a>
-                    {{-- MVP: Contacto oculto --}}
-                    {{-- <a href="{{ route('contacto') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('contacto') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Contacto</a> --}}
+                    <a href="{{ route('contacto') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('contacto') ? 'text-amber-600 bg-amber-50 border-b-2 border-amber-500' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Contacto</a>
 
                     @auth
                         <a href="{{ route('admin.dashboard') }}" class="ml-3 px-4 py-2 text-sm font-medium bg-blue-700 text-white rounded-md hover:bg-blue-800 transition">
@@ -69,12 +115,11 @@
             {{-- Menú móvil --}}
             <div id="mobile-menu" class="hidden md:hidden pb-4 space-y-1">
                 <a href="{{ route('home') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Inicio</a>
-                {{-- MVP: Catálogo oculto --}}
-                {{-- <a href="{{ route('catalogo') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Cursos</a> --}}
+                <a href="{{ route('nosotros') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Nosotros</a>
+                <a href="{{ route('catalogo') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Cursos</a>
                 <a href="{{ route('consulta') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Consultar Certificado</a>
                 <a href="{{ route('verificar') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Verificar</a>
-                {{-- MVP: Contacto oculto --}}
-                {{-- <a href="{{ route('contacto') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Contacto</a> --}}
+                <a href="{{ route('contacto') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Contacto</a>
                 @auth
                     <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-md text-center">Panel administrativo</a>
                 @else
@@ -116,7 +161,7 @@
 
                 {{-- Sobre el instituto --}}
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Instituto EDCSST</h3>
+                    <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-amber-400">Instituto EDCSST</h3>
                     <p class="text-blue-100 text-sm leading-relaxed">
                         Educación para el Desarrollo y la Calidad en Seguridad y Salud en el Trabajo.
                         Formación profesional con certificación verificable.
@@ -125,21 +170,20 @@
 
                 {{-- Enlaces rápidos --}}
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Enlaces rápidos</h3>
+                    <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-amber-400">Enlaces rápidos</h3>
                     <ul class="space-y-2 text-sm text-blue-100">
                         <li><a href="{{ route('home') }}" class="hover:text-white transition">Inicio</a></li>
-                        {{-- MVP: Catálogo oculto --}}
-                        {{-- <li><a href="{{ route('catalogo') }}" class="hover:text-white transition">Catálogo de cursos</a></li> --}}
+                        <li><a href="{{ route('nosotros') }}" class="hover:text-white transition">Sobre nosotros</a></li>
+                        <li><a href="{{ route('catalogo') }}" class="hover:text-white transition">Catálogo de cursos</a></li>
                         <li><a href="{{ route('consulta') }}" class="hover:text-white transition">Consultar certificado</a></li>
                         <li><a href="{{ route('verificar') }}" class="hover:text-white transition">Verificar certificado</a></li>
-                        {{-- MVP: Contacto oculto --}}
-                        {{-- <li><a href="{{ route('contacto') }}" class="hover:text-white transition">Contacto</a></li> --}}
+                        <li><a href="{{ route('contacto') }}" class="hover:text-white transition">Contacto</a></li>
                     </ul>
                 </div>
 
                 {{-- Contacto y redes --}}
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Contacto</h3>
+                    <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-amber-400">Contacto</h3>
                     <ul class="space-y-2 text-sm text-blue-100">
                         <li class="flex items-start"><span class="mr-2">📍</span> Villavicencio, Meta - Colombia</li>
                         <li class="flex items-start"><span class="mr-2">📞</span> +57 321 217 3463</li>

@@ -12,12 +12,12 @@
 
             {{-- Texto del hero --}}
             <div>
-                <span class="inline-block px-3 py-1 bg-blue-700 text-blue-100 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
+                <span class="inline-block px-3 py-1 bg-amber-500 text-white rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
                     Capacitación profesional
                 </span>
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
                     Forma tu futuro con<br>
-                    <span class="text-blue-200">certificaciones reales</span>
+                    <span class="text-amber-300">certificaciones reales</span>
                 </h1>
                 <p class="text-lg sm:text-xl text-blue-100 mb-8 leading-relaxed">
                     En el Instituto EDCSST capacitamos profesionales con certificados verificables digitalmente. Educación práctica para el mundo laboral actual.
@@ -28,7 +28,7 @@
                         Consultar mi certificado
                         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </a>
-                    <a href="{{ route('verificar') }}" class="inline-flex items-center px-6 py-3 bg-blue-700 border-2 border-blue-400 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
+                    <a href="{{ route('verificar') }}" class="inline-flex items-center px-6 py-3 bg-amber-500 border-2 border-amber-400 text-white font-semibold rounded-lg hover:bg-amber-600 transition">
                         Verificar certificado
                     </a>
                 </div>
@@ -71,6 +71,7 @@
 
         <div class="text-center mb-12">
             <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Nuestros cursos destacados</h2>
+            <div class="w-12 h-1 bg-amber-400 rounded-full mx-auto mb-3"></div>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">
                 Capacitaciones diseñadas para impulsar tu carrera profesional con certificación reconocida.
             </p>
@@ -79,7 +80,7 @@
         @if($cursosDestacados->count() > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($cursosDestacados as $curso)
-                    <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden border border-gray-100 group">
+                    <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden border border-gray-100 group card-gold-hover">
                         {{-- Imagen del curso --}}
                         <div class="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 relative overflow-hidden">
                             @if($curso->imagen)
@@ -107,13 +108,12 @@
                 @endforeach
             </div>
 
-            {{-- MVP: Botón "Ver todos los cursos" oculto --}}
-            {{-- <div class="text-center mt-10">
+            <div class="text-center mt-10">
                 <a href="{{ route('catalogo') }}" class="inline-flex items-center px-6 py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition">
                     Ver todos los cursos
                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
-            </div> --}}
+            </div>
         @else
             <p class="text-center text-gray-500">Pronto publicaremos nuestros cursos. ¡Atento!</p>
         @endif
@@ -125,7 +125,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-                <span class="text-blue-700 font-semibold text-sm uppercase tracking-wider">Sobre nosotros</span>
+                <span class="text-amber-600 font-semibold text-sm uppercase tracking-wider">Sobre nosotros</span>
                 <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mt-2 mb-6">
                     Educación de calidad con<br>certificación verificable
                 </h2>
@@ -137,12 +137,12 @@
                 </p>
 
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <div class="text-3xl font-bold text-blue-700">100%</div>
+                    <div class="bg-amber-50 p-4 rounded-lg border border-amber-100">
+                        <div class="text-3xl font-bold text-amber-600">100%</div>
                         <div class="text-sm text-gray-600">Certificados digitales</div>
                     </div>
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <div class="text-3xl font-bold text-blue-700">24/7</div>
+                    <div class="bg-amber-50 p-4 rounded-lg border border-amber-100">
+                        <div class="text-3xl font-bold text-amber-600">24/7</div>
                         <div class="text-sm text-gray-600">Verificación online</div>
                     </div>
                 </div>
@@ -183,8 +183,7 @@
     </div>
 </section>
 
-{{-- MVP: CTA Contacto oculto --}}
-{{-- <section class="py-16 bg-blue-900 text-white">
+<section class="py-16 bg-blue-900 text-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl sm:text-4xl font-bold mb-4">¿Tienes preguntas?</h2>
         <p class="text-lg text-blue-100 mb-8">
@@ -195,6 +194,6 @@
             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
         </a>
     </div>
-</section> --}}
+</section>
 
 @endsection

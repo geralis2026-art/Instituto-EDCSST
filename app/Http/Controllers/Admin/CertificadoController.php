@@ -9,6 +9,7 @@ use App\Models\Certificado;
 use App\Models\Curso;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CertificadoController extends Controller
 {
@@ -49,11 +50,18 @@ class CertificadoController extends Controller
     public function store(CertificadoRequest $request)
     {
         $datos = $request->validated();
-        $datos['codigo_unico'] = $datos['codigo_unico'] ?: Certificado::generarCodigoUnico();
+        $codigoManual = $datos['codigo_unico'] ?: null;
+        $datos['codigo_unico'] = $codigoManual ?? (string) Str::uuid();
         $datos['emitido_por'] = auth()->id();
-        $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados', 'public');
+        $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados');
+        $datos['fecha_vencimiento'] = \Carbon\Carbon::parse($datos['fecha_emision'])->addYear()->toDateString();
 
         $certificado = Certificado::create($datos);
+
+        if (!$codigoManual) {
+            $certificado->codigo_unico = Certificado::generarCodigoUnico($certificado->id);
+            $certificado->saveQuietly();
+        }
 
         return redirect()
             ->route('admin.certificados.show', $certificado)
@@ -78,13 +86,14 @@ class CertificadoController extends Controller
     public function update(CertificadoRequest $request, Certificado $certificado)
     {
         $datos = $request->validated();
+        $datos['fecha_vencimiento'] = \Carbon\Carbon::parse($datos['fecha_emision'])->addYear()->toDateString();
 
         if ($request->hasFile('archivo_pdf')) {
             if ($certificado->archivo_pdf) {
-                Storage::disk('public')->delete($certificado->archivo_pdf);
+                Storage::disk('local')->delete($certificado->archivo_pdf);
             }
 
-            $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados', 'public');
+            $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados');
         } else {
             unset($datos['archivo_pdf']);
         }
@@ -96,10 +105,21 @@ class CertificadoController extends Controller
             ->with('success', 'Certificado actualizado correctamente.');
     }
 
+    public function verPdf(Certificado $certificado)
+    {
+        if (!$certificado->archivo_pdf || !Storage::disk('local')->exists($certificado->archivo_pdf)) {
+            abort(404, 'El archivo PDF no se encuentra.');
+        }
+
+        return Storage::disk('local')->response($certificado->archivo_pdf, null, [
+            'Content-Type' => 'application/pdf',
+        ]);
+    }
+
     public function destroy(Certificado $certificado)
     {
         if ($certificado->archivo_pdf) {
-            Storage::disk('public')->delete($certificado->archivo_pdf);
+            Storage::disk('local')->delete($certificado->archivo_pdf);
         }
 
         $certificado->delete();

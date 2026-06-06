@@ -39,7 +39,7 @@
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Codigo</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Capacitado</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Curso</th>
-                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Fecha</th>
+                        <th class="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Emisión / Vence</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Estado</th>
                         <th class="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Acciones</th>
                     </tr>
@@ -55,11 +55,19 @@
                                 <p class="text-sm text-gray-500">{{ $certificado->capacitado?->documento }}</p>
                             </td>
                             <td class="px-6 py-4">{{ $certificado->curso?->nombre ?? 'Sin curso' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $certificado->fecha_emision->format('d/m/Y') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <p class="text-sm text-gray-900">{{ $certificado->fecha_emision->format('d/m/Y') }}</p>
+                                <p class="text-xs {{ $certificado->isVencido() ? 'text-red-600 font-semibold' : 'text-gray-500' }}">
+                                    Vence: {{ $certificado->fecha_vencimiento?->format('d/m/Y') ?? '—' }}
+                                </p>
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-3 py-1 rounded-full text-sm font-semibold {{ $certificado->activo ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700' }}">
                                     {{ $certificado->activo ? 'Activo' : 'Inactivo' }}
                                 </span>
+                                @if($certificado->isVencido())
+                                    <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">Vencido</span>
+                                @endif
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex flex-wrap gap-2 text-sm font-medium">

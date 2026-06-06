@@ -18,15 +18,17 @@ class Certificado extends Model
         'emitido_por',
         'codigo_unico',
         'fecha_emision',
+        'fecha_vencimiento',
         'intensidad_horaria',
         'archivo_pdf',
         'activo',
     ];
 
     protected $casts = [
-        'fecha_emision' => 'date',
+        'fecha_emision'      => 'date',
+        'fecha_vencimiento'  => 'date',
         'intensidad_horaria' => 'integer',
-        'activo' => 'boolean',
+        'activo'             => 'boolean',
     ];
 
     public function capacitado(): BelongsTo
@@ -49,15 +51,9 @@ class Certificado extends Model
      * Formato: EDCSST-{AÑO}-{ID_5_DIGITOS}
      * Ej: EDCSST-2026-00001
      */
-    public static function generarCodigoUnico(): string
+    public static function generarCodigoUnico(int $id): string
     {
-        $anio = now()->year;
-        $ultimo = static::whereYear('created_at', $anio)
-            ->orderBy('id', 'desc')
-            ->first();
-
-        $siguiente = $ultimo ? $ultimo->id + 1 : 1;
-        return sprintf('EDCSST-%d-%05d', $anio, $siguiente);
+        return sprintf('EDCSST-%d-%05d', now()->year, $id);
     }
 
     /**
@@ -76,13 +72,29 @@ class Certificado extends Model
     public function getPdfUrlAttribute(): ?string
     {
         return $this->archivo_pdf
-            ? asset('storage/' . $this->archivo_pdf)
+            ? route('admin.certificados.pdf', $this)
             : null;
+    }
+
+    public function isVencido(): bool
+    {
+        return $this->fecha_vencimiento && $this->fecha_vencimiento->isPast();
     }
 
     public function scopeActivos($query)
     {
         return $query->where('activo', true);
+    }
+
+    public function scopeVigentes($query)
+    {
+        return $query->where('activo', true)
+                     ->where('fecha_vencimiento', '>=', now()->toDateString());
+    }
+
+    public function scopeVencidos($query)
+    {
+        return $query->where('fecha_vencimiento', '<', now()->toDateString());
     }
 
     /**

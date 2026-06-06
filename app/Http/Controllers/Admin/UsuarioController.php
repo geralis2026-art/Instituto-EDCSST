@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 
@@ -27,15 +28,16 @@ class UsuarioController extends Controller
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'rol'      => ['required', 'in:admin,capacitador'],
         ]);
 
-        $usuario = User::create([
+        User::create([
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
+            'rol'      => $request->rol,
+            'activo'   => false,
         ]);
-        $usuario->activo = false;
-        $usuario->save();
 
         return redirect()->route('admin.usuarios.index')
             ->with('success', 'Usuario creado. Actívalo para que pueda ingresar.');
@@ -43,7 +45,7 @@ class UsuarioController extends Controller
 
     public function toggleActivo(User $usuario)
     {
-        if ($usuario->id === auth()->id()) {
+        if ($usuario->id === Auth::id()) {
             return back()->with('error', 'No puedes desactivarte a ti mismo.');
         }
 
@@ -55,7 +57,7 @@ class UsuarioController extends Controller
 
     public function destroy(User $usuario)
     {
-        if ($usuario->id === auth()->id()) {
+        if ($usuario->id === Auth::id()) {
             return back()->with('error', 'No puedes eliminarte a ti mismo.');
         }
 
