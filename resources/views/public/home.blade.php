@@ -109,7 +109,7 @@
             </div>
 
             <div class="text-center mt-10">
-                <a href="{{ route('catalogo') }}" class="inline-flex items-center px-6 py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition" style="border-bottom: 3px solid #F59E0B;">
+                <a href="{{ route('catalogo') }}" class="inline-flex items-center px-6 py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition">
                     Ver todos los cursos
                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
