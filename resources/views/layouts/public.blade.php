@@ -94,7 +94,7 @@
                     <a href="{{ route('contacto') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('contacto') ? 'text-amber-600 bg-amber-50 border-b-2 border-amber-500' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Contacto</a>
 
                     @auth
-                        <a href="{{ route('admin.dashboard') }}" class="ml-3 px-4 py-2 text-sm font-semibold bg-amber-500 text-white rounded-md hover:bg-amber-600 transition shadow-sm">
+                        <a href="{{ route('admin.dashboard') }}" class="ml-3 px-4 py-2 text-sm font-medium bg-blue-700 text-white rounded-md hover:bg-blue-800 transition">
                             Panel
                         </a>
                     @else
@@ -121,7 +121,7 @@
                 <a href="{{ route('verificar') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Verificar</a>
                 <a href="{{ route('contacto') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Contacto</a>
                 @auth
-                    <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm font-semibold text-white bg-amber-500 rounded-md text-center hover:bg-amber-600 transition">Panel administrativo</a>
+                    <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-md text-center">Panel administrativo</a>
                 @else
                     <a href="{{ route('login') }}" class="block px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md text-center">Acceso administrativo</a>
                 @endauth
