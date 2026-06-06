@@ -23,24 +23,24 @@
 
     {{-- Tarjetas de estadísticas --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 border-t-4 border-t-amber-500">
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 border-t-4 border-t-amber-500 card-hover reveal delay-1">
             <p class="text-xs text-gray-500 uppercase tracking-wider">Capacitados</p>
-            <p class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($totalCapacitados) }}</p>
+            <p class="text-3xl font-bold text-gray-900 mt-1 counter" data-target="{{ $totalCapacitados }}" data-format="number">{{ number_format($totalCapacitados) }}</p>
             <p class="text-xs text-amber-600 mt-1">+{{ $capacitadosMesActual }} este mes</p>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 border-t-4 border-t-blue-600">
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 border-t-4 border-t-blue-600 card-hover reveal delay-2">
             <p class="text-xs text-gray-500 uppercase tracking-wider">Certificados</p>
-            <p class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($totalCertificados) }}</p>
+            <p class="text-3xl font-bold text-gray-900 mt-1 counter" data-target="{{ $totalCertificados }}" data-format="number">{{ number_format($totalCertificados) }}</p>
             <p class="text-xs text-amber-600 mt-1">+{{ $certificadosMesActual }} este mes</p>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 border-t-4 border-t-amber-500">
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 border-t-4 border-t-amber-500 card-hover reveal delay-3">
             <p class="text-xs text-gray-500 uppercase tracking-wider">Horas capacitadas</p>
-            <p class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($horasCapacitadasTotal) }}</p>
+            <p class="text-3xl font-bold text-gray-900 mt-1 counter" data-target="{{ $horasCapacitadasTotal }}" data-format="number">{{ number_format($horasCapacitadasTotal) }}</p>
             <p class="text-xs text-gray-400 mt-1">acumuladas</p>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 border-t-4 border-t-blue-600">
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 border-t-4 border-t-blue-600 card-hover reveal delay-4">
             <p class="text-xs text-gray-500 uppercase tracking-wider">Mensajes nuevos</p>
-            <p class="text-3xl font-bold mt-1 {{ $mensajesNuevos > 0 ? 'text-red-600' : 'text-gray-900' }}">{{ $mensajesNuevos }}</p>
+            <p class="text-3xl font-bold mt-1 {{ $mensajesNuevos > 0 ? 'text-red-600' : 'text-gray-900' }} counter" data-target="{{ $mensajesNuevos }}">{{ $mensajesNuevos }}</p>
             <a href="{{ route('admin.mensajes.index') }}" class="text-xs text-amber-600 hover:underline mt-1 inline-block">Ver bandeja</a>
         </div>
     </div>
@@ -49,13 +49,13 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {{-- Gráfica certificados por mes --}}
-        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6 card-hover reveal delay-1">
             <h2 class="text-sm font-semibold text-gray-700 mb-4">Certificados emitidos — últimos 12 meses</h2>
             <canvas id="chartCertificados" height="100"></canvas>
         </div>
 
         {{-- Top capacitados por horas --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 card-hover reveal delay-2">
             <h2 class="text-sm font-semibold text-gray-700 mb-4">Top capacitados por horas</h2>
             @if($topCapacitados->isEmpty())
                 <p class="text-sm text-gray-400">Sin datos aún.</p>
@@ -79,7 +79,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {{-- Últimos certificados --}}
-        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6 card-hover reveal">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-sm font-semibold text-gray-700">Últimos certificados</h2>
                 <a href="{{ route('admin.certificados.index') }}" class="text-xs text-amber-600 hover:underline">Ver todos</a>
@@ -115,7 +115,7 @@
         </div>
 
         {{-- Cursos más usados --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 card-hover reveal delay-1">
             <h2 class="text-sm font-semibold text-gray-700 mb-4">Cursos más certificados</h2>
             @if($cursosMasUsados->isEmpty())
                 <p class="text-sm text-gray-400">Sin datos aún.</p>
@@ -140,7 +140,7 @@
 
     {{-- Mensajes recientes --}}
     @if($mensajesRecientes->isNotEmpty())
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 card-hover reveal">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-sm font-semibold text-gray-700">Mensajes recientes</h2>
             <a href="{{ route('admin.mensajes.index') }}" class="text-xs text-amber-600 hover:underline">Ver todos</a>

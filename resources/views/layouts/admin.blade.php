@@ -9,46 +9,85 @@
 
     <x-app-assets />
     <style>
-        :root {
-            --gold: #D4A017;
-            --gold-soft: #F59E0B;
-        }
+        :root { --gold: #D4A017; --gold-soft: #F59E0B; }
+
+        /* ===== BTN GOLD (shimmer) ===== */
         .btn-gold {
+            position: relative; overflow: hidden;
             background: linear-gradient(135deg, var(--gold-soft), var(--gold));
-            color: #fff;
-            font-weight: 600;
-            border-radius: 0.5rem;
+            color: #fff; font-weight: 600; border-radius: 0.5rem;
             box-shadow: 0 2px 8px rgba(212,160,23,0.35);
             transition: opacity 0.2s, box-shadow 0.2s;
         }
-        .btn-gold:hover { opacity: 0.9; box-shadow: 0 4px 14px rgba(212,160,23,0.45); }
+        .btn-gold:hover { opacity: 0.9; box-shadow: 0 4px 14px rgba(212,160,23,0.5); }
+        .btn-gold::after {
+            content: ''; position: absolute;
+            top: 0; left: -80%; width: 55%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+            transform: skewX(-20deg); transition: left 0.55s ease; pointer-events: none;
+        }
+        .btn-gold:hover::after { left: 130%; }
+
+        /* ===== BADGE GOLD (shine) ===== */
+        @keyframes badge-shine {
+            0%   { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
         .badge-gold {
             display: inline-block;
-            background: linear-gradient(135deg, var(--gold-soft), var(--gold));
-            color: #fff;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            font-size: 0.68rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
+            background: linear-gradient(90deg, var(--gold-soft) 0%, var(--gold) 35%, #FCD34D 50%, var(--gold) 65%, var(--gold-soft) 100%);
+            background-size: 200% auto;
+            animation: badge-shine 3.5s linear infinite;
+            color: #fff; font-weight: 700; letter-spacing: 0.06em;
+            text-transform: uppercase; font-size: 0.68rem;
+            padding: 0.25rem 0.75rem; border-radius: 9999px;
             box-shadow: 0 2px 6px rgba(212,160,23,0.4);
         }
+
+        /* ===== NAV ===== */
         .nav-link-active {
             background-color: rgba(255,255,255,0.08);
             border-left: 4px solid #F59E0B;
-            padding-left: 0.75rem;
-            color: #FDE68A;
-            font-weight: 600;
+            padding-left: 0.75rem; color: #FDE68A; font-weight: 600;
         }
-        .nav-link-inactive {
-            border-left: 4px solid transparent;
-            padding-left: 0.75rem;
+        .nav-link-inactive { border-left: 4px solid transparent; padding-left: 0.75rem; }
+        .nav-link-inactive:hover { background-color: rgba(255,255,255,0.06); color: #FDE68A; }
+        aside nav a svg { transition: transform 0.2s; }
+        aside nav a:hover svg { transform: scale(1.15); }
+
+        /* ===== SIDEBAR ENTRY ===== */
+        @keyframes sidebarIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to   { opacity: 1; transform: translateX(0); }
         }
-        .nav-link-inactive:hover {
-            background-color: rgba(255,255,255,0.06);
-            color: #FDE68A;
+        .sidebar-link-in { animation: sidebarIn 0.4s ease-out both; }
+
+        /* ===== MAIN CONTENT ENTRY ===== */
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
+        main { animation: pageIn 0.45s ease-out both; }
+
+        /* ===== SCROLL REVEAL ===== */
+        .reveal      { opacity: 0; transform: translateY(22px); transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1); }
+        .reveal-left { opacity: 0; transform: translateX(-22px); transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1); }
+        .reveal.visible, .reveal-left.visible { opacity: 1; transform: translate(0,0); }
+        .delay-1 { transition-delay: 0.08s; }
+        .delay-2 { transition-delay: 0.16s; }
+        .delay-3 { transition-delay: 0.24s; }
+        .delay-4 { transition-delay: 0.32s; }
+
+        /* ===== CARD HOVER ===== */
+        .card-hover { transition: box-shadow 0.25s, transform 0.25s cubic-bezier(0.22,1,0.36,1); }
+        .card-hover:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.09); transform: translateY(-3px); }
+
+        /* ===== FLASH MESSAGES SLIDE IN ===== */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .flash-msg { animation: slideDown 0.35s ease-out both; }
     </style>
     @stack('styles')
 </head>
@@ -167,7 +206,7 @@
             {{-- Mensajes flash --}}
             <div class="px-4 sm:px-6 lg:px-8 pt-4">
                 @if(session('success'))
-                    <div class="bg-green-50 border-l-4 border-green-500 text-green-800 p-4 rounded-md shadow-sm mb-4">
+                    <div class="bg-green-50 border-l-4 border-green-500 text-green-800 p-4 rounded-md shadow-sm mb-4 flash-msg">
                         <div class="flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                             <span>{{ session('success') }}</span>
@@ -175,17 +214,17 @@
                     </div>
                 @endif
                 @if(session('error'))
-                    <div class="bg-red-50 border-l-4 border-red-500 text-red-800 p-4 rounded-md shadow-sm mb-4">
+                    <div class="bg-red-50 border-l-4 border-red-500 text-red-800 p-4 rounded-md shadow-sm mb-4 flash-msg">
                         {{ session('error') }}
                     </div>
                 @endif
                 @if(session('info'))
-                    <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-800 p-4 rounded-md shadow-sm mb-4">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-800 p-4 rounded-md shadow-sm mb-4 flash-msg">
                         {{ session('info') }}
                     </div>
                 @endif
                 @if($errors->any())
-                    <div class="bg-red-50 border-l-4 border-red-500 text-red-800 p-4 rounded-md shadow-sm mb-4">
+                    <div class="bg-red-50 border-l-4 border-red-500 text-red-800 p-4 rounded-md shadow-sm mb-4 flash-msg">
                         <p class="font-semibold mb-2">Por favor corrige los siguientes errores:</p>
                         <ul class="list-disc list-inside text-sm">
                             @foreach($errors->all() as $error)
@@ -231,6 +270,41 @@
         document.addEventListener('click', function() {
             userMenu?.classList.add('hidden');
         });
+
+        // ===== Sidebar link stagger =====
+        document.querySelectorAll('aside nav a').forEach((el, i) => {
+            el.style.animationDelay = (i * 0.07 + 0.04) + 's';
+            el.classList.add('sidebar-link-in');
+        });
+
+        // ===== Scroll Reveal =====
+        const _rObs = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+        document.querySelectorAll('.reveal, .reveal-left').forEach(el => _rObs.observe(el));
+
+        // ===== Counter Animation =====
+        function _animCount(el) {
+            const target = parseFloat(el.dataset.target);
+            const suffix = el.dataset.suffix || '';
+            const fmt = el.dataset.format === 'number';
+            const dur = 1600, t0 = performance.now();
+            (function tick(now) {
+                const p = Math.min((now - t0) / dur, 1);
+                const v = Math.round(target * (1 - Math.pow(1 - p, 3)));
+                el.textContent = (fmt ? v.toLocaleString('es-CO') : v) + suffix;
+                if (p < 1) requestAnimationFrame(tick);
+            })(performance.now());
+        }
+        const _cObs = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting && !e.target.dataset.counted) {
+                    e.target.dataset.counted = '1';
+                    _animCount(e.target);
+                }
+            });
+        }, { threshold: 0.6 });
+        document.querySelectorAll('[data-target]').forEach(el => _cObs.observe(el));
     </script>
 
     @stack('scripts')
