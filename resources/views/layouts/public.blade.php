@@ -33,18 +33,18 @@
 
                 {{-- Menú desktop --}}
                 <div class="hidden md:flex items-center space-x-1">
-                    <a href="{{ route('home') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('home') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
+                    <a href="{{ route('home') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('home') ? 'text-amber-600 bg-amber-50 border-b-2 border-amber-500' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
                         Inicio
                     </a>
-                    <a href="{{ route('nosotros') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('nosotros') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Nosotros</a>
-                    <a href="{{ route('catalogo') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('catalogo') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Cursos</a>
-                    <a href="{{ route('consulta') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('consulta') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
+                    <a href="{{ route('nosotros') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('nosotros') ? 'text-amber-600 bg-amber-50 border-b-2 border-amber-500' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Nosotros</a>
+                    <a href="{{ route('catalogo') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('catalogo') ? 'text-amber-600 bg-amber-50 border-b-2 border-amber-500' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Cursos</a>
+                    <a href="{{ route('consulta') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('consulta') ? 'text-amber-600 bg-amber-50 border-b-2 border-amber-500' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
                         Consultar Certificado
                     </a>
-                    <a href="{{ route('verificar') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('verificar') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
+                    <a href="{{ route('verificar') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('verificar') ? 'text-amber-600 bg-amber-50 border-b-2 border-amber-500' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
                         Verificar
                     </a>
-                    <a href="{{ route('contacto') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('contacto') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Contacto</a>
+                    <a href="{{ route('contacto') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('contacto') ? 'text-amber-600 bg-amber-50 border-b-2 border-amber-500' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Contacto</a>
 
                     @auth
                         <a href="{{ route('admin.dashboard') }}" class="ml-3 px-4 py-2 text-sm font-medium bg-blue-700 text-white rounded-md hover:bg-blue-800 transition">

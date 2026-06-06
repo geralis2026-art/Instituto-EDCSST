@@ -8,7 +8,7 @@
 {{-- HERO --}}
 <section class="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <span class="inline-block px-3 py-1 bg-blue-700 text-blue-100 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
+        <span class="inline-block px-3 py-1 bg-amber-500 text-white rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
             Quiénes somos
         </span>
         <h1 class="text-4xl sm:text-5xl font-bold mb-6">Instituto EDCSST</h1>
@@ -23,8 +23,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-            <div class="text-center p-8 rounded-2xl bg-blue-50 border border-blue-100">
-                <div class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-5">
+            <div class="text-center p-8 rounded-2xl bg-amber-50 border border-amber-100">
+                <div class="w-14 h-14 bg-amber-500 rounded-xl flex items-center justify-center mx-auto mb-5">
                     <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 </div>
                 <h2 class="text-xl font-bold text-blue-900 mb-3">Misión</h2>
@@ -63,7 +63,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
             <div>
-                <span class="text-blue-700 font-semibold text-sm uppercase tracking-wider">Nuestra historia</span>
+                <span class="text-amber-600 font-semibold text-sm uppercase tracking-wider">Nuestra historia</span>
                 <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mt-2 mb-6">
                     Comprometidos con la formación profesional
                 </h2>
@@ -79,12 +79,12 @@
             </div>
 
             <div class="grid grid-cols-2 gap-5">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
-                    <div class="text-4xl font-bold text-blue-700 mb-1">100%</div>
+                <div class="bg-amber-50 p-6 rounded-xl shadow-sm border border-amber-100 text-center">
+                    <div class="text-4xl font-bold text-amber-600 mb-1">100%</div>
                     <div class="text-sm text-gray-600">Certificados digitales verificables</div>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
-                    <div class="text-4xl font-bold text-blue-700 mb-1">24/7</div>
+                <div class="bg-amber-50 p-6 rounded-xl shadow-sm border border-amber-100 text-center">
+                    <div class="text-4xl font-bold text-amber-600 mb-1">24/7</div>
                     <div class="text-sm text-gray-600">Verificación en línea disponible</div>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
@@ -111,16 +111,16 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach([
-                ['icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'titulo' => 'Certificados verificables', 'texto' => 'Cada certificado cuenta con un código único que cualquier empresa puede validar en nuestra plataforma en segundos.'],
-                ['icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', 'titulo' => 'Formación práctica', 'texto' => 'Programas diseñados con enfoque aplicado para que el conocimiento sea útil desde el primer día en el entorno laboral.'],
-                ['icon' => 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3', 'titulo' => 'Cumplimiento normativo', 'texto' => 'Nuestros programas están alineados con la normativa colombiana vigente en seguridad y salud en el trabajo.'],
-                ['icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z', 'titulo' => 'Atención personalizada', 'texto' => 'Acompañamos a cada capacitado durante su proceso de formación y estamos disponibles para resolver dudas.'],
-                ['icon' => 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', 'titulo' => 'Seguridad de datos', 'texto' => 'La información de nuestros capacitados se gestiona con los más altos estándares de seguridad y privacidad.'],
-                ['icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'titulo' => 'Soporte continuo', 'texto' => 'Contáctanos por correo, teléfono o WhatsApp. Respondemos a la brevedad para resolver cualquier inquietud.'],
+                ['icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'titulo' => 'Certificados verificables', 'texto' => 'Cada certificado cuenta con un código único que cualquier empresa puede validar en nuestra plataforma en segundos.', 'color' => 'amber'],
+                ['icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', 'titulo' => 'Formación práctica', 'texto' => 'Programas diseñados con enfoque aplicado para que el conocimiento sea útil desde el primer día en el entorno laboral.', 'color' => 'blue'],
+                ['icon' => 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3', 'titulo' => 'Cumplimiento normativo', 'texto' => 'Nuestros programas están alineados con la normativa colombiana vigente en seguridad y salud en el trabajo.', 'color' => 'amber'],
+                ['icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z', 'titulo' => 'Atención personalizada', 'texto' => 'Acompañamos a cada capacitado durante su proceso de formación y estamos disponibles para resolver dudas.', 'color' => 'blue'],
+                ['icon' => 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', 'titulo' => 'Seguridad de datos', 'texto' => 'La información de nuestros capacitados se gestiona con los más altos estándares de seguridad y privacidad.', 'color' => 'amber'],
+                ['icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'titulo' => 'Soporte continuo', 'texto' => 'Contáctanos por correo, teléfono o WhatsApp. Respondemos a la brevedad para resolver cualquier inquietud.', 'color' => 'blue'],
             ] as $item)
             <div class="flex items-start bg-gray-50 p-6 rounded-xl border border-gray-100 hover:shadow-sm transition">
-                <div class="w-11 h-11 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-11 h-11 {{ $item['color'] === 'amber' ? 'bg-amber-100' : 'bg-blue-100' }} rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 {{ $item['color'] === 'amber' ? 'text-amber-600' : 'text-blue-700' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}"/>
                     </svg>
                 </div>

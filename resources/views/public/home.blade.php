@@ -12,7 +12,7 @@
 
             {{-- Texto del hero --}}
             <div>
-                <span class="inline-block px-3 py-1 bg-blue-700 text-blue-100 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
+                <span class="inline-block px-3 py-1 bg-amber-500 text-white rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
                     Capacitación profesional
                 </span>
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
@@ -28,7 +28,7 @@
                         Consultar mi certificado
                         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </a>
-                    <a href="{{ route('verificar') }}" class="inline-flex items-center px-6 py-3 bg-blue-700 border-2 border-blue-400 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
+                    <a href="{{ route('verificar') }}" class="inline-flex items-center px-6 py-3 bg-amber-500 border-2 border-amber-400 text-white font-semibold rounded-lg hover:bg-amber-600 transition">
                         Verificar certificado
                     </a>
                 </div>
@@ -124,7 +124,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-                <span class="text-blue-700 font-semibold text-sm uppercase tracking-wider">Sobre nosotros</span>
+                <span class="text-amber-600 font-semibold text-sm uppercase tracking-wider">Sobre nosotros</span>
                 <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mt-2 mb-6">
                     Educación de calidad con<br>certificación verificable
                 </h2>
@@ -136,12 +136,12 @@
                 </p>
 
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <div class="text-3xl font-bold text-blue-700">100%</div>
+                    <div class="bg-amber-50 p-4 rounded-lg border border-amber-100">
+                        <div class="text-3xl font-bold text-amber-600">100%</div>
                         <div class="text-sm text-gray-600">Certificados digitales</div>
                     </div>
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <div class="text-3xl font-bold text-blue-700">24/7</div>
+                    <div class="bg-amber-50 p-4 rounded-lg border border-amber-100">
+                        <div class="text-3xl font-bold text-amber-600">24/7</div>
                         <div class="text-sm text-gray-600">Verificación online</div>
                     </div>
                 </div>

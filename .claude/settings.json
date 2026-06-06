@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(npm run *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "PowerShell(git -C \"c:\\\\laragon\\\\www\\\\instituto-edcsst\" add -A)",
+      "PowerShell(git -C \"c:\\\\laragon\\\\www\\\\instituto-edcsst\" commit -m \"Estilo: agregar acento dorado/amber para romper monotonia azul`n`nNavbar activo con fondo amber, badges amber en heroes, boton secundario amber,`nlabels de seccion amber, estadisticas amber-50, iconos alternados blue/amber,`ncontacto iconos amber, catalogo badge amber.`n`nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\")"
     ]
   }
 }

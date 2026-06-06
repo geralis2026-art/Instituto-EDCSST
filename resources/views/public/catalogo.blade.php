@@ -35,7 +35,7 @@
                                 <p class="text-sm text-gray-600 mt-1">{{ $categoria->descripcion }}</p>
                             @endif
                         </div>
-                        <span class="bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full">
+                        <span class="bg-amber-100 text-amber-800 text-sm font-semibold px-3 py-1 rounded-full">
                             {{ $categoria->cursos->count() }} {{ Str::plural('curso', $categoria->cursos->count()) }}
                         </span>
                     </div>
