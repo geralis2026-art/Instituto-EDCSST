@@ -55,20 +55,6 @@
         aside nav a svg { transition: transform 0.2s; }
         aside nav a:hover svg { transform: scale(1.15); }
 
-        /* ===== SIDEBAR ENTRY ===== */
-        @keyframes sidebarIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to   { opacity: 1; transform: translateX(0); }
-        }
-        .sidebar-link-in { animation: sidebarIn 0.4s ease-out both; }
-
-        /* ===== MAIN CONTENT ENTRY ===== */
-        @keyframes pageIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        main { animation: pageIn 0.45s ease-out both; }
-
         /* ===== SCROLL REVEAL ===== */
         .reveal      { opacity: 0; transform: translateY(22px); transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1); }
         .reveal-left { opacity: 0; transform: translateX(-22px); transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1); }
@@ -269,12 +255,6 @@
 
         document.addEventListener('click', function() {
             userMenu?.classList.add('hidden');
-        });
-
-        // ===== Sidebar link stagger =====
-        document.querySelectorAll('aside nav a').forEach((el, i) => {
-            el.style.animationDelay = (i * 0.07 + 0.04) + 's';
-            el.classList.add('sidebar-link-in');
         });
 
         // ===== Scroll Reveal =====
