@@ -18,12 +18,19 @@
         <form method="GET" class="flex flex-wrap gap-3 items-center">
             <input type="text" name="busqueda" placeholder="Buscar por nombre o correo..." value="{{ request('busqueda') }}"
                 class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 min-w-[200px]">
-            <select name="estado" class="px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[220px]">
-                <option value="">Todos los estados</option>
-                <option value="nuevo"      @selected(request('estado') === 'nuevo')>Nuevos</option>
-                <option value="leido"      @selected(request('estado') === 'leido')>Leídos</option>
-                <option value="respondido" @selected(request('estado') === 'respondido')>Respondidos</option>
-            </select>
+            <div class="relative">
+                <select name="estado" class="appearance-none bg-white px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[220px]">
+                    <option value="">Todos los estados</option>
+                    <option value="nuevo"      @selected(request('estado') === 'nuevo')>Nuevos</option>
+                    <option value="leido"      @selected(request('estado') === 'leido')>Leídos</option>
+                    <option value="respondido" @selected(request('estado') === 'respondido')>Respondidos</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+            </div>
             <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Filtrar</button>
             @if(request('busqueda') || request('estado'))
                 <a href="{{ route('admin.mensajes.index') }}" class="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Limpiar</a>
