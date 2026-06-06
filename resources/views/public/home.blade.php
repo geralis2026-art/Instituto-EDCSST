@@ -6,7 +6,7 @@
 @section('contenido')
 
 {{-- ============ HERO / BANNER PRINCIPAL ============ --}}
-<section class="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white">
+<section class="bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
@@ -44,8 +44,8 @@
                                 <p class="text-xs uppercase tracking-wider text-gray-500">Certificado</p>
                                 <p class="text-lg font-bold text-blue-900">Instituto EDCSST</p>
                             </div>
-                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                                <svg class="w-10 h-10 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                            <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center">
+                                <svg class="w-10 h-10 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                             </div>
                         </div>
                         <div class="border-t border-gray-200 pt-4">
