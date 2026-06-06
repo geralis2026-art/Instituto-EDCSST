@@ -71,7 +71,7 @@
                 {{-- Logo / Nombre del instituto --}}
                 <div class="flex items-center">
                     <a href="{{ route('home') }}" class="flex items-center space-x-2">
-                        <div class="w-24 h-24 flex items-center justify-center rounded-lg logo-ring">
+                        <div class="w-24 h-24 flex items-center justify-center">
                             <x-application-logo class="w-full h-full" />
                         </div>
                         <span class="text-xl font-bold text-blue-900 hidden sm:block">Instituto EDCSST</span>

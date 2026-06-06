@@ -70,7 +70,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div class="text-center mb-12">
-            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 section-title-center">Nuestros cursos destacados</h2>
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Nuestros cursos destacados</h2>
+            <div class="w-12 h-1 bg-amber-400 rounded-full mx-auto mb-3"></div>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">
                 Capacitaciones diseñadas para impulsar tu carrera profesional con certificación reconocida.
             </p>
@@ -108,7 +109,7 @@
             </div>
 
             <div class="text-center mt-10">
-                <a href="{{ route('catalogo') }}" class="inline-flex items-center px-6 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 transition shadow-md">
+                <a href="{{ route('catalogo') }}" class="inline-flex items-center px-6 py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition" style="border-bottom: 3px solid #F59E0B;">
                     Ver todos los cursos
                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
