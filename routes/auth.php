@@ -27,6 +27,10 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    // Registro público deshabilitado: solo admins creados desde el panel
+    Route::get('register', fn() => abort(403))->name('register');
+    Route::post('register', fn() => abort(403));
 });
 
 Route::middleware('auth')->group(function () {
