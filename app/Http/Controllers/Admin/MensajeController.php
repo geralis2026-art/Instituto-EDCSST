@@ -8,9 +8,17 @@ use Illuminate\Http\Request;
 
 class MensajeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $mensajes = Mensaje::latest()->paginate(20);
+        $mensajes = Mensaje::query()
+            ->when($request->busqueda, fn($q, $v) =>
+                $q->where('nombre', 'like', "%{$v}%")
+                  ->orWhere('correo', 'like', "%{$v}%")
+            )
+            ->when($request->estado, fn($q, $v) => $q->where('estado', $v))
+            ->latest()
+            ->paginate(20);
+
         return view('admin.mensajes.index', compact('mensajes'));
     }
 
