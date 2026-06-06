@@ -32,7 +32,7 @@ Route::get('/cursos', [CatalogoController::class, 'index'])->name('catalogo');
 
 // Formulario de contacto
 Route::get('/contacto', [ContactoController::class, 'index'])->name('contacto');
-Route::post('/contacto', [ContactoController::class, 'enviar'])->name('contacto.enviar');
+Route::post('/contacto', [ContactoController::class, 'enviar'])->name('contacto.enviar')->middleware('throttle:contacto-publica');
 
 // Consulta pública de certificados (capacitado busca sus certificados)
 Route::get('/consulta', [ConsultaCertificadoController::class, 'index'])->name('consulta');
@@ -70,6 +70,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(
 
     // Gestión de certificados
     Route::patch('certificados/{certificado}/toggle-activo', [CertificadoController::class, 'toggleActivo'])->name('certificados.toggle-activo');
+    Route::get('certificados/{certificado}/pdf', [CertificadoController::class, 'verPdf'])->name('certificados.pdf');
     Route::resource('certificados', CertificadoController::class);
     Route::get('certificados-masivos', [CertificadoController::class, 'masivosForm'])->name('certificados.masivos');
     Route::post('certificados-masivos', [CertificadoController::class, 'generarMasivos'])->name('certificados.generar-masivos');

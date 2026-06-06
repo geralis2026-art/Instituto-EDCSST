@@ -31,5 +31,13 @@ class AppServiceProvider extends ServiceProvider
                     ['message' => 'Demasiadas verificaciones. Espera un momento antes de intentar de nuevo.'], 429
                 ));
         });
+
+        RateLimiter::for('contacto-publica', function (Request $request) {
+            return Limit::perMinute(3)->by($request->ip())
+                ->response(fn() => back()
+                    ->withInput()
+                    ->withErrors(['mensaje' => 'Has enviado demasiados mensajes. Espera unos minutos antes de intentar de nuevo.'])
+                );
+        });
     }
 }

@@ -85,7 +85,7 @@ class ConsultaCertificadoController extends Controller
 
         $path = $certificado->archivo_pdf;
 
-        if (!str_starts_with($path, 'certificados/') || !Storage::disk('public')->exists($path)) {
+        if (!str_starts_with($path, 'certificados/') || !Storage::disk('local')->exists($path)) {
             abort(404, 'El archivo del certificado no se encuentra. Por favor contacta al instituto.');
         }
 
@@ -95,6 +95,6 @@ class ConsultaCertificadoController extends Controller
             $certificado->codigo_unico
         );
 
-        return Storage::disk('public')->download($path, $nombreArchivo);
+        return Storage::disk('local')->download($path, $nombreArchivo);
     }
 }

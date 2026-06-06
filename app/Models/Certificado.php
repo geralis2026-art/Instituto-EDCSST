@@ -49,15 +49,9 @@ class Certificado extends Model
      * Formato: EDCSST-{AÑO}-{ID_5_DIGITOS}
      * Ej: EDCSST-2026-00001
      */
-    public static function generarCodigoUnico(): string
+    public static function generarCodigoUnico(int $id): string
     {
-        $anio = now()->year;
-        $ultimo = static::whereYear('created_at', $anio)
-            ->orderBy('id', 'desc')
-            ->first();
-
-        $siguiente = $ultimo ? $ultimo->id + 1 : 1;
-        return sprintf('EDCSST-%d-%05d', $anio, $siguiente);
+        return sprintf('EDCSST-%d-%05d', now()->year, $id);
     }
 
     /**
@@ -76,7 +70,7 @@ class Certificado extends Model
     public function getPdfUrlAttribute(): ?string
     {
         return $this->archivo_pdf
-            ? asset('storage/' . $this->archivo_pdf)
+            ? route('admin.certificados.pdf', $this)
             : null;
     }
 

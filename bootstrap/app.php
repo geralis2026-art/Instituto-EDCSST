@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             Request::HEADER_X_FORWARDED_HOST |
             Request::HEADER_X_FORWARDED_PORT |
             Request::HEADER_X_FORWARDED_PROTO);
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
     })
     ->booted(function () {
         if (config('app.env') === 'production') {
