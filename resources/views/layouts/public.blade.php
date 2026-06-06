@@ -36,6 +36,7 @@
                     <a href="{{ route('home') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('home') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
                         Inicio
                     </a>
+                    <a href="{{ route('nosotros') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('nosotros') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Nosotros</a>
                     <a href="{{ route('catalogo') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('catalogo') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Cursos</a>
                     <a href="{{ route('consulta') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('consulta') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
                         Consultar Certificado
@@ -67,6 +68,7 @@
             {{-- Menú móvil --}}
             <div id="mobile-menu" class="hidden md:hidden pb-4 space-y-1">
                 <a href="{{ route('home') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Inicio</a>
+                <a href="{{ route('nosotros') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Nosotros</a>
                 <a href="{{ route('catalogo') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Cursos</a>
                 <a href="{{ route('consulta') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Consultar Certificado</a>
                 <a href="{{ route('verificar') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Verificar</a>
@@ -124,6 +126,7 @@
                     <h3 class="text-lg font-semibold mb-4">Enlaces rápidos</h3>
                     <ul class="space-y-2 text-sm text-blue-100">
                         <li><a href="{{ route('home') }}" class="hover:text-white transition">Inicio</a></li>
+                        <li><a href="{{ route('nosotros') }}" class="hover:text-white transition">Sobre nosotros</a></li>
                         <li><a href="{{ route('catalogo') }}" class="hover:text-white transition">Catálogo de cursos</a></li>
                         <li><a href="{{ route('consulta') }}" class="hover:text-white transition">Consultar certificado</a></li>
                         <li><a href="{{ route('verificar') }}" class="hover:text-white transition">Verificar certificado</a></li>

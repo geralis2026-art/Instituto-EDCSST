@@ -27,6 +27,9 @@ use Illuminate\Support\Facades\Route;
 // Página de inicio
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// Sobre nosotros
+Route::get('/nosotros', [HomeController::class, 'nosotros'])->name('nosotros');
+
 // Catálogo de cursos
 Route::get('/cursos', [CatalogoController::class, 'index'])->name('catalogo');
 

@@ -11,6 +11,11 @@ class HomeController extends Controller
     /**
      * Página de inicio del sitio público.
      */
+    public function nosotros()
+    {
+        return view('public.nosotros');
+    }
+
     public function index()
     {
         // Cursos destacados para mostrar en home (máximo 4)
