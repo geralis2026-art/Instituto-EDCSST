@@ -92,26 +92,23 @@ class DashboardController extends Controller
      */
     private function certificadosPorMes(): array
     {
+        $inicio = Carbon::now()->subMonths(11)->startOfMonth();
+
+        $resultados = Certificado::where('activo', true)
+            ->where('fecha_emision', '>=', $inicio)
+            ->selectRaw("DATE_FORMAT(fecha_emision, '%Y-%m') as mes, COUNT(*) as total")
+            ->groupBy('mes')
+            ->pluck('total', 'mes');
+
         $meses = [];
         $cantidades = [];
 
-        // Generar los últimos 12 meses
         for ($i = 11; $i >= 0; $i--) {
             $fecha = Carbon::now()->subMonths($i);
-            $inicioMes = $fecha->copy()->startOfMonth();
-            $finMes = $fecha->copy()->endOfMonth();
-
-            $cantidad = Certificado::where('activo', true)
-                ->whereBetween('fecha_emision', [$inicioMes, $finMes])
-                ->count();
-
             $meses[] = $fecha->locale('es')->isoFormat('MMM YYYY');
-            $cantidades[] = $cantidad;
+            $cantidades[] = $resultados[$fecha->format('Y-m')] ?? 0;
         }
 
-        return [
-            'labels' => $meses,
-            'data' => $cantidades,
-        ];
+        return ['labels' => $meses, 'data' => $cantidades];
     }
 }

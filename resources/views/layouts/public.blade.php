@@ -36,16 +36,14 @@
                     <a href="{{ route('home') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('home') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
                         Inicio
                     </a>
-                    {{-- MVP: Catálogo oculto --}}
-                    {{-- <a href="{{ route('catalogo') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('catalogo') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Cursos</a> --}}
+                    <a href="{{ route('catalogo') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('catalogo') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Cursos</a>
                     <a href="{{ route('consulta') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('consulta') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
                         Consultar Certificado
                     </a>
                     <a href="{{ route('verificar') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('verificar') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">
                         Verificar
                     </a>
-                    {{-- MVP: Contacto oculto --}}
-                    {{-- <a href="{{ route('contacto') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('contacto') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Contacto</a> --}}
+                    <a href="{{ route('contacto') }}" class="px-4 py-2 text-sm font-medium rounded-md transition {{ request()->routeIs('contacto') ? 'text-blue-700 bg-blue-50' : 'text-gray-700 hover:text-blue-700 hover:bg-gray-50' }}">Contacto</a>
 
                     @auth
                         <a href="{{ route('admin.dashboard') }}" class="ml-3 px-4 py-2 text-sm font-medium bg-blue-700 text-white rounded-md hover:bg-blue-800 transition">
@@ -69,12 +67,10 @@
             {{-- Menú móvil --}}
             <div id="mobile-menu" class="hidden md:hidden pb-4 space-y-1">
                 <a href="{{ route('home') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Inicio</a>
-                {{-- MVP: Catálogo oculto --}}
-                {{-- <a href="{{ route('catalogo') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Cursos</a> --}}
+                <a href="{{ route('catalogo') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Cursos</a>
                 <a href="{{ route('consulta') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Consultar Certificado</a>
                 <a href="{{ route('verificar') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Verificar</a>
-                {{-- MVP: Contacto oculto --}}
-                {{-- <a href="{{ route('contacto') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Contacto</a> --}}
+                <a href="{{ route('contacto') }}" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Contacto</a>
                 @auth
                     <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-md text-center">Panel administrativo</a>
                 @else
@@ -128,12 +124,10 @@
                     <h3 class="text-lg font-semibold mb-4">Enlaces rápidos</h3>
                     <ul class="space-y-2 text-sm text-blue-100">
                         <li><a href="{{ route('home') }}" class="hover:text-white transition">Inicio</a></li>
-                        {{-- MVP: Catálogo oculto --}}
-                        {{-- <li><a href="{{ route('catalogo') }}" class="hover:text-white transition">Catálogo de cursos</a></li> --}}
+                        <li><a href="{{ route('catalogo') }}" class="hover:text-white transition">Catálogo de cursos</a></li>
                         <li><a href="{{ route('consulta') }}" class="hover:text-white transition">Consultar certificado</a></li>
                         <li><a href="{{ route('verificar') }}" class="hover:text-white transition">Verificar certificado</a></li>
-                        {{-- MVP: Contacto oculto --}}
-                        {{-- <li><a href="{{ route('contacto') }}" class="hover:text-white transition">Contacto</a></li> --}}
+                        <li><a href="{{ route('contacto') }}" class="hover:text-white transition">Contacto</a></li>
                     </ul>
                 </div>
 

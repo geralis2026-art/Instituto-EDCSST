@@ -107,13 +107,12 @@
                 @endforeach
             </div>
 
-            {{-- MVP: Botón "Ver todos los cursos" oculto --}}
-            {{-- <div class="text-center mt-10">
+            <div class="text-center mt-10">
                 <a href="{{ route('catalogo') }}" class="inline-flex items-center px-6 py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition">
                     Ver todos los cursos
                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
-            </div> --}}
+            </div>
         @else
             <p class="text-center text-gray-500">Pronto publicaremos nuestros cursos. ¡Atento!</p>
         @endif
@@ -183,8 +182,7 @@
     </div>
 </section>
 
-{{-- MVP: CTA Contacto oculto --}}
-{{-- <section class="py-16 bg-blue-900 text-white">
+<section class="py-16 bg-blue-900 text-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl sm:text-4xl font-bold mb-4">¿Tienes preguntas?</h2>
         <p class="text-lg text-blue-100 mb-8">
@@ -195,6 +193,6 @@
             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
         </a>
     </div>
-</section> --}}
+</section>
 
 @endsection
