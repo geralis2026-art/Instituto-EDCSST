@@ -18,7 +18,7 @@
         <form method="GET" class="flex flex-wrap gap-3 items-center">
             <input type="text" name="busqueda" placeholder="Buscar por nombre o correo..." value="{{ request('busqueda') }}"
                 class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 min-w-[200px]">
-            <select name="estado" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select name="estado" class="px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[180px]">
                 <option value="">Todos los estados</option>
                 <option value="nuevo"      @selected(request('estado') === 'nuevo')>Nuevos</option>
                 <option value="leido"      @selected(request('estado') === 'leido')>Leídos</option>
