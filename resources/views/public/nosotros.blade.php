@@ -135,15 +135,15 @@
 </section>
 
 {{-- CTA --}}
-<section class="py-16 bg-blue-900 text-white">
+<section class="py-16 bg-gradient-to-r from-amber-500 to-amber-600 text-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl sm:text-4xl font-bold mb-4">¿Listo para capacitarte?</h2>
-        <p class="text-lg text-blue-100 mb-8">Revisa nuestro catálogo de cursos o contáctanos para más información.</p>
+        <p class="text-lg text-amber-100 mb-8">Revisa nuestro catálogo de cursos o contáctanos para más información.</p>
         <div class="flex flex-wrap gap-4 justify-center">
-            <a href="{{ route('catalogo') }}" class="px-8 py-4 bg-white text-blue-900 font-semibold rounded-lg hover:bg-blue-50 transition shadow-lg">
+            <a href="{{ route('catalogo') }}" class="px-8 py-4 bg-white text-amber-700 font-semibold rounded-lg hover:bg-amber-50 transition shadow-lg">
                 Ver cursos
             </a>
-            <a href="{{ route('contacto') }}" class="px-8 py-4 bg-blue-700 border-2 border-blue-400 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
+            <a href="{{ route('contacto') }}" class="px-8 py-4 bg-amber-700 border-2 border-amber-400 text-white font-semibold rounded-lg hover:bg-amber-800 transition">
                 Contáctanos
             </a>
         </div>

@@ -17,7 +17,7 @@
 <body class="bg-gray-50 text-gray-800 font-sans antialiased">
 
     {{-- ============ NAVBAR PÚBLICO ============ --}}
-    <nav class="bg-white shadow-sm sticky top-0 z-40 border-b border-gray-200">
+    <nav class="bg-white shadow-sm sticky top-0 z-40 border-b-2 border-amber-400">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
 
@@ -114,7 +114,7 @@
 
                 {{-- Sobre el instituto --}}
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Instituto EDCSST</h3>
+                    <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-amber-400">Instituto EDCSST</h3>
                     <p class="text-blue-100 text-sm leading-relaxed">
                         Educación para el Desarrollo y la Calidad en Seguridad y Salud en el Trabajo.
                         Formación profesional con certificación verificable.
@@ -123,7 +123,7 @@
 
                 {{-- Enlaces rápidos --}}
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Enlaces rápidos</h3>
+                    <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-amber-400">Enlaces rápidos</h3>
                     <ul class="space-y-2 text-sm text-blue-100">
                         <li><a href="{{ route('home') }}" class="hover:text-white transition">Inicio</a></li>
                         <li><a href="{{ route('nosotros') }}" class="hover:text-white transition">Sobre nosotros</a></li>
@@ -136,7 +136,7 @@
 
                 {{-- Contacto y redes --}}
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Contacto</h3>
+                    <h3 class="text-lg font-semibold mb-4 pb-2 border-b border-amber-400">Contacto</h3>
                     <ul class="space-y-2 text-sm text-blue-100">
                         <li class="flex items-start"><span class="mr-2">📍</span> Villavicencio, Meta - Colombia</li>
                         <li class="flex items-start"><span class="mr-2">📞</span> +57 321 217 3463</li>

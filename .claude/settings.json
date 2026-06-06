@@ -4,7 +4,8 @@
       "Bash(npm run *)",
       "Bash(git commit -m ' *)",
       "PowerShell(git -C \"c:\\\\laragon\\\\www\\\\instituto-edcsst\" add -A)",
-      "PowerShell(git -C \"c:\\\\laragon\\\\www\\\\instituto-edcsst\" commit -m \"Estilo: agregar acento dorado/amber para romper monotonia azul`n`nNavbar activo con fondo amber, badges amber en heroes, boton secundario amber,`nlabels de seccion amber, estadisticas amber-50, iconos alternados blue/amber,`ncontacto iconos amber, catalogo badge amber.`n`nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\")"
+      "PowerShell(git -C \"c:\\\\laragon\\\\www\\\\instituto-edcsst\" commit -m \"Estilo: agregar acento dorado/amber para romper monotonia azul`n`nNavbar activo con fondo amber, badges amber en heroes, boton secundario amber,`nlabels de seccion amber, estadisticas amber-50, iconos alternados blue/amber,`ncontacto iconos amber, catalogo badge amber.`n`nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\")",
+      "PowerShell(git -C \"c:\\\\laragon\\\\www\\\\instituto-edcsst\" commit -m \"Estilo: amber mas visible en navbar, hero, CTA y footer`n`n- Navbar: borde inferior amber visible en toda la barra`n- Hero: 'certificaciones reales' en amber-300`n- Boton 'Ver todos los cursos' en amber`n- Seccion CTA home: fondo degradado amber en lugar de azul`n- Seccion CTA nosotros: fondo degradado amber`n- Footer: titulos de columna con borde inferior amber`n`nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\")"
     ]
   }
 }
