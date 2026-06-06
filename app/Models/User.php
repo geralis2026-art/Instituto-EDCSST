@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,10 +12,14 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    const ROL_ADMIN       = 'admin';
+    const ROL_CAPACITADOR = 'capacitador';
+
     protected $fillable = [
         'name',
         'email',
         'password',
+        'rol',
     ];
 
     protected $hidden = [
@@ -42,8 +47,18 @@ class User extends Authenticatable
     /**
      * Scope para filtrar solo usuarios activos.
      */
-    public function scopeActivos($query)
+    public function scopeActivos(Builder $query): Builder
     {
         return $query->where('activo', true);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->rol === self::ROL_ADMIN;
+    }
+
+    public function isCapacitador(): bool
+    {
+        return $this->rol === self::ROL_CAPACITADOR;
     }
 }

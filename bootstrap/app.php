@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->alias([
             'activo' => \App\Http\Middleware\EnsureUserIsActivo::class,
+            'admin'  => \App\Http\Middleware\EnsureUserIsAdmin::class,
         ]);
     })
     ->booted(function () {

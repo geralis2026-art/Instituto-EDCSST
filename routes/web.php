@@ -55,33 +55,42 @@ Route::post('/verificar', [VerificacionController::class, 'verificar'])->name('v
 | El prefijo /admin y el middleware 'auth' las protegen.
 */
 
+// ── Rutas accesibles para todos los roles autenticados ──────────────────────
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo'])->group(function () {
 
-    // Dashboard principal del panel
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Gestión de capacitados (CRUD completo)
-    Route::resource('capacitados', CapacitadoController::class);
-    Route::get('capacitados-plantilla', [CapacitadoController::class, 'descargarPlantilla'])->name('capacitados.descargarPlantilla');
-    Route::post('capacitados-importar', [CapacitadoController::class, 'importar'])->name('capacitados.importar');
+    // Capacitados — solo lectura
+    Route::get('capacitados',              [CapacitadoController::class, 'index'])->name('capacitados.index');
+    Route::get('capacitados/{capacitado}', [CapacitadoController::class, 'show'])->name('capacitados.show');
 
-    // Gestión de cursos
-    Route::resource('cursos', CursoController::class);
-
-    // Gestión de categorías
-    Route::resource('categorias', CategoriaController::class);
-
-    // Gestión de certificados
-    Route::patch('certificados/{certificado}/toggle-activo', [CertificadoController::class, 'toggleActivo'])->name('certificados.toggle-activo');
+    // Certificados — ver, crear y descargar PDF
     Route::get('certificados/{certificado}/pdf', [CertificadoController::class, 'verPdf'])->name('certificados.pdf');
-    Route::resource('certificados', CertificadoController::class);
-    Route::get('certificados-masivos', [CertificadoController::class, 'masivosForm'])->name('certificados.masivos');
+    Route::resource('certificados', CertificadoController::class)->only(['index', 'create', 'store', 'show']);
+});
+
+// ── Rutas exclusivas para administradores ───────────────────────────────────
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'admin'])->group(function () {
+
+    // Capacitados — CRUD completo
+    Route::resource('capacitados', CapacitadoController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
+    Route::get('capacitados-plantilla', [CapacitadoController::class, 'descargarPlantilla'])->name('capacitados.descargarPlantilla');
+    Route::post('capacitados-importar',  [CapacitadoController::class, 'importar'])->name('capacitados.importar');
+
+    // Certificados — editar, eliminar, activar/desactivar, masivos
+    Route::resource('certificados', CertificadoController::class)->only(['edit', 'update', 'destroy']);
+    Route::patch('certificados/{certificado}/toggle-activo', [CertificadoController::class, 'toggleActivo'])->name('certificados.toggle-activo');
+    Route::get('certificados-masivos',  [CertificadoController::class, 'masivosForm'])->name('certificados.masivos');
     Route::post('certificados-masivos', [CertificadoController::class, 'generarMasivos'])->name('certificados.generar-masivos');
+
+    // Cursos y categorías
+    Route::resource('cursos',     CursoController::class);
+    Route::resource('categorias', CategoriaController::class);
 
     // Bandeja de mensajes
     Route::resource('mensajes', MensajeController::class)->only(['index', 'show', 'update', 'destroy']);
 
-    // Gestión de usuarios admin
+    // Gestión de usuarios
     Route::resource('usuarios', UsuarioController::class)->only(['index', 'create', 'store', 'destroy']);
     Route::patch('usuarios/{usuario}/toggle-activo', [UsuarioController::class, 'toggleActivo'])->name('usuarios.toggle-activo');
 });

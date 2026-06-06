@@ -7,7 +7,9 @@
       "PowerShell(git -C \"c:\\\\laragon\\\\www\\\\instituto-edcsst\" commit -m \"Estilo: agregar acento dorado/amber para romper monotonia azul`n`nNavbar activo con fondo amber, badges amber en heroes, boton secundario amber,`nlabels de seccion amber, estadisticas amber-50, iconos alternados blue/amber,`ncontacto iconos amber, catalogo badge amber.`n`nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\")",
       "PowerShell(git -C \"c:\\\\laragon\\\\www\\\\instituto-edcsst\" commit -m \"Estilo: amber mas visible en navbar, hero, CTA y footer`n`n- Navbar: borde inferior amber visible en toda la barra`n- Hero: 'certificaciones reales' en amber-300`n- Boton 'Ver todos los cursos' en amber`n- Seccion CTA home: fondo degradado amber en lugar de azul`n- Seccion CTA nosotros: fondo degradado amber`n- Footer: titulos de columna con borde inferior amber`n`nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\")",
       "PowerShell(git -C \"c:\\\\laragon\\\\www\\\\instituto-edcsst\" commit -m \"Estilo: acento dorado via CSS puro, revertir CTAs a azul`n`n- CSS custom properties con --gold en layout publico`n- Clase section-title-center: subrayado dorado bajo titulos de seccion`n- Clase card-gold-hover: borde izquierdo dorado al hacer hover en tarjetas`n- Logo con anillo dorado en navbar`n- Links de footer con hover dorado`n- CTAs revertidos a azul \\(el amber en secciones grandes no era estetico\\)`n`nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\")",
-      "PowerShell(git -C \"c:\\\\laragon\\\\www\\\\instituto-edcsst\" commit -m \"Fix: logo sin cuadrado, subrayado amber como div, boton azul con acento dorado`n`nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\")"
+      "PowerShell(git -C \"c:\\\\laragon\\\\www\\\\instituto-edcsst\" commit -m \"Fix: logo sin cuadrado, subrayado amber como div, boton azul con acento dorado`n`nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\")",
+      "Bash(git commit *)",
+      "Bash(git log *)"
     ]
   }
 }
