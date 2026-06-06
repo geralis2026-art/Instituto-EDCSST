@@ -33,7 +33,9 @@ class VerificacionController extends Controller
             ->where('activo', true)
             ->first();
 
-        return view('public.verificar', compact('certificado'))
+        $vencido = $certificado && $certificado->isVencido();
+
+        return view('public.verificar', compact('certificado', 'vencido'))
             ->with('verificacionRealizada', true)
             ->with('codigoBuscado', $codigo);
     }

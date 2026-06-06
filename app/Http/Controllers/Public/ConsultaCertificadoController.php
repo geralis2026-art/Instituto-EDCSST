@@ -64,9 +64,11 @@ class ConsultaCertificadoController extends Controller
             }
         }
 
-        $urlsDescarga = $certificados->mapWithKeys(fn($c) => [
-            $c->id => URL::temporarySignedRoute('consulta.descargar', now()->addMinutes(30), $c)
-        ]);
+        $urlsDescarga = $certificados
+            ->filter(fn($c) => !$c->isVencido())
+            ->mapWithKeys(fn($c) => [
+                $c->id => URL::temporarySignedRoute('consulta.descargar', now()->addMinutes(30), $c)
+            ]);
 
         return view('public.consulta', compact('certificados', 'capacitado', 'mensajeError', 'urlsDescarga'))
             ->with('busquedaRealizada', true)
@@ -81,6 +83,10 @@ class ConsultaCertificadoController extends Controller
     {
         if (!$certificado->activo || !$certificado->archivo_pdf) {
             abort(404, 'Este certificado no está disponible para descarga.');
+        }
+
+        if ($certificado->isVencido()) {
+            abort(403, 'Este certificado ha vencido y no está disponible para descarga.');
         }
 
         $path = $certificado->archivo_pdf;

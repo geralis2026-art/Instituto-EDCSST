@@ -34,14 +34,27 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    @if($certificado->isVencido())
+        <div class="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg">
+            <strong>Certificado vencido</strong> — venció el {{ $certificado->fecha_vencimiento->format('d/m/Y') }}. No disponible para descarga pública.
+        </div>
+    @endif
+
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
         <div class="bg-white rounded-lg shadow p-6">
             <p class="text-sm text-gray-500">Estado</p>
             <p class="text-xl font-semibold {{ $certificado->activo ? 'text-green-700' : 'text-gray-700' }}">{{ $certificado->activo ? 'Activo' : 'Inactivo' }}</p>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
-            <p class="text-sm text-gray-500">Fecha</p>
-            <p class="text-xl font-semibold text-gray-900">{{ $certificado->fecha_emision->format('d/m/Y') }}</p>
+            <p class="text-sm text-gray-500">Vigencia</p>
+            <p class="text-xl font-semibold {{ $certificado->isVencido() ? 'text-red-600' : 'text-green-600' }}">
+                {{ $certificado->isVencido() ? 'Vencido' : 'Vigente' }}
+            </p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <p class="text-sm text-gray-500">Emisión / Vencimiento</p>
+            <p class="text-sm font-semibold text-gray-900">{{ $certificado->fecha_emision->format('d/m/Y') }}</p>
+            <p class="text-sm text-gray-600">{{ $certificado->fecha_vencimiento?->format('d/m/Y') ?? '—' }}</p>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
             <p class="text-sm text-gray-500">Horas</p>

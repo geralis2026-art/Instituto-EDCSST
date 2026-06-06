@@ -48,8 +48,8 @@
         {{-- ============ RESULTADO DE VERIFICACIÓN ============ --}}
         @if(isset($verificacionRealizada) && $verificacionRealizada)
 
-            @if($certificado)
-                {{-- Certificado VÁLIDO --}}
+            @if($certificado && !$vencido)
+                {{-- Certificado VÁLIDO Y VIGENTE --}}
                 <div class="bg-white rounded-xl shadow-lg border-2 border-green-500 overflow-hidden">
                     <div class="bg-green-500 text-white px-6 py-4">
                         <div class="flex items-center">
@@ -84,17 +84,65 @@
                                 <p class="text-base font-semibold text-gray-900">{{ $certificado->fecha_emision->locale('es')->isoFormat('D [de] MMMM [de] YYYY') }}</p>
                             </div>
                             <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Intensidad horaria</p>
-                                <p class="text-base font-semibold text-gray-900">{{ $certificado->intensidad_horaria }} horas</p>
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Válido hasta</p>
+                                <p class="text-base font-semibold text-gray-900">{{ $certificado->fecha_vencimiento?->locale('es')->isoFormat('D [de] MMMM [de] YYYY') ?? '—' }}</p>
                             </div>
                             <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Institución emisora</p>
-                                <p class="text-base font-semibold text-gray-900">Instituto EDCSST</p>
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Intensidad horaria</p>
+                                <p class="text-base font-semibold text-gray-900">{{ $certificado->intensidad_horaria }} horas</p>
                             </div>
                         </div>
 
                         <div class="mt-6 pt-6 border-t border-gray-200 text-sm text-gray-600">
                             <p>Este certificado ha sido verificado contra los registros oficiales del Instituto EDCSST y es auténtico.</p>
+                        </div>
+                    </div>
+                </div>
+
+            @elseif($certificado && $vencido)
+                {{-- Certificado VENCIDO --}}
+                <div class="bg-white rounded-xl shadow-lg border-2 border-orange-400 overflow-hidden">
+                    <div class="bg-orange-400 text-white px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
+                                <svg class="w-7 h-7 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold">⚠ CERTIFICADO VENCIDO</h3>
+                                <p class="text-orange-100 text-sm">El certificado existió pero su vigencia ha expirado</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 sm:p-8">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Otorgado a</p>
+                                <p class="text-lg font-bold text-gray-900">{{ $certificado->capacitado->nombre_completo }}</p>
+                                <p class="text-sm text-gray-600">Documento: {{ $certificado->capacitado->documento }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Código del certificado</p>
+                                <p class="text-lg font-bold font-mono text-blue-900">{{ $certificado->codigo_unico }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Curso</p>
+                                <p class="text-base font-semibold text-gray-900">{{ $certificado->curso->nombre }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Fecha de emisión</p>
+                                <p class="text-base font-semibold text-gray-900">{{ $certificado->fecha_emision->locale('es')->isoFormat('D [de] MMMM [de] YYYY') }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Venció el</p>
+                                <p class="text-base font-semibold text-red-600">{{ $certificado->fecha_vencimiento->locale('es')->isoFormat('D [de] MMMM [de] YYYY') }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 text-sm text-gray-700">
+                                Este certificado fue emitido oficialmente por el Instituto EDCSST pero su vigencia de un (1) año ha expirado. Para renovarlo, comunícate con el instituto.
+                            </div>
                         </div>
                     </div>
                 </div>

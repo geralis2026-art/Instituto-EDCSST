@@ -54,6 +54,7 @@ class CertificadoController extends Controller
         $datos['codigo_unico'] = $codigoManual ?? (string) Str::uuid();
         $datos['emitido_por'] = auth()->id();
         $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados');
+        $datos['fecha_vencimiento'] = \Carbon\Carbon::parse($datos['fecha_emision'])->addYear()->toDateString();
 
         $certificado = Certificado::create($datos);
 
@@ -85,6 +86,7 @@ class CertificadoController extends Controller
     public function update(CertificadoRequest $request, Certificado $certificado)
     {
         $datos = $request->validated();
+        $datos['fecha_vencimiento'] = \Carbon\Carbon::parse($datos['fecha_emision'])->addYear()->toDateString();
 
         if ($request->hasFile('archivo_pdf')) {
             if ($certificado->archivo_pdf) {

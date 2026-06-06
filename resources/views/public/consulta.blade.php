@@ -121,6 +121,10 @@
                                                         <svg class="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                                         <span><strong>Emitido:</strong> {{ $certificado->fecha_emision->format('d/m/Y') }}</span>
                                                     </div>
+                                                    <div class="flex items-center {{ $certificado->isVencido() ? 'text-red-600' : 'text-gray-600' }}">
+                                                        <svg class="w-4 h-4 mr-1.5 {{ $certificado->isVencido() ? 'text-red-400' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                        <span><strong>Vence:</strong> {{ $certificado->fecha_vencimiento?->format('d/m/Y') ?? '—' }}</span>
+                                                    </div>
                                                     <div class="flex items-center text-gray-600">
                                                         <svg class="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                                         <span><strong>Horas:</strong> {{ $certificado->intensidad_horaria }}</span>
@@ -135,7 +139,12 @@
                                     </div>
 
                                     <div class="flex-shrink-0">
-                                        @if($certificado->archivo_pdf)
+                                        @if($certificado->isVencido())
+                                            <span class="inline-flex items-center px-5 py-2.5 bg-red-100 text-red-700 font-semibold rounded-lg cursor-not-allowed">
+                                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                Certificado vencido
+                                            </span>
+                                        @elseif($certificado->archivo_pdf)
                                             <a href="{{ $urlsDescarga[$certificado->id] }}" class="inline-flex items-center px-5 py-2.5 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition shadow-sm">
                                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                                                 Descargar PDF

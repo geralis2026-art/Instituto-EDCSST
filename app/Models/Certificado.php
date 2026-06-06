@@ -18,15 +18,17 @@ class Certificado extends Model
         'emitido_por',
         'codigo_unico',
         'fecha_emision',
+        'fecha_vencimiento',
         'intensidad_horaria',
         'archivo_pdf',
         'activo',
     ];
 
     protected $casts = [
-        'fecha_emision' => 'date',
+        'fecha_emision'      => 'date',
+        'fecha_vencimiento'  => 'date',
         'intensidad_horaria' => 'integer',
-        'activo' => 'boolean',
+        'activo'             => 'boolean',
     ];
 
     public function capacitado(): BelongsTo
@@ -74,9 +76,25 @@ class Certificado extends Model
             : null;
     }
 
+    public function isVencido(): bool
+    {
+        return $this->fecha_vencimiento && $this->fecha_vencimiento->isPast();
+    }
+
     public function scopeActivos($query)
     {
         return $query->where('activo', true);
+    }
+
+    public function scopeVigentes($query)
+    {
+        return $query->where('activo', true)
+                     ->where('fecha_vencimiento', '>=', now()->toDateString());
+    }
+
+    public function scopeVencidos($query)
+    {
+        return $query->where('fecha_vencimiento', '<', now()->toDateString());
     }
 
     /**
