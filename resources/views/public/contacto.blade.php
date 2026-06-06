@@ -112,6 +112,14 @@
                             <p class="text-xs text-gray-500 mt-1">Mínimo 10 caracteres</p>
                         </div>
 
+                        {{-- reCAPTCHA --}}
+                        <div>
+                            <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site') }}"></div>
+                            @error('g-recaptcha-response')
+                                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         {{-- Aviso de privacidad --}}
                         <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-gray-600">
                             Al enviar este formulario aceptas que tus datos sean utilizados para responder tu consulta, conforme a la Ley 1581 de 2012 (Habeas Data).
@@ -128,5 +136,9 @@
         </div>
     </div>
 </section>
+
+@push('scripts')
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+@endpush
 
 @endsection
