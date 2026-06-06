@@ -14,7 +14,7 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Capacitado
             </a>
-            <a href="{{ route('admin.certificados.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition shadow-sm">
+            <a href="{{ route('admin.certificados.create') }}" class="inline-flex items-center gap-2 px-4 py-2 btn-gold text-sm rounded-lg shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Certificado
             </a>
@@ -23,25 +23,25 @@
 
     {{-- Tarjetas de estadísticas --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 border-t-4 border-t-amber-500">
             <p class="text-xs text-gray-500 uppercase tracking-wider">Capacitados</p>
             <p class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($totalCapacitados) }}</p>
-            <p class="text-xs text-green-600 mt-1">+{{ $capacitadosMesActual }} este mes</p>
+            <p class="text-xs text-amber-600 mt-1">+{{ $capacitadosMesActual }} este mes</p>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 border-t-4 border-t-blue-600">
             <p class="text-xs text-gray-500 uppercase tracking-wider">Certificados</p>
             <p class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($totalCertificados) }}</p>
-            <p class="text-xs text-green-600 mt-1">+{{ $certificadosMesActual }} este mes</p>
+            <p class="text-xs text-amber-600 mt-1">+{{ $certificadosMesActual }} este mes</p>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 border-t-4 border-t-amber-500">
             <p class="text-xs text-gray-500 uppercase tracking-wider">Horas capacitadas</p>
             <p class="text-3xl font-bold text-gray-900 mt-1">{{ number_format($horasCapacitadasTotal) }}</p>
             <p class="text-xs text-gray-400 mt-1">acumuladas</p>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 border-t-4 border-t-blue-600">
             <p class="text-xs text-gray-500 uppercase tracking-wider">Mensajes nuevos</p>
             <p class="text-3xl font-bold mt-1 {{ $mensajesNuevos > 0 ? 'text-red-600' : 'text-gray-900' }}">{{ $mensajesNuevos }}</p>
-            <a href="{{ route('admin.mensajes.index') }}" class="text-xs text-blue-600 hover:underline mt-1 inline-block">Ver bandeja</a>
+            <a href="{{ route('admin.mensajes.index') }}" class="text-xs text-amber-600 hover:underline mt-1 inline-block">Ver bandeja</a>
         </div>
     </div>
 
@@ -67,7 +67,7 @@
                             <p class="text-sm font-medium text-gray-800 truncate">{{ $c->nombre_completo }}</p>
                             <p class="text-xs text-gray-400">{{ $c->documento }}</p>
                         </div>
-                        <span class="ml-3 text-sm font-bold text-blue-600 whitespace-nowrap">{{ $c->horas_capacitadas }}h</span>
+                        <span class="ml-3 text-sm font-bold text-amber-600 whitespace-nowrap">{{ $c->horas_capacitadas }}h</span>
                     </li>
                     @endforeach
                 </ul>
@@ -82,7 +82,7 @@
         <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-sm font-semibold text-gray-700">Últimos certificados</h2>
-                <a href="{{ route('admin.certificados.index') }}" class="text-xs text-blue-600 hover:underline">Ver todos</a>
+                <a href="{{ route('admin.certificados.index') }}" class="text-xs text-amber-600 hover:underline">Ver todos</a>
             </div>
             @if($ultimosCertificados->isEmpty())
                 <p class="text-sm text-gray-400">Sin certificados aún.</p>
@@ -103,7 +103,7 @@
                                 <td class="py-2 pr-3 font-medium text-gray-800 truncate max-w-[140px]">{{ $cert->capacitado->nombre_completo }}</td>
                                 <td class="py-2 pr-3 text-gray-600 truncate max-w-[140px]">{{ $cert->curso->nombre }}</td>
                                 <td class="py-2 pr-3">
-                                    <a href="{{ route('admin.certificados.show', $cert) }}" class="text-blue-600 hover:underline font-mono text-xs">{{ $cert->codigo_unico }}</a>
+                                    <a href="{{ route('admin.certificados.show', $cert) }}" class="text-amber-600 hover:underline font-mono text-xs">{{ $cert->codigo_unico }}</a>
                                 </td>
                                 <td class="py-2 text-gray-500 whitespace-nowrap">{{ $cert->fecha_emision->format('d/m/Y') }}</td>
                             </tr>
@@ -129,7 +129,7 @@
                         </div>
                         @php $max = $cursosMasUsados->first()->certificados_count ?: 1; @endphp
                         <div class="w-full bg-gray-100 rounded-full h-1.5">
-                            <div class="bg-blue-500 h-1.5 rounded-full" style="width: {{ round(($curso->certificados_count / $max) * 100) }}%"></div>
+                            <div class="h-1.5 rounded-full" style="width: {{ round(($curso->certificados_count / $max) * 100) }}%; background: linear-gradient(90deg, #F59E0B, #D4A017)"></div>
                         </div>
                     </li>
                     @endforeach
@@ -143,7 +143,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-sm font-semibold text-gray-700">Mensajes recientes</h2>
-            <a href="{{ route('admin.mensajes.index') }}" class="text-xs text-blue-600 hover:underline">Ver todos</a>
+            <a href="{{ route('admin.mensajes.index') }}" class="text-xs text-amber-600 hover:underline">Ver todos</a>
         </div>
         <div class="space-y-3">
             @foreach($mensajesRecientes as $mensaje)
@@ -183,8 +183,8 @@
             datasets: [{
                 label: 'Certificados',
                 data: @json($certificadosPorMes['data']),
-                backgroundColor: 'rgba(37, 99, 235, 0.15)',
-                borderColor: 'rgba(37, 99, 235, 0.8)',
+                backgroundColor: 'rgba(245, 158, 11, 0.18)',
+                borderColor: 'rgba(212, 160, 23, 0.9)',
                 borderWidth: 2,
                 borderRadius: 6,
             }]

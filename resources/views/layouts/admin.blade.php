@@ -8,60 +8,102 @@
     <title>@yield('titulo', 'Panel') - Admin Instituto EDCSST</title>
 
     <x-app-assets />
+    <style>
+        :root {
+            --gold: #D4A017;
+            --gold-soft: #F59E0B;
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+            color: #fff;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(212,160,23,0.35);
+            transition: opacity 0.2s, box-shadow 0.2s;
+        }
+        .btn-gold:hover { opacity: 0.9; box-shadow: 0 4px 14px rgba(212,160,23,0.45); }
+        .badge-gold {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-size: 0.68rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            box-shadow: 0 2px 6px rgba(212,160,23,0.4);
+        }
+        .nav-link-active {
+            background-color: rgba(255,255,255,0.08);
+            border-left: 4px solid #F59E0B;
+            padding-left: 0.75rem;
+            color: #FDE68A;
+            font-weight: 600;
+        }
+        .nav-link-inactive {
+            border-left: 4px solid transparent;
+            padding-left: 0.75rem;
+        }
+        .nav-link-inactive:hover {
+            background-color: rgba(255,255,255,0.06);
+            color: #FDE68A;
+        }
+    </style>
     @stack('styles')
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans antialiased">
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
 
     <div class="min-h-screen flex">
 
         {{-- ============ SIDEBAR ============ --}}
-        <aside id="sidebar" class="bg-blue-900 text-white w-64 min-h-screen fixed lg:sticky top-0 left-0 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+        <aside id="sidebar" class="bg-blue-950 text-white w-64 min-h-screen fixed lg:sticky top-0 left-0 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 border-r-4 border-amber-500">
 
             {{-- Logo --}}
-            <div class="p-6 border-b border-blue-800">
+            <div class="p-5 border-b border-blue-900">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3">
-                    <div class="w-24 h-24 bg-white rounded-lg flex items-center justify-center p-1">
+                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center p-1 shadow">
                         <x-application-logo class="w-full h-full" />
                     </div>
                     <div>
-                        <div class="font-bold text-base">EDCSST Admin</div>
-                        <div class="text-xs text-blue-300">Panel administrativo</div>
+                        <div class="font-bold text-sm text-white">EDCSST Admin</div>
+                        <div class="text-xs text-amber-400">Panel administrativo</div>
                     </div>
                 </a>
             </div>
 
             {{-- Menú lateral --}}
-            <nav class="p-4 space-y-1">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.dashboard') ? 'bg-blue-700' : 'hover:bg-blue-800' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            <nav class="p-3 space-y-0.5">
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center pr-4 py-2.5 rounded-lg transition text-sm {{ request()->routeIs('admin.dashboard') ? 'nav-link-active' : 'nav-link-inactive text-blue-100' }}">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     Dashboard
                 </a>
 
-                <a href="{{ route('admin.capacitados.index') }}" class="flex items-center px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.capacitados.*') ? 'bg-blue-700' : 'hover:bg-blue-800' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <a href="{{ route('admin.capacitados.index') }}" class="flex items-center pr-4 py-2.5 rounded-lg transition text-sm {{ request()->routeIs('admin.capacitados.*') ? 'nav-link-active' : 'nav-link-inactive text-blue-100' }}">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     Capacitados
                 </a>
 
                 @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.cursos.index') }}" class="flex items-center px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.cursos.*') ? 'bg-blue-700' : 'hover:bg-blue-800' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    <a href="{{ route('admin.cursos.index') }}" class="flex items-center pr-4 py-2.5 rounded-lg transition text-sm {{ request()->routeIs('admin.cursos.*') ? 'nav-link-active' : 'nav-link-inactive text-blue-100' }}">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                         Cursos
                     </a>
 
-                    <a href="{{ route('admin.categorias.index') }}" class="flex items-center px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.categorias.*') ? 'bg-blue-700' : 'hover:bg-blue-800' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                    <a href="{{ route('admin.categorias.index') }}" class="flex items-center pr-4 py-2.5 rounded-lg transition text-sm {{ request()->routeIs('admin.categorias.*') ? 'nav-link-active' : 'nav-link-inactive text-blue-100' }}">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
                         Categorías
                     </a>
                 @endif
 
-                <a href="{{ route('admin.certificados.index') }}" class="flex items-center px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.certificados.*') ? 'bg-blue-700' : 'hover:bg-blue-800' }}">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                <a href="{{ route('admin.certificados.index') }}" class="flex items-center pr-4 py-2.5 rounded-lg transition text-sm {{ request()->routeIs('admin.certificados.*') ? 'nav-link-active' : 'nav-link-inactive text-blue-100' }}">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                     Certificados
                 </a>
 
                 @if(auth()->user()->isAdmin())
-                    <a href="{{ route('admin.mensajes.index') }}" class="flex items-center px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.mensajes.*') ? 'bg-blue-700' : 'hover:bg-blue-800' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <a href="{{ route('admin.mensajes.index') }}" class="flex items-center pr-4 py-2.5 rounded-lg transition text-sm {{ request()->routeIs('admin.mensajes.*') ? 'nav-link-active' : 'nav-link-inactive text-blue-100' }}">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         <span>Mensajes</span>
                         @php $mensajesNuevos = \App\Models\Mensaje::nuevos()->count(); @endphp
                         @if($mensajesNuevos > 0)
@@ -69,16 +111,16 @@
                         @endif
                     </a>
 
-                    <a href="{{ route('admin.usuarios.index') }}" class="flex items-center px-4 py-3 rounded-lg transition {{ request()->routeIs('admin.usuarios.*') ? 'bg-blue-700' : 'hover:bg-blue-800' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <a href="{{ route('admin.usuarios.index') }}" class="flex items-center pr-4 py-2.5 rounded-lg transition text-sm {{ request()->routeIs('admin.usuarios.*') ? 'nav-link-active' : 'nav-link-inactive text-blue-100' }}">
+                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         Usuarios
                     </a>
                 @endif
 
-                <div class="border-t border-blue-800 my-4"></div>
+                <div class="border-t border-blue-900 my-3"></div>
 
-                <a href="{{ route('home') }}" target="_blank" class="flex items-center px-4 py-3 rounded-lg hover:bg-blue-800 transition">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                <a href="{{ route('home') }}" target="_blank" class="flex items-center pr-4 py-2.5 rounded-lg transition text-sm nav-link-inactive text-blue-200 hover:text-amber-300">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     Ver sitio público
                 </a>
             </nav>
@@ -91,7 +133,7 @@
         <div class="flex-1 flex flex-col lg:ml-0">
 
             {{-- Topbar --}}
-            <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+            <header class="bg-white shadow-sm border-b-2 border-amber-400 sticky top-0 z-10">
                 <div class="px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
                     <div class="flex items-center">
                         {{-- Botón menú móvil --}}
