@@ -55,7 +55,7 @@ Route::post('/verificar', [VerificacionController::class, 'verificar'])->name('v
 | El prefijo /admin y el middleware 'auth' las protegen.
 */
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo'])->group(function () {
 
     // Dashboard principal del panel
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -87,7 +87,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(
 });
 
 Route::redirect('/dashboard', '/admin')
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'activo'])
     ->name('dashboard');
 
 
