@@ -11,6 +11,53 @@
     {{-- Tailwind compilado por Vite --}}
     <x-app-assets />
 
+    <style>
+        :root { --gold: #F59E0B; --gold-dark: #D97706; --gold-light: #FEF3C7; }
+
+        /* Títulos de sección con subrayado dorado */
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 3rem;
+            height: 3px;
+            background: var(--gold);
+            border-radius: 2px;
+            margin-top: 0.5rem;
+        }
+        .section-title-center::after {
+            content: '';
+            display: block;
+            width: 3rem;
+            height: 3px;
+            background: var(--gold);
+            border-radius: 2px;
+            margin: 0.5rem auto 0;
+        }
+
+        /* Tarjetas con borde izquierdo dorado al hacer hover */
+        .card-gold-hover {
+            border-left: 3px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .card-gold-hover:hover { border-left-color: var(--gold); }
+
+        /* Botón con acento dorado */
+        .btn-gold {
+            background: var(--gold);
+            color: #fff;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
+        }
+        .btn-gold:hover { background: var(--gold-dark); }
+
+        /* Links del footer con hover dorado */
+        footer a:hover { color: var(--gold) !important; }
+
+        /* Logo con anillo dorado */
+        .logo-ring { box-shadow: 0 0 0 2px var(--gold); }
+    </style>
+
     {{-- Estilos adicionales por página --}}
     @stack('styles')
 </head>
@@ -24,7 +71,7 @@
                 {{-- Logo / Nombre del instituto --}}
                 <div class="flex items-center">
                     <a href="{{ route('home') }}" class="flex items-center space-x-2">
-                        <div class="w-24 h-24 flex items-center justify-center">
+                        <div class="w-24 h-24 flex items-center justify-center rounded-lg logo-ring">
                             <x-application-logo class="w-full h-full" />
                         </div>
                         <span class="text-xl font-bold text-blue-900 hidden sm:block">Instituto EDCSST</span>

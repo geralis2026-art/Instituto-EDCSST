@@ -70,7 +70,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div class="text-center mb-12">
-            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Nuestros cursos destacados</h2>
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 section-title-center">Nuestros cursos destacados</h2>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto">
                 Capacitaciones diseñadas para impulsar tu carrera profesional con certificación reconocida.
             </p>
@@ -79,7 +79,7 @@
         @if($cursosDestacados->count() > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($cursosDestacados as $curso)
-                    <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden border border-gray-100 group">
+                    <div class="bg-white rounded-xl shadow-sm hover:shadow-lg transition overflow-hidden border border-gray-100 group card-gold-hover">
                         {{-- Imagen del curso --}}
                         <div class="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 relative overflow-hidden">
                             @if($curso->imagen)
@@ -182,13 +182,13 @@
     </div>
 </section>
 
-<section class="py-16 bg-gradient-to-r from-amber-500 to-amber-600 text-white">
+<section class="py-16 bg-blue-900 text-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl sm:text-4xl font-bold mb-4">¿Tienes preguntas?</h2>
-        <p class="text-lg text-amber-100 mb-8">
+        <p class="text-lg text-blue-100 mb-8">
             Contáctanos para obtener información sobre nuestros cursos, fechas de inicio o procesos de inscripción.
         </p>
-        <a href="{{ route('contacto') }}" class="inline-flex items-center px-8 py-4 bg-white text-amber-700 font-semibold rounded-lg hover:bg-amber-50 transition shadow-lg">
+        <a href="{{ route('contacto') }}" class="inline-flex items-center px-8 py-4 bg-white text-blue-900 font-semibold rounded-lg hover:bg-blue-50 transition shadow-lg">
             Contáctanos ahora
             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
         </a>

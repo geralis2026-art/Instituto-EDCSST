@@ -105,7 +105,7 @@
 <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">¿Por qué elegirnos?</h2>
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 section-title-center">¿Por qué elegirnos?</h2>
             <p class="text-gray-600 max-w-2xl mx-auto">Razones que nos diferencian y respaldan la confianza de nuestros capacitados y empresas aliadas.</p>
         </div>
 
@@ -118,7 +118,7 @@
                 ['icon' => 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', 'titulo' => 'Seguridad de datos', 'texto' => 'La información de nuestros capacitados se gestiona con los más altos estándares de seguridad y privacidad.', 'color' => 'amber'],
                 ['icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'titulo' => 'Soporte continuo', 'texto' => 'Contáctanos por correo, teléfono o WhatsApp. Respondemos a la brevedad para resolver cualquier inquietud.', 'color' => 'blue'],
             ] as $item)
-            <div class="flex items-start bg-gray-50 p-6 rounded-xl border border-gray-100 hover:shadow-sm transition">
+            <div class="flex items-start bg-gray-50 p-6 rounded-xl border border-gray-100 hover:shadow-sm transition card-gold-hover">
                 <div class="w-11 h-11 {{ $item['color'] === 'amber' ? 'bg-amber-100' : 'bg-blue-100' }} rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 {{ $item['color'] === 'amber' ? 'text-amber-600' : 'text-blue-700' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}"/>
@@ -135,15 +135,15 @@
 </section>
 
 {{-- CTA --}}
-<section class="py-16 bg-gradient-to-r from-amber-500 to-amber-600 text-white">
+<section class="py-16 bg-blue-900 text-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl sm:text-4xl font-bold mb-4">¿Listo para capacitarte?</h2>
-        <p class="text-lg text-amber-100 mb-8">Revisa nuestro catálogo de cursos o contáctanos para más información.</p>
+        <p class="text-lg text-blue-100 mb-8">Revisa nuestro catálogo de cursos o contáctanos para más información.</p>
         <div class="flex flex-wrap gap-4 justify-center">
-            <a href="{{ route('catalogo') }}" class="px-8 py-4 bg-white text-amber-700 font-semibold rounded-lg hover:bg-amber-50 transition shadow-lg">
+            <a href="{{ route('catalogo') }}" class="px-8 py-4 bg-white text-blue-900 font-semibold rounded-lg hover:bg-blue-50 transition shadow-lg">
                 Ver cursos
             </a>
-            <a href="{{ route('contacto') }}" class="px-8 py-4 bg-amber-700 border-2 border-amber-400 text-white font-semibold rounded-lg hover:bg-amber-800 transition">
+            <a href="{{ route('contacto') }}" class="px-8 py-4 bg-blue-700 border-2 border-blue-400 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
                 Contáctanos
             </a>
         </div>
