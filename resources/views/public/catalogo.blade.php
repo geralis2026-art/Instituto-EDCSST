@@ -6,10 +6,13 @@
 @section('contenido')
 
 {{-- Encabezado --}}
-<section class="bg-blue-900 text-white py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="bg-blue-950 text-white py-12 border-b-4 border-amber-500 relative overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none"
+         style="background: linear-gradient(135deg, transparent 50%, rgba(245,158,11,0.07))"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <span class="badge-gold mb-3 inline-block">Oferta académica</span>
         <h1 class="text-3xl sm:text-4xl font-bold mb-3">Catálogo de Cursos</h1>
-        <p class="text-blue-100 text-lg">Encuentra el curso ideal para tu desarrollo profesional</p>
+        <p class="text-blue-200 text-lg">Encuentra el curso ideal para tu desarrollo profesional</p>
     </div>
 </section>
 
@@ -28,14 +31,14 @@
             @foreach($categorias as $categoria)
                 <div class="mb-12 last:mb-0">
                     {{-- Encabezado de categoría --}}
-                    <div class="flex items-center justify-between mb-6 pb-3 border-b-2 border-blue-100">
+                    <div class="flex items-center justify-between mb-6 pb-3 border-b-2 border-amber-400">
                         <div>
-                            <h2 class="text-2xl font-bold text-blue-900">{{ $categoria->nombre }}</h2>
+                            <h2 class="text-2xl font-bold text-blue-900 section-title">{{ $categoria->nombre }}</h2>
                             @if($categoria->descripcion)
-                                <p class="text-sm text-gray-600 mt-1">{{ $categoria->descripcion }}</p>
+                                <p class="text-sm text-gray-600 mt-2">{{ $categoria->descripcion }}</p>
                             @endif
                         </div>
-                        <span class="bg-amber-100 text-amber-800 text-sm font-semibold px-3 py-1 rounded-full">
+                        <span class="badge-gold">
                             {{ $categoria->cursos->count() }} {{ Str::plural('curso', $categoria->cursos->count()) }}
                         </span>
                     </div>

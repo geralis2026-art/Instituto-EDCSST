@@ -6,13 +6,13 @@
 @section('contenido')
 
 {{-- HERO --}}
-<section class="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <span class="inline-block px-3 py-1 bg-amber-500 text-white rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
-            Quiénes somos
-        </span>
+<section class="bg-blue-950 text-white py-20 border-b-4 border-amber-500 relative overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none"
+         style="background: radial-gradient(ellipse at 70% 50%, rgba(245,158,11,0.1) 0%, transparent 60%)"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="badge-gold mb-5 inline-block">Quiénes somos</span>
         <h1 class="text-4xl sm:text-5xl font-bold mb-6">Instituto EDCSST</h1>
-        <p class="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
+        <p class="text-xl text-blue-200 max-w-3xl mx-auto leading-relaxed">
             Educación para el Desarrollo y la Calidad en Seguridad y Salud en el Trabajo. Formamos profesionales con certificación verificable desde Villavicencio, Meta.
         </p>
     </div>
@@ -23,32 +23,39 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-            <div class="text-center p-8 rounded-2xl bg-amber-50 border border-amber-100">
-                <div class="w-14 h-14 bg-amber-500 rounded-xl flex items-center justify-center mx-auto mb-5">
+            {{-- Misión: card dorado --}}
+            <div class="text-center p-8 rounded-2xl shadow-md border-t-4 border-amber-400"
+                 style="background: linear-gradient(160deg, #FFFBEB, #FEF3C7)">
+                <div class="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-5 shadow-md"
+                     style="background: linear-gradient(135deg, #F59E0B, #D4A017)">
                     <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 </div>
                 <h2 class="text-xl font-bold text-blue-900 mb-3">Misión</h2>
-                <p class="text-gray-600 text-sm leading-relaxed">
+                <p class="text-gray-700 text-sm leading-relaxed">
                     Brindar formación profesional de alta calidad en seguridad y salud en el trabajo, emitiendo certificaciones verificables digitalmente que respalden el desarrollo laboral de nuestros capacitados.
                 </p>
             </div>
 
-            <div class="text-center p-8 rounded-2xl bg-blue-50 border border-blue-100">
-                <div class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-5">
+            {{-- Visión: card azul --}}
+            <div class="text-center p-8 rounded-2xl shadow-md border-t-4 border-blue-500 bg-blue-50">
+                <div class="w-14 h-14 bg-blue-700 rounded-xl flex items-center justify-center mx-auto mb-5 shadow-md">
                     <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                 </div>
                 <h2 class="text-xl font-bold text-blue-900 mb-3">Visión</h2>
-                <p class="text-gray-600 text-sm leading-relaxed">
+                <p class="text-gray-700 text-sm leading-relaxed">
                     Ser referente nacional en capacitación y certificación en seguridad y salud en el trabajo, reconocidos por la calidad de nuestros programas y la confianza de empresas y profesionales en Colombia.
                 </p>
             </div>
 
-            <div class="text-center p-8 rounded-2xl bg-blue-50 border border-blue-100">
-                <div class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-5">
+            {{-- Valores: card dorado --}}
+            <div class="text-center p-8 rounded-2xl shadow-md border-t-4 border-amber-400"
+                 style="background: linear-gradient(160deg, #FFFBEB, #FEF3C7)">
+                <div class="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-5 shadow-md"
+                     style="background: linear-gradient(135deg, #F59E0B, #D4A017)">
                     <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 </div>
                 <h2 class="text-xl font-bold text-blue-900 mb-3">Valores</h2>
-                <p class="text-gray-600 text-sm leading-relaxed">
+                <p class="text-gray-700 text-sm leading-relaxed">
                     Calidad, transparencia, innovación y compromiso social. Cada certificado que emitimos representa nuestra responsabilidad con la seguridad laboral y el bienestar de los trabajadores colombianos.
                 </p>
             </div>
@@ -135,15 +142,20 @@
 </section>
 
 {{-- CTA --}}
-<section class="py-16 bg-blue-900 text-white">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+<section class="py-16 bg-blue-950 text-white relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-1"
+         style="background: linear-gradient(90deg, transparent, #F59E0B, transparent)"></div>
+    <div class="absolute inset-0 pointer-events-none"
+         style="background: radial-gradient(ellipse at 80% 50%, rgba(245,158,11,0.08) 0%, transparent 60%)"></div>
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl sm:text-4xl font-bold mb-4">¿Listo para capacitarte?</h2>
-        <p class="text-lg text-blue-100 mb-8">Revisa nuestro catálogo de cursos o contáctanos para más información.</p>
+        <p class="text-lg text-blue-200 mb-8">Revisa nuestro catálogo de cursos o contáctanos para más información.</p>
         <div class="flex flex-wrap gap-4 justify-center">
-            <a href="{{ route('catalogo') }}" class="px-8 py-4 bg-white text-blue-900 font-semibold rounded-lg hover:bg-blue-50 transition shadow-lg">
+            <a href="{{ route('catalogo') }}" class="px-8 py-4 btn-gold rounded-lg font-semibold inline-flex items-center gap-2">
                 Ver cursos
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </a>
-            <a href="{{ route('contacto') }}" class="px-8 py-4 bg-blue-700 border-2 border-blue-400 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
+            <a href="{{ route('contacto') }}" class="px-8 py-4 border-2 border-blue-600 text-white font-semibold rounded-lg hover:bg-blue-900 transition">
                 Contáctanos
             </a>
         </div>
