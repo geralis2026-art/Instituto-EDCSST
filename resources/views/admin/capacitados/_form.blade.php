@@ -1,8 +1,7 @@
 {{-- Formulario compartido para crear/editar capacitados --}}
 <form action="{{ isset($capacitado) ? route('admin.capacitados.update', $capacitado) : route('admin.capacitados.store') }}"
       method="POST"
-      class="space-y-6"
-      x-data="{ modalidad: '{{ old('modalidad', $capacitado->modalidad ?? '') }}' }">
+      class="space-y-6">
     @csrf
     @isset($capacitado)
         @method('PUT')
@@ -75,26 +74,8 @@
             @enderror
         </div>
 
-        {{-- Modalidad --}}
+        {{-- Grupo Sanguíneo (RH) --}}
         <div>
-            <label for="modalidad" class="block text-sm font-medium text-gray-700 mb-1">
-                Modalidad
-            </label>
-            <select id="modalidad"
-                    name="modalidad"
-                    x-model="modalidad"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('modalidad') border-red-500 @enderror">
-                <option value="">— Sin especificar —</option>
-                <option value="virtual">Virtual</option>
-                <option value="presencial">Presencial</option>
-            </select>
-            @error('modalidad')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-            @enderror
-        </div>
-
-        {{-- RH (solo visible cuando modalidad = presencial) --}}
-        <div x-show="modalidad === 'presencial'" x-cloak>
             <label for="rh" class="block text-sm font-medium text-gray-700 mb-1">
                 Grupo Sanguíneo (RH)
             </label>

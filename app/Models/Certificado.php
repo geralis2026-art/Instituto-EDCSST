@@ -20,6 +20,7 @@ class Certificado extends Model
         'fecha_emision',
         'fecha_vencimiento',
         'intensidad_horaria',
+        'modalidad',
         'archivo_pdf',
         'activo',
     ];
