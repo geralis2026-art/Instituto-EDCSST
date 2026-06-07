@@ -18,6 +18,8 @@ class Capacitado extends Model
         'documento',
         'correo',
         'telefono',
+        'modalidad',
+        'rh',
         'horas_capacitadas',
     ];
 
