@@ -16,6 +16,13 @@ class AppServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
     }
 
+    /**
+     * Rate limiters para las rutas públicas sensibles.
+     * Todos limitan por IP para evitar abuso desde una misma conexión.
+     *   - consulta-publica:    10/min  (búsqueda de certificados)
+     *   - verificacion-publica: 10/min (verificación de autenticidad)
+     *   - contacto-publica:      3/min (formulario de contacto)
+     */
     protected function configureRateLimiting(): void
     {
         RateLimiter::for('consulta-publica', function (Request $request) {

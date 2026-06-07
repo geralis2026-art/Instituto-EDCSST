@@ -11,17 +11,20 @@ use Illuminate\Validation\Rules;
 
 class UsuarioController extends Controller
 {
+    /** Lista todos los usuarios (empleados) del sistema. */
     public function index()
     {
         $usuarios = User::orderBy('name')->get();
         return view('admin.usuarios.index', compact('usuarios'));
     }
 
+    /** Formulario para crear un nuevo usuario. */
     public function create()
     {
         return view('admin.usuarios.create');
     }
 
+    /** Crea el usuario con rol asignado. Se crea inactivo por defecto — el admin debe activarlo. */
     public function store(Request $request)
     {
         $request->validate([
@@ -43,6 +46,7 @@ class UsuarioController extends Controller
             ->with('success', 'Usuario creado. Actívalo para que pueda ingresar.');
     }
 
+    /** Activa o desactiva un usuario. No puede aplicarse al usuario autenticado en sesión. */
     public function toggleActivo(User $usuario)
     {
         if ($usuario->id === Auth::id()) {
@@ -55,6 +59,7 @@ class UsuarioController extends Controller
         return back()->with('success', $usuario->activo ? 'Usuario activado.' : 'Usuario desactivado.');
     }
 
+    /** Elimina el usuario. No puede aplicarse al usuario autenticado en sesión. */
     public function destroy(User $usuario)
     {
         if ($usuario->id === Auth::id()) {

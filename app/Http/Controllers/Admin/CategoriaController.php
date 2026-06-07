@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 
 class CategoriaController extends Controller
 {
+    /** Lista paginada de categorías con búsqueda y conteo de cursos asociados. */
     public function index(Request $request)
     {
         $busqueda = $request->query('busqueda', '');
@@ -28,11 +29,13 @@ class CategoriaController extends Controller
         return view('admin.categorias.index', compact('categorias', 'busqueda'));
     }
 
+    /** Formulario para crear una nueva categoría. */
     public function create()
     {
         return view('admin.categorias.create');
     }
 
+    /** Guarda la nueva categoría. */
     public function store(CategoriaRequest $request)
     {
         $categoria = Categoria::create($request->validated());
@@ -42,6 +45,7 @@ class CategoriaController extends Controller
             ->with('success', 'Categoria creada correctamente.');
     }
 
+    /** Detalle de la categoría con lista paginada de sus cursos. */
     public function show(Categoria $categoria)
     {
         $categoria->loadCount('cursos');
@@ -53,11 +57,13 @@ class CategoriaController extends Controller
         return view('admin.categorias.show', compact('categoria', 'cursos'));
     }
 
+    /** Formulario para editar una categoría existente. */
     public function edit(Categoria $categoria)
     {
         return view('admin.categorias.edit', compact('categoria'));
     }
 
+    /** Actualiza la categoría. */
     public function update(CategoriaRequest $request, Categoria $categoria)
     {
         $categoria->update($request->validated());
@@ -67,6 +73,7 @@ class CategoriaController extends Controller
             ->with('success', 'Categoria actualizada correctamente.');
     }
 
+    /** Elimina la categoría. Bloqueado si tiene cursos asociados. */
     public function destroy(Categoria $categoria)
     {
         if ($categoria->cursos()->exists()) {

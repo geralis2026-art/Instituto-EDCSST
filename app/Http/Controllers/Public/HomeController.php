@@ -16,6 +16,7 @@ class HomeController extends Controller
         return view('public.nosotros');
     }
 
+    /** Página de inicio con hasta 4 cursos destacados y configuración del sitio. */
     public function index()
     {
         // Cursos destacados para mostrar en home (máximo 4)

@@ -13,6 +13,7 @@ class CursoRequest extends FormRequest
         return true;
     }
 
+    /** Genera el slug desde el nombre y normaliza los booleanos antes de validar. */
     protected function prepareForValidation(): void
     {
         $this->merge([

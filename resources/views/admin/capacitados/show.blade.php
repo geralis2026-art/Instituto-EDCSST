@@ -62,6 +62,24 @@
                 <p class="text-sm text-gray-600 font-medium">Teléfono</p>
                 <p class="text-lg text-gray-900">{{ $capacitado->telefono ?? '—' }}</p>
             </div>
+            <div>
+                <p class="text-sm text-gray-600 font-medium">Modalidad</p>
+                <p class="text-lg text-gray-900">
+                    @if($capacitado->modalidad === 'virtual')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">Virtual</span>
+                    @elseif($capacitado->modalidad === 'presencial')
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">Presencial</span>
+                    @else
+                        —
+                    @endif
+                </p>
+            </div>
+            @if($capacitado->modalidad === 'presencial')
+            <div>
+                <p class="text-sm text-gray-600 font-medium">Grupo Sanguíneo (RH)</p>
+                <p class="text-lg text-gray-900">{{ $capacitado->rh ?? '—' }}</p>
+            </div>
+            @endif
             <div class="md:col-span-2">
                 <p class="text-sm text-gray-600 font-medium">Total de Horas Capacitadas</p>
                 <p class="text-3xl font-bold text-blue-600">{{ $capacitado->horas_capacitadas }} horas</p>

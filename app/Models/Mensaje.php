@@ -31,11 +31,13 @@ class Mensaje extends Model
         self::ESTADO_RESPONDIDO => 'Respondido',
     ];
 
-    public function scopeNuevos($query)
+    /** Mensajes que aún no han sido leídos por el admin. */
+    public function scopeNuevos(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('estado', self::ESTADO_NUEVO);
     }
 
+    /** Cambia el estado a 'leido' solo si estaba en 'nuevo'. */
     public function marcarComoLeido(): void
     {
         if ($this->estado === self::ESTADO_NUEVO) {
@@ -43,11 +45,13 @@ class Mensaje extends Model
         }
     }
 
+    /** Cambia el estado a 'respondido' sin importar el estado actual. */
     public function marcarComoRespondido(): void
     {
         $this->update(['estado' => self::ESTADO_RESPONDIDO]);
     }
 
+    /** Retorna la etiqueta legible del estado actual (ej: "Leído"). */
     public function getEstadoFormateadoAttribute(): string
     {
         return self::$estados[$this->estado] ?? $this->estado;

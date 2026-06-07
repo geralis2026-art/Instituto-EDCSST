@@ -65,12 +65,14 @@ class Curso extends Model
                     ->withTimestamps();
     }
 
-    public function scopeActivos($query)
+    /** Cursos activos. */
+    public function scopeActivos(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('activo', true);
     }
 
-    public function scopeDestacados($query)
+    /** Cursos activos marcados como destacados (se muestran en el home). */
+    public function scopeDestacados(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('destacado', true)->where('activo', true);
     }
