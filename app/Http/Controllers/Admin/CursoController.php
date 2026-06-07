@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 class CursoController extends Controller
 {
+    /** Lista paginada de cursos con búsqueda por nombre/descripción y filtro por categoría. */
     public function index(Request $request)
     {
         $busqueda = $request->query('busqueda', '');
@@ -34,6 +35,7 @@ class CursoController extends Controller
         return view('admin.cursos.index', compact('cursos', 'categorias', 'busqueda', 'categoriaId'));
     }
 
+    /** Formulario para crear un nuevo curso. */
     public function create()
     {
         $categorias = Categoria::activas()->orderBy('nombre')->get();
@@ -41,6 +43,7 @@ class CursoController extends Controller
         return view('admin.cursos.create', compact('categorias'));
     }
 
+    /** Guarda el nuevo curso (el slug se genera automáticamente desde el nombre). */
     public function store(CursoRequest $request)
     {
         $curso = Curso::create($request->validated());
@@ -50,6 +53,7 @@ class CursoController extends Controller
             ->with('success', 'Curso creado correctamente.');
     }
 
+    /** Detalle del curso con su categoría y conteo de certificados emitidos. */
     public function show(Curso $curso)
     {
         $curso->load('categoria')->loadCount('certificados');
@@ -57,6 +61,7 @@ class CursoController extends Controller
         return view('admin.cursos.show', compact('curso'));
     }
 
+    /** Formulario para editar un curso existente. */
     public function edit(Curso $curso)
     {
         $categorias = Categoria::orderBy('nombre')->get();
@@ -64,6 +69,7 @@ class CursoController extends Controller
         return view('admin.cursos.edit', compact('curso', 'categorias'));
     }
 
+    /** Actualiza el curso. */
     public function update(CursoRequest $request, Curso $curso)
     {
         $curso->update($request->validated());
@@ -73,6 +79,7 @@ class CursoController extends Controller
             ->with('success', 'Curso actualizado correctamente.');
     }
 
+    /** Elimina el curso. Bloqueado si tiene certificados asociados. */
     public function destroy(Curso $curso)
     {
         if ($curso->certificados()->exists()) {

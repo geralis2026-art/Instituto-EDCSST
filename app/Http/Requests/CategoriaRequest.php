@@ -13,6 +13,7 @@ class CategoriaRequest extends FormRequest
         return true;
     }
 
+    /** Genera el slug desde el nombre y normaliza el booleano 'activo' antes de validar. */
     protected function prepareForValidation(): void
     {
         $this->merge([

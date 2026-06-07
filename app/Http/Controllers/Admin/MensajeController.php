@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class MensajeController extends Controller
 {
+    /** Bandeja de mensajes paginada con búsqueda por nombre/correo y filtro por estado. */
     public function index(Request $request)
     {
         $mensajes = Mensaje::query()
@@ -22,6 +23,7 @@ class MensajeController extends Controller
         return view('admin.mensajes.index', compact('mensajes'));
     }
 
+    /** Muestra el mensaje y lo marca como leído automáticamente si era nuevo. */
     public function show(Mensaje $mensaje)
     {
         if ($mensaje->estado === Mensaje::ESTADO_NUEVO) {
@@ -30,6 +32,7 @@ class MensajeController extends Controller
         return view('admin.mensajes.show', compact('mensaje'));
     }
 
+    /** Actualiza el estado y/o las notas internas del mensaje. */
     public function update(Request $request, Mensaje $mensaje)
     {
         $request->validate([
@@ -42,6 +45,7 @@ class MensajeController extends Controller
         return back()->with('success', 'Mensaje actualizado.');
     }
 
+    /** Elimina permanentemente el mensaje. */
     public function destroy(Mensaje $mensaje)
     {
         $mensaje->delete();

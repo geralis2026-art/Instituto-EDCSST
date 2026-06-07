@@ -76,23 +76,27 @@ class Certificado extends Model
             : null;
     }
 
+    /** Verdadero si la fecha de vencimiento ya pasó. */
     public function isVencido(): bool
     {
         return $this->fecha_vencimiento && $this->fecha_vencimiento->isPast();
     }
 
-    public function scopeActivos($query)
+    /** Certificados marcados como activos (no invalidados). */
+    public function scopeActivos(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('activo', true);
     }
 
-    public function scopeVigentes($query)
+    /** Certificados activos y cuya fecha de vencimiento no ha llegado. */
+    public function scopeVigentes(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('activo', true)
                      ->where('fecha_vencimiento', '>=', now()->toDateString());
     }
 
-    public function scopeVencidos($query)
+    /** Certificados cuya fecha de vencimiento ya pasó (independientemente de si están activos). */
+    public function scopeVencidos(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('fecha_vencimiento', '<', now()->toDateString());
     }

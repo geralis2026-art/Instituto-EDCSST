@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 
 class CertificadoController extends Controller
 {
+    /** Lista paginada de certificados con búsqueda por código/capacitado y filtro por curso. */
     public function index(Request $request)
     {
         $busqueda = $request->query('busqueda', '');
@@ -39,6 +40,7 @@ class CertificadoController extends Controller
         return view('admin.certificados.index', compact('certificados', 'cursos', 'busqueda', 'cursoId'));
     }
 
+    /** Formulario para registrar un nuevo certificado. */
     public function create()
     {
         $capacitados = Capacitado::orderBy('nombre_completo')->get();
@@ -47,6 +49,10 @@ class CertificadoController extends Controller
         return view('admin.certificados.create', compact('capacitados', 'cursos'));
     }
 
+    /**
+     * Guarda el certificado: genera código único, calcula fecha de vencimiento (+1 año)
+     * y almacena el PDF en storage/app/certificados/.
+     */
     public function store(CertificadoRequest $request)
     {
         $datos = $request->validated();
@@ -68,6 +74,7 @@ class CertificadoController extends Controller
             ->with('success', 'Certificado registrado correctamente.');
     }
 
+    /** Detalle completo del certificado con capacitado, curso y quién lo emitió. */
     public function show(Certificado $certificado)
     {
         $certificado->load(['capacitado', 'curso.categoria', 'emitidoPor']);
@@ -75,6 +82,7 @@ class CertificadoController extends Controller
         return view('admin.certificados.show', compact('certificado'));
     }
 
+    /** Formulario para editar un certificado existente. */
     public function edit(Certificado $certificado)
     {
         $capacitados = Capacitado::orderBy('nombre_completo')->get();
@@ -83,6 +91,7 @@ class CertificadoController extends Controller
         return view('admin.certificados.edit', compact('certificado', 'capacitados', 'cursos'));
     }
 
+    /** Actualiza el certificado. Si se sube nuevo PDF, elimina el anterior del storage. */
     public function update(CertificadoRequest $request, Certificado $certificado)
     {
         $datos = $request->validated();
@@ -105,6 +114,7 @@ class CertificadoController extends Controller
             ->with('success', 'Certificado actualizado correctamente.');
     }
 
+    /** Sirve el PDF del certificado directamente en el navegador (inline). */
     public function verPdf(Certificado $certificado)
     {
         if (!$certificado->archivo_pdf || !Storage::disk('local')->exists($certificado->archivo_pdf)) {
@@ -116,6 +126,7 @@ class CertificadoController extends Controller
         ]);
     }
 
+    /** Elimina el certificado y su PDF del storage. */
     public function destroy(Certificado $certificado)
     {
         if ($certificado->archivo_pdf) {
@@ -141,6 +152,7 @@ class CertificadoController extends Controller
             ->with('info', 'La generación masiva estará disponible próximamente.');
     }
 
+    /** Activa o desactiva el certificado sin eliminarlo. Recalcula horas del capacitado vía evento. */
     public function toggleActivo(Certificado $certificado)
     {
         $certificado->update([

@@ -41,7 +41,8 @@ class Categoria extends Model
         return $this->hasMany(Curso::class);
     }
 
-    public function scopeActivas($query)
+    /** Categorías activas. */
+    public function scopeActivas(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
     {
         return $query->where('activo', true);
     }

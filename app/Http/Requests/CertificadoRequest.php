@@ -12,6 +12,7 @@ class CertificadoRequest extends FormRequest
         return true;
     }
 
+    /** Normaliza el código único a mayúsculas y convierte 'activo' a booleano antes de validar. */
     protected function prepareForValidation(): void
     {
         $this->merge([
@@ -22,6 +23,10 @@ class CertificadoRequest extends FormRequest
         ]);
     }
 
+    /**
+     * El PDF es obligatorio en creación y opcional en edición.
+     * Si no se provee código único, se genera automáticamente post-insert.
+     */
     public function rules(): array
     {
         $certificadoId = $this->route('certificado')?->id;
