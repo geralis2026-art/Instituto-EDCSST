@@ -58,7 +58,7 @@ Route::post('/verificar', [VerificacionController::class, 'verificar'])->name('v
 // ── Rutas accesibles para todos los roles autenticados ──────────────────────
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo'])->group(function () {
 
-    Route::get('/', fn() => redirect()->route('admin.capacitados.index'))->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Capacitados — solo lectura
     Route::get('capacitados',              [CapacitadoController::class, 'index'])->name('capacitados.index');
