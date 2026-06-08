@@ -38,12 +38,8 @@
             <div class="hidden lg:block">
                 <div class="relative rounded-3xl overflow-hidden shadow-2xl">
                     <img src="{{ asset('images/capacitacion-grupal-docencia.jpg') }}"
-                         alt="Capacitación grupal EDCSST"
-                         class="w-full h-full object-cover">
-                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-900/80 to-transparent px-6 py-4">
-                        <p class="text-white font-semibold text-sm">Docencia en Salud · EDCSST + Multimedico</p>
-                        <p class="text-blue-200 text-xs mt-0.5">Capacitación presencial, virtual e híbrida</p>
-                    </div>
+                        alt="Capacitación grupal EDCSST"
+                        class="w-full h-full object-cover">
                 </div>
             </div>
         </div>
