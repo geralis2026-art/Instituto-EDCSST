@@ -57,10 +57,13 @@ return [
         ],
 
         // Disco para PDFs de certificados (privados, servidos vía controlador).
-        // En producción: CERTIFICADOS_DISK_ROOT=/home/u123456789/certificados_edcsst
+        // Root por defecto = storage/app/private (mismo que disco 'local') para que
+        // los paths existentes en BD (certificados/xxx.pdf) funcionen sin migración.
+        // En producción: CERTIFICADOS_DISK_ROOT=/home/u123456789/edcsst_storage
+        // y mover ~/public_html/storage/app/private/certificados/ a ese directorio.
         'certificados' => [
             'driver' => 'local',
-            'root' => env('CERTIFICADOS_DISK_ROOT', storage_path('app/certificados')),
+            'root' => env('CERTIFICADOS_DISK_ROOT', storage_path('app/private')),
             'throw' => false,
             'report' => false,
         ],
