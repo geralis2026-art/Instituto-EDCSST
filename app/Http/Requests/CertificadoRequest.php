@@ -9,7 +9,7 @@ class CertificadoRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return auth()->check();
     }
 
     /** Normaliza el código único a mayúsculas y convierte 'activo' a booleano antes de validar. */
