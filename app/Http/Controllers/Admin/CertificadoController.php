@@ -49,7 +49,9 @@ class CertificadoController extends Controller
             ->orderBy('nombre')
             ->get();
 
-        return view('admin.certificados.create', compact('categorias'));
+        $categoriasJson = $this->buildCategoriasJson($categorias);
+
+        return view('admin.certificados.create', compact('categorias', 'categoriasJson'));
     }
 
     /**
@@ -93,9 +95,19 @@ class CertificadoController extends Controller
             ->orderBy('nombre')
             ->get();
 
+        $categoriasJson = $this->buildCategoriasJson($categorias);
         $certificado->load('capacitado');
 
-        return view('admin.certificados.edit', compact('certificado', 'categorias'));
+        return view('admin.certificados.edit', compact('certificado', 'categorias', 'categoriasJson'));
+    }
+
+    private function buildCategoriasJson($categorias): string
+    {
+        return json_encode($categorias->map(fn ($cat) => [
+            'id'     => $cat->id,
+            'nombre' => $cat->nombre,
+            'cursos' => $cat->cursos->map(fn ($c) => ['id' => $c->id, 'nombre' => $c->nombre])->values(),
+        ])->values());
     }
 
     /** Actualiza el certificado. Si se sube nuevo PDF, elimina el anterior del storage. */

@@ -70,10 +70,7 @@
         </div>
 
         {{-- Selector de categoría + curso dependiente --}}
-        <div x-data="selectorCurso(
-                @json($categorias->map(fn($cat) => ['id' => $cat->id, 'nombre' => $cat->nombre, 'cursos' => $cat->cursos->map(fn($c) => ['id' => $c->id, 'nombre' => $c->nombre])->values()])->values()),
-                '{{ old('curso_id', $certificado->curso_id ?? '') }}'
-             )"
+        <div x-data="selectorCurso({{ $categoriasJson }}, '{{ old('curso_id', $certificado->curso_id ?? '') }}')"
              class="contents">
 
             {{-- Categoría --}}
