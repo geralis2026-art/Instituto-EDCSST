@@ -50,7 +50,7 @@ class CursoController extends Controller
         $datos = $request->validated();
 
         if ($request->hasFile('imagen')) {
-            $datos['imagen'] = $request->file('imagen')->store('cursos', 'public');
+            $datos['imagen'] = $request->file('imagen')->store('cursos', 'uploads');
         } else {
             unset($datos['imagen']);
         }
@@ -85,9 +85,9 @@ class CursoController extends Controller
 
         if ($request->hasFile('imagen')) {
             if ($curso->imagen) {
-                Storage::disk('public')->delete($curso->imagen);
+                Storage::disk('uploads')->delete($curso->imagen);
             }
-            $datos['imagen'] = $request->file('imagen')->store('cursos', 'public');
+            $datos['imagen'] = $request->file('imagen')->store('cursos', 'uploads');
         } else {
             unset($datos['imagen']);
         }
@@ -108,7 +108,7 @@ class CursoController extends Controller
         }
 
         if ($curso->imagen) {
-            Storage::disk('public')->delete($curso->imagen);
+            Storage::disk('uploads')->delete($curso->imagen);
         }
 
         $curso->delete();

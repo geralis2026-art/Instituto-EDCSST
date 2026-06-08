@@ -35,7 +35,13 @@ class ConfiguracionSitio extends Model
 
     public function getLogoUrlAttribute(): ?string
     {
-        return $this->logo ? asset('uploads/' . $this->logo) : null;
+        if (!$this->logo) {
+            return null;
+        }
+
+        [$type, $filename] = explode('/', $this->logo, 2);
+
+        return route('uploads.serve', compact('type', 'filename'));
     }
 
     public function getPlantillaUrlAttribute(): ?string

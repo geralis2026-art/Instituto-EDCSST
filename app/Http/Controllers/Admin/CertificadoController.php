@@ -64,7 +64,7 @@ class CertificadoController extends Controller
         $codigoManual = $datos['codigo_unico'] ?: null;
         $datos['codigo_unico'] = $codigoManual ?? (string) Str::uuid();
         $datos['emitido_por'] = auth()->id();
-        $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados');
+        $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados', 'certificados');
         $datos['fecha_vencimiento'] = \Carbon\Carbon::parse($datos['fecha_emision'])->addYear()->toDateString();
 
         $certificado = Certificado::create($datos);
@@ -118,10 +118,10 @@ class CertificadoController extends Controller
 
         if ($request->hasFile('archivo_pdf')) {
             if ($certificado->archivo_pdf) {
-                Storage::disk('local')->delete($certificado->archivo_pdf);
+                Storage::disk('certificados')->delete($certificado->archivo_pdf);
             }
 
-            $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados');
+            $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados', 'certificados');
         } else {
             unset($datos['archivo_pdf']);
         }
@@ -136,11 +136,11 @@ class CertificadoController extends Controller
     /** Sirve el PDF del certificado directamente en el navegador (inline). */
     public function verPdf(Certificado $certificado)
     {
-        if (!$certificado->archivo_pdf || !Storage::disk('local')->exists($certificado->archivo_pdf)) {
+        if (!$certificado->archivo_pdf || !Storage::disk('certificados')->exists($certificado->archivo_pdf)) {
             abort(404, 'El archivo PDF no se encuentra.');
         }
 
-        return Storage::disk('local')->response($certificado->archivo_pdf, null, [
+        return Storage::disk('certificados')->response($certificado->archivo_pdf, null, [
             'Content-Type' => 'application/pdf',
         ]);
     }
@@ -149,7 +149,7 @@ class CertificadoController extends Controller
     public function destroy(Certificado $certificado)
     {
         if ($certificado->archivo_pdf) {
-            Storage::disk('local')->delete($certificado->archivo_pdf);
+            Storage::disk('certificados')->delete($certificado->archivo_pdf);
         }
 
         $certificado->delete();

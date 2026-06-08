@@ -40,9 +40,30 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => public_path('uploads'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/uploads',
+            'root' => storage_path('app/public'),
+            'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
+        // Disco para imágenes y archivos públicos subidos por el admin.
+        // En producción: UPLOADS_DISK_ROOT=/home/u123456789/uploads_edcsst
+        'uploads' => [
+            'driver' => 'local',
+            'root' => env('UPLOADS_DISK_ROOT', storage_path('app/uploads')),
+            'throw' => false,
+            'report' => false,
+        ],
+
+        // Disco para PDFs de certificados (privados, servidos vía controlador).
+        // Root por defecto = storage/app/private (mismo que disco 'local') para que
+        // los paths existentes en BD (certificados/xxx.pdf) funcionen sin migración.
+        // En producción: CERTIFICADOS_DISK_ROOT=/home/u123456789/edcsst_storage
+        // y mover ~/public_html/storage/app/private/certificados/ a ese directorio.
+        'certificados' => [
+            'driver' => 'local',
+            'root' => env('CERTIFICADOS_DISK_ROOT', storage_path('app/private')),
             'throw' => false,
             'report' => false,
         ],
