@@ -12,6 +12,8 @@ class Certificado extends Model
 
     protected $table = 'certificados';
 
+    protected $appends = ['pdf_url'];
+
     protected $fillable = [
         'capacitado_id',
         'curso_id',

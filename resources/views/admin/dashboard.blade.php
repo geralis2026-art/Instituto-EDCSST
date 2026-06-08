@@ -174,7 +174,7 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script>
+<script nonce="{{ $cspNonce }}">
     const ctx = document.getElementById('chartCertificados').getContext('2d');
     new Chart(ctx, {
         type: 'bar',

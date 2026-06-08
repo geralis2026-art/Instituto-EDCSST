@@ -9,7 +9,7 @@ class CertificadoRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return auth()->check();
     }
 
     /** Normaliza el código único a mayúsculas y convierte 'activo' a booleano antes de validar. */
@@ -44,7 +44,7 @@ class CertificadoRequest extends FormRequest
             'fecha_emision' => 'required|date',
             'intensidad_horaria' => 'required|integer|min:1|max:10000',
             'modalidad' => 'nullable|in:virtual,presencial',
-            'archivo_pdf' => [$pdfRule, 'file', 'mimes:pdf', 'max:10240'],
+            'archivo_pdf' => [$pdfRule, 'file', 'mimetypes:application/pdf', 'max:10240'],
             'activo' => 'boolean',
         ];
     }
@@ -60,7 +60,7 @@ class CertificadoRequest extends FormRequest
             'fecha_emision.required' => 'La fecha de emision es requerida.',
             'intensidad_horaria.required' => 'La intensidad horaria es requerida.',
             'archivo_pdf.required' => 'Debes cargar el PDF del certificado.',
-            'archivo_pdf.mimes' => 'El archivo debe ser un PDF.',
+            'archivo_pdf.mimetypes' => 'El archivo debe ser un PDF válido.',
             'archivo_pdf.max' => 'El PDF no puede pesar mas de 10 MB.',
             'modalidad.in' => 'La modalidad debe ser virtual o presencial.',
         ];

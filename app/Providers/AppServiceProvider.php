@@ -2,9 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Mensaje;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,6 +18,19 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureRateLimiting();
+
+        View::composer('*', function ($view) {
+            $view->with('cspNonce', request()->attributes->get('csp_nonce', ''));
+        });
+
+        View::composer('layouts.admin', function ($view) {
+            $user = Auth::user();
+            $nuevos = ($user instanceof User && $user->isAdmin())
+                ? Mensaje::nuevos()->count()
+                : 0;
+
+            $view->with('mensajesNuevos', $nuevos);
+        });
     }
 
     /**

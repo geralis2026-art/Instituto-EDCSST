@@ -63,5 +63,9 @@
             </tbody>
         </table>
     </div>
+
+    @if($usuarios->hasPages())
+        <div class="mt-4">{{ $usuarios->links() }}</div>
+    @endif
 </div>
 @endsection

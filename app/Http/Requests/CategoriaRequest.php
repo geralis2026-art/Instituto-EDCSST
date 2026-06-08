@@ -10,7 +10,7 @@ class CategoriaRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return auth()->user()?->isAdmin() ?? false;
     }
 
     /** Genera el slug desde el nombre y normaliza el booleano 'activo' antes de validar. */

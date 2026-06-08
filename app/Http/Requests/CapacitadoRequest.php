@@ -12,7 +12,7 @@ class CapacitadoRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->check();
     }
 
     /**
@@ -27,6 +27,7 @@ class CapacitadoRequest extends FormRequest
             'documento' => [
                 'required',
                 'string',
+                'min:4',
                 'max:50',
                 Rule::unique('capacitados', 'documento')
                     ->ignore($capacitadoId),
@@ -48,6 +49,7 @@ class CapacitadoRequest extends FormRequest
             
             'documento.required' => 'El documento es requerido.',
             'documento.unique' => 'Este documento ya está registrado en el sistema.',
+            'documento.min' => 'El documento debe tener al menos 4 caracteres.',
             'documento.max' => 'El documento no puede exceder 50 caracteres.',
             
             'correo.email' => 'El correo debe ser una dirección válida.',
