@@ -14,7 +14,7 @@ class UsuarioController extends Controller
     /** Lista todos los usuarios (empleados) del sistema. */
     public function index()
     {
-        $usuarios = User::orderBy('name')->get();
+        $usuarios = User::orderBy('name')->paginate(15);
         return view('admin.usuarios.index', compact('usuarios'));
     }
 
