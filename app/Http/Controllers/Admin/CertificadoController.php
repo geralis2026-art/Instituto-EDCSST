@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CertificadoRequest;
 use App\Models\Capacitado;
+use App\Models\Categoria;
 use App\Models\Certificado;
 use App\Models\Curso;
 use Illuminate\Http\Request;
@@ -43,10 +44,12 @@ class CertificadoController extends Controller
     /** Formulario para registrar un nuevo certificado. */
     public function create()
     {
-        $capacitados = Capacitado::orderBy('nombre_completo')->get();
-        $cursos = Curso::activos()->orderBy('nombre')->get();
+        $categorias = Categoria::activas()
+            ->with(['cursos' => fn ($q) => $q->activos()->orderBy('nombre')])
+            ->orderBy('nombre')
+            ->get();
 
-        return view('admin.certificados.create', compact('capacitados', 'cursos'));
+        return view('admin.certificados.create', compact('categorias'));
     }
 
     /**
@@ -85,10 +88,14 @@ class CertificadoController extends Controller
     /** Formulario para editar un certificado existente. */
     public function edit(Certificado $certificado)
     {
-        $capacitados = Capacitado::orderBy('nombre_completo')->get();
-        $cursos = Curso::orderBy('nombre')->get();
+        $categorias = Categoria::activas()
+            ->with(['cursos' => fn ($q) => $q->activos()->orderBy('nombre')])
+            ->orderBy('nombre')
+            ->get();
 
-        return view('admin.certificados.edit', compact('certificado', 'capacitados', 'cursos'));
+        $certificado->load('capacitado');
+
+        return view('admin.certificados.edit', compact('certificado', 'categorias'));
     }
 
     /** Actualiza el certificado. Si se sube nuevo PDF, elimina el anterior del storage. */
