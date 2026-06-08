@@ -77,7 +77,7 @@
                             <div>
                                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Curso aprobado</p>
                                 <p class="text-base font-semibold text-gray-900">{{ $certificado->curso->nombre }}</p>
-                                <p class="text-sm text-gray-600">Categoría: {{ $certificado->curso->categoria->nombre }}</p>
+                                <p class="text-sm text-gray-600">Categoría: {{ $certificado->curso->categoria?->nombre ?? '—' }}</p>
                             </div>
                             <div>
                                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Fecha de emisión</p>

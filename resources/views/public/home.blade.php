@@ -72,7 +72,7 @@
                                 </div>
                             @endif
                             <span class="absolute top-3 left-3 bg-white/95 px-3 py-1 rounded-full text-xs font-semibold text-blue-900">
-                                {{ $curso->categoria->nombre }}
+                                {{ $curso->categoria?->nombre ?? 'Sin categoría' }}
                             </span>
                         </div>
 
