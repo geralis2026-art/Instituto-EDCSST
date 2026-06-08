@@ -39,7 +39,7 @@ class CursoRequest extends FormRequest
             'descripcion_corta' => 'required|string',
             'duracion' => 'required|string|max:255',
             'intensidad_horaria' => 'required|integer|min:1|max:10000',
-            'imagen' => 'nullable|string|max:255',
+            'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'destacado' => 'boolean',
             'activo' => 'boolean',
         ];

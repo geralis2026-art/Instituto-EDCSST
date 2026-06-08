@@ -7,6 +7,7 @@ use App\Http\Requests\CursoRequest;
 use App\Models\Categoria;
 use App\Models\Curso;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CursoController extends Controller
 {
@@ -46,7 +47,15 @@ class CursoController extends Controller
     /** Guarda el nuevo curso (el slug se genera automáticamente desde el nombre). */
     public function store(CursoRequest $request)
     {
-        $curso = Curso::create($request->validated());
+        $datos = $request->validated();
+
+        if ($request->hasFile('imagen')) {
+            $datos['imagen'] = $request->file('imagen')->store('cursos', 'public');
+        } else {
+            unset($datos['imagen']);
+        }
+
+        $curso = Curso::create($datos);
 
         return redirect()
             ->route('admin.cursos.show', $curso)
@@ -72,7 +81,18 @@ class CursoController extends Controller
     /** Actualiza el curso. */
     public function update(CursoRequest $request, Curso $curso)
     {
-        $curso->update($request->validated());
+        $datos = $request->validated();
+
+        if ($request->hasFile('imagen')) {
+            if ($curso->imagen) {
+                Storage::disk('public')->delete($curso->imagen);
+            }
+            $datos['imagen'] = $request->file('imagen')->store('cursos', 'public');
+        } else {
+            unset($datos['imagen']);
+        }
+
+        $curso->update($datos);
 
         return redirect()
             ->route('admin.cursos.show', $curso)
@@ -85,6 +105,10 @@ class CursoController extends Controller
         if ($curso->certificados()->exists()) {
             return back()
                 ->with('error', 'No se puede eliminar este curso porque tiene certificados asociados.');
+        }
+
+        if ($curso->imagen) {
+            Storage::disk('public')->delete($curso->imagen);
         }
 
         $curso->delete();

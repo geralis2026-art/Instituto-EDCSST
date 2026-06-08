@@ -1,5 +1,6 @@
 <form action="{{ isset($curso) ? route('admin.cursos.update', $curso) : route('admin.cursos.store') }}"
       method="POST"
+      enctype="multipart/form-data"
       class="space-y-6">
     @csrf
     @isset($curso)
@@ -38,7 +39,17 @@
 
         <div>
             <label for="imagen" class="block text-sm font-medium text-gray-700 mb-1">Imagen</label>
-            <input type="text" id="imagen" name="imagen" value="{{ old('imagen', $curso->imagen ?? '') }}" placeholder="Ruta en storage, opcional" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('imagen') border-red-500 @enderror">
+            @isset($curso)
+                @if($curso->imagen)
+                    <div class="mb-2">
+                        <img src="{{ $curso->imagen_url }}" alt="{{ $curso->nombre }}" class="h-24 w-auto rounded-lg border border-gray-200 object-cover">
+                        <p class="text-xs text-gray-400 mt-1">Si cargas una nueva imagen, reemplazará la actual.</p>
+                    </div>
+                @endif
+            @endisset
+            <input type="file" id="imagen" name="imagen" accept="image/jpeg,image/png,image/webp"
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('imagen') border-red-500 @enderror">
+            <p class="text-xs text-gray-400 mt-1">JPG, PNG o WebP — máx. 2 MB. Opcional.</p>
             @error('imagen')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
         </div>
 
