@@ -9,7 +9,9 @@
       "PowerShell(git -C \"c:\\\\laragon\\\\www\\\\instituto-edcsst\" commit -m \"Estilo: acento dorado via CSS puro, revertir CTAs a azul`n`n- CSS custom properties con --gold en layout publico`n- Clase section-title-center: subrayado dorado bajo titulos de seccion`n- Clase card-gold-hover: borde izquierdo dorado al hacer hover en tarjetas`n- Logo con anillo dorado en navbar`n- Links de footer con hover dorado`n- CTAs revertidos a azul \\(el amber en secciones grandes no era estetico\\)`n`nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\")",
       "PowerShell(git -C \"c:\\\\laragon\\\\www\\\\instituto-edcsst\" commit -m \"Fix: logo sin cuadrado, subrayado amber como div, boton azul con acento dorado`n`nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\")",
       "Bash(git commit *)",
-      "Bash(git log *)"
+      "Bash(git log *)",
+      "Bash(ls \"C:\\\\Users\\\\guavi\\\\OneDrive\\\\Documentos\\\\Instituto EDCSST\\\\Imagenes\")",
+      "Read(//c/Users/guavi/OneDrive/Documentos/Instituto EDCSST/Imagenes/**)"
     ]
   }
 }
