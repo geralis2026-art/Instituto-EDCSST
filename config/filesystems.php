@@ -40,9 +40,19 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => public_path('uploads'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/uploads',
+            'root' => storage_path('app/public'),
+            'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
+        // Disco para imágenes y archivos públicos subidos por el admin.
+        // En producción (Hostinger), apuntar a un directorio persistente fuera del
+        // deployment: UPLOADS_DISK_ROOT=/home/u123456789/uploads_edcsst
+        'uploads' => [
+            'driver' => 'local',
+            'root' => env('UPLOADS_DISK_ROOT', storage_path('app/uploads')),
             'throw' => false,
             'report' => false,
         ],

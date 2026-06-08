@@ -1,5 +1,6 @@
 ﻿<?php
 
+use App\Http\Controllers\UploadsController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\CatalogoController;
 use App\Http\Controllers\Public\ContactoController;
@@ -23,6 +24,12 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | Cualquier visitante puede acceder a estas URLs sin necesidad de login.
 */
+
+// Servir archivos subidos (imágenes de cursos, logos) desde storage persistente
+Route::get('/uploads/{type}/{filename}', [UploadsController::class, 'serve'])
+    ->where('type', 'cursos|logos')
+    ->where('filename', '[^/]+')
+    ->name('uploads.serve');
 
 // Página de inicio
 Route::get('/', [HomeController::class, 'index'])->name('home');
