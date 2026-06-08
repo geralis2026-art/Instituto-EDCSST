@@ -34,30 +34,15 @@
                 </div>
             </div>
 
-            {{-- Imagen / Card decorativo --}}
+            {{-- Foto real de capacitación --}}
             <div class="hidden lg:block">
-                <div class="relative">
-                    <div class="absolute inset-0 bg-blue-400 rounded-3xl transform rotate-3 opacity-20"></div>
-                    <div class="relative bg-white text-gray-800 rounded-3xl shadow-2xl p-8">
-                        <div class="flex items-center justify-between mb-6">
-                            <div>
-                                <p class="text-xs uppercase tracking-wider text-gray-500">Certificado</p>
-                                <p class="text-lg font-bold text-blue-900">Instituto EDCSST</p>
-                            </div>
-                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                                <svg class="w-10 h-10 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
-                            </div>
-                        </div>
-                        <div class="border-t border-gray-200 pt-4">
-                            <p class="text-sm text-gray-500 mb-1">Otorgado a:</p>
-                            <p class="text-xl font-bold mb-3">Tu nombre aquí</p>
-                            <p class="text-sm text-gray-500 mb-1">Por completar el curso de:</p>
-                            <p class="text-base font-semibold text-blue-900">Seguridad y Salud en el Trabajo</p>
-                        </div>
-                        <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 text-xs text-gray-500">
-                            <span>Cód: EDCSST-2026-00001</span>
-                            <span>Verificable</span>
-                        </div>
+                <div class="relative rounded-3xl overflow-hidden shadow-2xl">
+                    <img src="{{ asset('images/capacitacion-grupal-docencia.jpg') }}"
+                         alt="Capacitación grupal EDCSST"
+                         class="w-full h-full object-cover">
+                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-900/80 to-transparent px-6 py-4">
+                        <p class="text-white font-semibold text-sm">Docencia en Salud · EDCSST + Multimedico</p>
+                        <p class="text-blue-200 text-xs mt-0.5">Capacitación presencial, virtual e híbrida</p>
                     </div>
                 </div>
             </div>
