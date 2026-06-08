@@ -17,8 +17,6 @@
     <div class="bg-white rounded-lg shadow p-8">
         @include('admin.certificados._form', [
             'certificado' => $certificado,
-            'capacitados' => $capacitados,
-            'cursos' => $cursos,
         ])
     </div>
 </div>
