@@ -40,7 +40,7 @@
         </div>
     @endif
 
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-6">
         <div class="bg-white rounded-lg shadow p-6">
             <p class="text-sm text-gray-500">Estado</p>
             <p class="text-xl font-semibold {{ $certificado->activo ? 'text-green-700' : 'text-gray-700' }}">{{ $certificado->activo ? 'Activo' : 'Inactivo' }}</p>
@@ -59,6 +59,16 @@
         <div class="bg-white rounded-lg shadow p-6">
             <p class="text-sm text-gray-500">Horas</p>
             <p class="text-xl font-semibold text-gray-900">{{ $certificado->intensidad_horaria }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <p class="text-sm text-gray-500">Modalidad</p>
+            @if($certificado->modalidad === 'virtual')
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">Virtual</span>
+            @elseif($certificado->modalidad === 'presencial')
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">Presencial</span>
+            @else
+                <p class="text-xl font-semibold text-gray-400">—</p>
+            @endif
         </div>
         <div class="bg-white rounded-lg shadow p-6">
             <p class="text-sm text-gray-500">PDF</p>

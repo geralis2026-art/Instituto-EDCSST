@@ -101,6 +101,26 @@ class CapacitadoController extends Controller
     }
 
     /**
+     * Búsqueda AJAX de capacitados por cédula o nombre (para el formulario de certificados).
+     */
+    public function buscar(Request $request)
+    {
+        $q = trim($request->query('q', ''));
+
+        if (strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $resultados = Capacitado::where('documento', 'like', "%{$q}%")
+            ->orWhere('nombre_completo', 'like', "%{$q}%")
+            ->orderBy('nombre_completo')
+            ->limit(10)
+            ->get(['id', 'nombre_completo', 'documento']);
+
+        return response()->json($resultados);
+    }
+
+    /**
      * Descargar plantilla Excel para importar capacitados masivamente.
      */
     public function descargarPlantilla()

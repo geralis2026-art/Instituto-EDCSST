@@ -43,6 +43,7 @@ class CertificadoRequest extends FormRequest
             ],
             'fecha_emision' => 'required|date',
             'intensidad_horaria' => 'required|integer|min:1|max:10000',
+            'modalidad' => 'nullable|in:virtual,presencial',
             'archivo_pdf' => [$pdfRule, 'file', 'mimes:pdf', 'max:10240'],
             'activo' => 'boolean',
         ];
@@ -61,6 +62,7 @@ class CertificadoRequest extends FormRequest
             'archivo_pdf.required' => 'Debes cargar el PDF del certificado.',
             'archivo_pdf.mimes' => 'El archivo debe ser un PDF.',
             'archivo_pdf.max' => 'El PDF no puede pesar mas de 10 MB.',
+            'modalidad.in' => 'La modalidad debe ser virtual o presencial.',
         ];
     }
 }

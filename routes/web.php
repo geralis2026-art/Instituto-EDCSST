@@ -62,6 +62,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo'])->group(fu
 
     // Capacitados — solo lectura
     Route::get('capacitados',              [CapacitadoController::class, 'index'])->name('capacitados.index');
+    Route::get('capacitados/buscar',       [CapacitadoController::class, 'buscar'])->name('capacitados.buscar');
     Route::get('capacitados/{capacitado}', [CapacitadoController::class, 'show'])->name('capacitados.show')->whereNumber('capacitado');
 
     // Certificados — ver, crear y descargar PDF

@@ -33,8 +33,6 @@ class CapacitadoRequest extends FormRequest
             ],
             'correo'    => 'nullable|email|max:150',
             'telefono'  => 'nullable|string|max:20',
-            'modalidad' => 'nullable|in:virtual,presencial',
-            // RH solo tiene sentido cuando la modalidad es presencial
             'rh'        => 'nullable|string|max:10',
         ];
     }
@@ -56,7 +54,6 @@ class CapacitadoRequest extends FormRequest
             'correo.max' => 'El correo no puede exceder 150 caracteres.',
             
             'telefono.max'  => 'El teléfono no puede exceder 20 caracteres.',
-            'modalidad.in'  => 'La modalidad debe ser virtual o presencial.',
             'rh.max'        => 'El RH no puede exceder 10 caracteres.',
         ];
     }
