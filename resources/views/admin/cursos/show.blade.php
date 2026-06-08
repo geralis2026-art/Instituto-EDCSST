@@ -54,7 +54,12 @@
         </div>
         <div>
             <p class="text-sm text-gray-500">Imagen</p>
-            <p class="text-lg text-gray-900">{{ $curso->imagen ?: 'Sin imagen configurada' }}</p>
+            @if($curso->imagen)
+                <img src="{{ $curso->imagen_url }}" alt="{{ $curso->nombre }}" class="h-28 w-auto rounded-lg border border-gray-200 object-cover mt-2">
+                <p class="text-xs text-gray-400 mt-1">{{ $curso->imagen }}</p>
+            @else
+                <p class="text-lg text-gray-900">Sin imagen configurada</p>
+            @endif
         </div>
         <div class="text-sm text-gray-500">
             <p>Slug: {{ $curso->slug }}</p>

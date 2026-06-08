@@ -107,7 +107,7 @@
                                     {{ $certificado->curso->nombre }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    {{ $certificado->curso->categoria->nombre }}
+                                    {{ $certificado->curso->categoria?->nombre ?? '—' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-semibold">

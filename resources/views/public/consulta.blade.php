@@ -114,7 +114,7 @@
                                             </div>
                                             <div class="ml-4">
                                                 <h3 class="font-bold text-lg text-gray-900">{{ $certificado->curso->nombre }}</h3>
-                                                <p class="text-sm text-gray-500 mt-1">{{ $certificado->curso->categoria->nombre }}</p>
+                                                <p class="text-sm text-gray-500 mt-1">{{ $certificado->curso->categoria?->nombre ?? '—' }}</p>
 
                                                 <div class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
                                                     <div class="flex items-center text-gray-600">

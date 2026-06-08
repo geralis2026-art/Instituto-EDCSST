@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Curso extends Model
@@ -27,6 +26,8 @@ class Curso extends Model
         'destacado',
         'activo',
     ];
+
+    protected $appends = ['imagen_url'];
 
     protected $casts = [
         'destacado' => 'boolean',
@@ -84,7 +85,7 @@ class Curso extends Model
     public function getImagenUrlAttribute(): string
     {
         return $this->imagen
-            ? Storage::disk('public')->url($this->imagen)
+            ? asset('uploads/' . $this->imagen)
             : asset('img/curso-default.png');
     }
 }
