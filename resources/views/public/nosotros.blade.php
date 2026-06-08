@@ -80,12 +80,8 @@
 
             <div class="relative rounded-2xl overflow-hidden shadow-lg">
                 <img src="{{ asset('images/examen-medico-ocupacional.jpg') }}"
-                     alt="Examen médico ocupacional EDCSST"
-                     class="w-full h-full object-cover">
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-900/80 to-transparent px-5 py-4">
-                    <p class="text-white font-semibold text-sm">Examen Médico Ocupacional</p>
-                    <p class="text-blue-200 text-xs mt-0.5">EDCSST · Multimedico Consultorio</p>
-                </div>
+                    alt="Examen médico ocupacional EDCSST"
+                    class="w-full h-full object-cover">
             </div>
 
         </div>
@@ -135,25 +131,25 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition">
+            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition h-96">
                 <img src="{{ asset('images/portafolio-cursos-salud-fotos.jpg') }}"
                      alt="Portafolio de cursos en salud - EDCSST"
-                     class="w-full h-auto object-cover">
+                     class="w-full h-full object-cover object-top">
             </div>
-            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition">
+            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition h-96">
                 <img src="{{ asset('images/portafolio-cursos-salud-iconos.jpg') }}"
                      alt="Portafolio de cursos Resolución 3100 - EDCSST"
-                     class="w-full h-auto object-cover">
+                     class="w-full h-full object-cover object-top">
             </div>
-            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition">
+            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition h-96">
                 <img src="{{ asset('images/flyer-kit-cursos-salud.jpg') }}"
                      alt="Kit de cursos en salud - EDCSST"
-                     class="w-full h-auto object-cover">
+                     class="w-full h-full object-cover object-top">
             </div>
-            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition">
+            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition h-96">
                 <img src="{{ asset('images/flyer-cursos-sst-alturas.jpg') }}"
                      alt="Cursos en Seguridad y Salud en el Trabajo - EDCSST"
-                     class="w-full h-auto object-cover">
+                     class="w-full h-full object-cover object-top">
             </div>
         </div>
     </div>
