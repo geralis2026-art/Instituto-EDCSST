@@ -69,27 +69,43 @@
             @enderror
         </div>
 
-        {{-- Cursos agrupados por categoría --}}
-        <div>
-            <label for="curso_id" class="block text-sm font-medium text-gray-700 mb-1">Curso *</label>
-            <select id="curso_id" name="curso_id"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('curso_id') border-red-500 @enderror"
-                    required>
-                <option value="">Seleccionar curso</option>
-                @foreach($categorias as $categoria)
-                    @if($categoria->cursos->isNotEmpty())
-                        <optgroup label="{{ $categoria->nombre }}">
-                            @foreach($categoria->cursos as $curso)
-                                <option value="{{ $curso->id }}" @selected(old('curso_id', $certificado->curso_id ?? '') == $curso->id)>
-                                    {{ $curso->nombre }}
-                                </option>
-                            @endforeach
-                        </optgroup>
-                    @endif
-                @endforeach
-            </select>
-            @error('curso_id')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
-        </div>
+        {{-- Selector de categoría + curso dependiente --}}
+        <div x-data="selectorCurso(
+                @json($categorias->map(fn($cat) => ['id' => $cat->id, 'nombre' => $cat->nombre, 'cursos' => $cat->cursos->map(fn($c) => ['id' => $c->id, 'nombre' => $c->nombre])->values()])->values()),
+                '{{ old('curso_id', $certificado->curso_id ?? '') }}'
+             )"
+             class="contents">
+
+            {{-- Categoría --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
+                <select x-model="categoriaSeleccionada"
+                        @change="cursoSeleccionado = ''"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required>
+                    <option value="">Seleccionar categoría</option>
+                    <template x-for="cat in categorias" :key="cat.id">
+                        <option :value="cat.id" x-text="cat.nombre"></option>
+                    </template>
+                </select>
+            </div>
+
+            {{-- Curso (depende de la categoría) --}}
+            <div>
+                <label for="curso_id" class="block text-sm font-medium text-gray-700 mb-1">Curso *</label>
+                <select id="curso_id" name="curso_id"
+                        x-model="cursoSeleccionado"
+                        :disabled="!categoriaSeleccionada"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed @error('curso_id') border-red-500 @enderror"
+                        required>
+                    <option value="">Seleccionar curso</option>
+                    <template x-for="curso in cursosFiltrados" :key="curso.id">
+                        <option :value="curso.id" x-text="curso.nombre"></option>
+                    </template>
+                </select>
+                @error('curso_id')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
+            </div>
+        </div>{{-- /selectorCurso --}}
 
         <div>
             <label for="codigo_unico" class="block text-sm font-medium text-gray-700 mb-1">Codigo unico</label>
@@ -204,6 +220,24 @@ function buscadorCapacitado(idInicial, nombreInicial, documentoInicial) {
 
         cerrar() {
             this.resultados = [];
+        }
+    };
+}
+
+function selectorCurso(categorias, cursoInicial) {
+    const categoriaInicial = categorias.find(cat =>
+        cat.cursos.some(c => String(c.id) === String(cursoInicial))
+    );
+
+    return {
+        categorias,
+        categoriaSeleccionada: categoriaInicial ? String(categoriaInicial.id) : '',
+        cursoSeleccionado: cursoInicial ? String(cursoInicial) : '',
+
+        get cursosFiltrados() {
+            if (!this.categoriaSeleccionada) return [];
+            const cat = this.categorias.find(c => String(c.id) === String(this.categoriaSeleccionada));
+            return cat ? cat.cursos : [];
         }
     };
 }
