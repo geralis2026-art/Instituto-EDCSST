@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Mensaje;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,6 +16,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureRateLimiting();
+
+        View::composer('layouts.admin', function ($view) {
+            $nuevos = auth()->check() && auth()->user()->isAdmin()
+                ? Mensaje::nuevos()->count()
+                : 0;
+
+            $view->with('mensajesNuevos', $nuevos);
+        });
     }
 
     /**
