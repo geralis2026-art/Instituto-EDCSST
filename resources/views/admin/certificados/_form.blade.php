@@ -177,7 +177,7 @@
     </div>
 </form>
 
-<script>
+<script nonce="{{ $cspNonce }}">
 function buscadorCapacitado(idInicial, nombreInicial, documentoInicial) {
     return {
         query: '',
