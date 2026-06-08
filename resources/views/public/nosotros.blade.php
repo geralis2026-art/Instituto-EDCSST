@@ -78,22 +78,13 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-2 gap-5">
-                <div class="bg-amber-50 p-6 rounded-xl shadow-sm border border-amber-100 text-center">
-                    <div class="text-4xl font-bold text-amber-600 mb-1">100%</div>
-                    <div class="text-sm text-gray-600">Certificados digitales verificables</div>
-                </div>
-                <div class="bg-amber-50 p-6 rounded-xl shadow-sm border border-amber-100 text-center">
-                    <div class="text-4xl font-bold text-amber-600 mb-1">24/7</div>
-                    <div class="text-sm text-gray-600">Verificación en línea disponible</div>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
-                    <div class="text-4xl font-bold text-blue-700 mb-1">SST</div>
-                    <div class="text-sm text-gray-600">Especialización en seguridad laboral</div>
-                </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
-                    <div class="text-4xl font-bold text-blue-700 mb-1">Col</div>
-                    <div class="text-sm text-gray-600">Normativa colombiana vigente</div>
+            <div class="relative rounded-2xl overflow-hidden shadow-lg">
+                <img src="{{ asset('images/examen-medico-ocupacional.jpg') }}"
+                     alt="Examen médico ocupacional EDCSST"
+                     class="w-full h-full object-cover">
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-900/80 to-transparent px-5 py-4">
+                    <p class="text-white font-semibold text-sm">Examen Médico Ocupacional</p>
+                    <p class="text-blue-200 text-xs mt-0.5">EDCSST · Multimedico Consultorio</p>
                 </div>
             </div>
 
@@ -130,6 +121,40 @@
                 </div>
             </div>
             @endforeach
+        </div>
+    </div>
+</section>
+
+{{-- PORTAFOLIO DE CURSOS --}}
+<section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+            <span class="text-amber-600 font-semibold text-sm uppercase tracking-wider">Material informativo</span>
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mt-2 mb-3">Nuestro portafolio de cursos</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">Más de 80 cursos disponibles en salud y seguridad en el trabajo, avalados por la normativa colombiana vigente.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition">
+                <img src="{{ asset('images/portafolio-cursos-salud-fotos.jpg') }}"
+                     alt="Portafolio de cursos en salud - EDCSST"
+                     class="w-full h-auto object-cover">
+            </div>
+            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition">
+                <img src="{{ asset('images/portafolio-cursos-salud-iconos.jpg') }}"
+                     alt="Portafolio de cursos Resolución 3100 - EDCSST"
+                     class="w-full h-auto object-cover">
+            </div>
+            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition">
+                <img src="{{ asset('images/flyer-kit-cursos-salud.jpg') }}"
+                     alt="Kit de cursos en salud - EDCSST"
+                     class="w-full h-auto object-cover">
+            </div>
+            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition">
+                <img src="{{ asset('images/flyer-cursos-sst-alturas.jpg') }}"
+                     alt="Cursos en Seguridad y Salud en el Trabajo - EDCSST"
+                     class="w-full h-auto object-cover">
+            </div>
         </div>
     </div>
 </section>
