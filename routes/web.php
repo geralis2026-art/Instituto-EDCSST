@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Http\Controllers\UploadsController;
 use App\Http\Controllers\Public\HomeController;
