@@ -24,7 +24,7 @@
             <input type="hidden" name="capacitado_id" :value="seleccionado.id">
 
             {{-- Capacitado ya seleccionado --}}
-            <div x-show="seleccionado.id" class="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg mb-2">
+            <div x-show="seleccionado.id" style="display:none" class="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg mb-2">
                 <div class="flex-1">
                     <p class="font-medium text-gray-900" x-text="seleccionado.nombre_completo"></p>
                     <p class="text-sm text-gray-500" x-text="seleccionado.documento"></p>
@@ -61,7 +61,7 @@
                     </template>
                 </div>
 
-                <p x-show="sinResultados" class="text-sm text-gray-500 mt-1">No se encontró ningún capacitado.</p>
+                <p x-show="sinResultados" style="display:none" class="text-sm text-gray-500 mt-1">No se encontró ningún capacitado.</p>
             </div>
 
             @error('capacitado_id')

@@ -3,18 +3,105 @@
 @section('titulo', 'Sobre Nosotros')
 @section('descripcion', 'Conoce el Instituto EDCSST: nuestra misión, visión, valores y compromiso con la formación profesional en seguridad y salud en el trabajo.')
 
+@push('styles')
+<style>
+    #hero-nosotros { min-height: 45vh; display: flex; align-items: center; }
+    @media (min-width: 1024px) { #hero-nosotros { min-height: 58vh; } }
+    @keyframes nosotrosKenBurns {
+        0%   { transform: scale(1) translate(0, 0); }
+        100% { transform: scale(1.07) translate(1%, -1%); }
+    }
+    #hero-nosotros .bg-foto {
+        animation: nosotrosKenBurns 14s ease-out forwards;
+    }
+    .stat-float-a { animation: floatA 4s ease-in-out infinite; }
+    .stat-float-b { animation: floatB 4.5s ease-in-out 0.5s infinite; }
+    @keyframes floatA {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-7px); }
+    }
+    @keyframes floatB {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-5px); }
+    }
+</style>
+@endpush
+
 @section('contenido')
 
 {{-- HERO --}}
-<section class="bg-blue-950 text-white py-20 border-b-4 border-amber-500 relative overflow-hidden">
-    <div class="absolute inset-0 pointer-events-none"
-         style="background: radial-gradient(ellipse at 70% 50%, rgba(245,158,11,0.1) 0%, transparent 60%)"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <span class="badge-gold mb-5 inline-block hero-1">Quiénes somos</span>
-        <h1 class="text-4xl sm:text-5xl font-bold mb-6 hero-2">Instituto EDCSST</h1>
-        <p class="text-xl text-blue-200 max-w-3xl mx-auto leading-relaxed hero-3">
-            Educación para el Desarrollo y la Calidad en Seguridad y Salud en el Trabajo. Formamos profesionales con certificación verificable desde Villavicencio, Meta.
-        </p>
+<section id="hero-nosotros" class="relative overflow-hidden bg-blue-950 text-white">
+
+    {{-- Foto de fondo con Ken Burns --}}
+    <div class="absolute inset-0">
+        <img src="{{ asset('images/examen-medico-ocupacional.jpg') }}"
+             alt="Instituto EDCSST"
+             class="bg-foto w-full h-full object-cover"
+             style="object-position: center 30%;">
+        {{-- Overlay: oscuro en ambos lados, más transparente al centro-derecha --}}
+        <div class="absolute inset-0"
+             style="background: linear-gradient(to right, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.80) 30%, rgba(30,58,138,0.65) 60%, rgba(30,58,138,0.45) 100%);"></div>
+        {{-- Línea dorada superior --}}
+        <div class="absolute top-0 left-0 right-0 h-1"
+             style="background: linear-gradient(90deg, transparent, #F59E0B 40%, #D4A017 60%, transparent);"></div>
+    </div>
+
+    {{-- Contenido --}}
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-0">
+        <div class="lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center">
+
+            {{-- Texto principal --}}
+            <div class="hero-1">
+                <span class="badge-gold mb-5 inline-block text-xs sm:text-sm">Quiénes somos</span>
+                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-5">
+                    Instituto<br>
+                    <span style="background: linear-gradient(90deg, #F59E0B, #D4A017); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                        EDCSST
+                    </span>
+                </h1>
+                <p class="text-base sm:text-lg text-blue-100 leading-relaxed max-w-lg mb-8">
+                    Educación para el Desarrollo y la Calidad en Seguridad y Salud en el Trabajo. Formamos profesionales con certificación verificable desde Villavicencio, Meta.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                    <a href="{{ route('catalogo') }}"
+                       class="inline-flex items-center gap-2 px-5 py-2.5 btn-gold rounded-lg font-semibold text-sm">
+                        Ver cursos
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </a>
+                    <a href="{{ route('contacto') }}"
+                       class="inline-flex items-center gap-2 px-5 py-2.5 border border-blue-400 text-white rounded-lg font-semibold text-sm hover:bg-blue-900 transition">
+                        Contáctanos
+                    </a>
+                </div>
+            </div>
+
+            {{-- Stats flotantes — solo desktop --}}
+            <div class="hidden lg:flex flex-col gap-4 items-end hero-2">
+                <div class="stat-float-a bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 w-52 text-center shadow-xl">
+                    <div class="text-3xl font-bold mb-1"
+                         style="background: linear-gradient(90deg, #F59E0B, #D4A017); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                        100%
+                    </div>
+                    <div class="text-blue-100 text-xs leading-snug">Certificados digitales verificables</div>
+                </div>
+                <div class="stat-float-b bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 w-52 text-center shadow-xl" style="margin-right: 2.5rem;">
+                    <div class="text-3xl font-bold text-white mb-1">24/7</div>
+                    <div class="text-blue-100 text-xs leading-snug">Verificación en línea disponible</div>
+                </div>
+                <div class="stat-float-a bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 w-52 text-center shadow-xl" style="animation-delay: 1s;">
+                    <div class="text-3xl font-bold text-white mb-1">SST</div>
+                    <div class="text-blue-100 text-xs leading-snug">Especialización en seguridad laboral</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {{-- Ola decorativa inferior --}}
+    <div class="absolute bottom-0 left-0 right-0 pointer-events-none">
+        <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block; width:100%; height:48px;">
+            <path d="M0 48 C360 0 1080 0 1440 48 L1440 48 L0 48 Z" fill="white"/>
+        </svg>
     </div>
 </section>
 
