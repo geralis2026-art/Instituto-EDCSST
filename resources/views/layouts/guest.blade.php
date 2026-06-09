@@ -12,7 +12,7 @@
         <style>
             .login-wrap { display: flex; min-height: 100vh; }
             .login-image { display: none; position: relative; overflow: hidden; }
-            .login-image img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 40% center; }
+            .login-image > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 40% center; }
             .login-image-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(15,23,42,0.92) 0%, rgba(30,58,138,0.80) 100%); }
             .login-image-content { position: relative; z-index: 10; display: flex; flex-direction: column; justify-content: space-between; padding: 3rem; height: 100%; }
             .login-form-col { display: flex; align-items: center; justify-content: center; padding: 2.5rem 1.5rem; width: 100%; background: #f8fafc; }
@@ -35,10 +35,11 @@
                 <div class="login-image-overlay"></div>
                 <div class="login-image-content">
                     {{-- Logo --}}
-                    <div style="display:flex; align-items:center; gap:0.75rem;">
-                        <x-application-logo style="width:2.8rem; height:2.8rem; color:#F59E0B;" class="fill-current" />
-                        <div style="color:white; font-weight:700; line-height:1.2; font-size:1rem;">Instituto<br>EDCSST</div>
-                    </div>
+                    <a href="/" style="display:flex; align-items:center; gap:0.75rem; text-decoration:none;">
+                        <img src="{{ asset('img/logo-edcsst.png') }}" alt="Logo EDCSST"
+                             style="width:2.8rem; height:2.8rem; object-fit:contain; flex-shrink:0;">
+                        <span style="color:white; font-weight:700; line-height:1.2; font-size:1rem;">Instituto<br>EDCSST</span>
+                    </a>
 
                     {{-- Texto central --}}
                     <div>
@@ -69,9 +70,10 @@
                 <div style="width:100%; max-width:26rem;">
 
                     {{-- Logo móvil --}}
-                    <div style="text-align:center; margin-bottom:2rem; display:block;" class="lg-hidden-logo">
-                        <a href="/">
-                            <x-application-logo style="width:4rem; height:4rem; color:#1e3a8a; margin:0 auto;" class="fill-current" />
+                    <div style="text-align:center; margin-bottom:2rem;">
+                        <a href="/" style="display:inline-block;">
+                            <img src="{{ asset('img/logo-edcsst.png') }}" alt="Logo EDCSST"
+                                 style="width:4rem; height:4rem; object-fit:contain; margin:0 auto;">
                         </a>
                         <p style="color:#6b7280; font-size:0.875rem; margin-top:0.4rem;">Instituto EDCSST</p>
                     </div>
