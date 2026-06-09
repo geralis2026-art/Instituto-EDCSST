@@ -3,44 +3,50 @@
 @section('titulo', 'Inicio')
 @section('descripcion', 'Instituto EDCSST - Capacitación y certificación profesional en seguridad y salud en el trabajo.')
 
+@push('styles')
+<style>
+#hero-principal { min-height: 50vh; }
+@@media (min-width: 1024px) { #hero-principal { min-height: 60vh; } }
+</style>
+@endpush
+
 @section('contenido')
 
 {{-- ============ HERO / BANNER PRINCIPAL ============ --}}
-<section class="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<section id="hero-principal" class="relative overflow-hidden bg-blue-900 text-white flex items-center">
 
-            {{-- Texto del hero --}}
-            <div>
-                <span class="inline-block px-3 py-1 bg-amber-500 text-white rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
-                    Capacitación profesional
-                </span>
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-                    Forma tu futuro con<br>
-                    <span class="text-amber-300">certificaciones reales</span>
-                </h1>
-                <p class="text-lg sm:text-xl text-blue-100 mb-8 leading-relaxed">
-                    En el Instituto EDCSST capacitamos profesionales con certificados verificables digitalmente. Educación práctica para el mundo laboral actual.
-                </p>
-                <div class="flex flex-wrap gap-4">
-                    {{-- MVP: Botón catálogo reemplazado por consulta --}}
-                    <a href="{{ route('consulta') }}" class="inline-flex items-center px-6 py-3 bg-white text-blue-900 font-semibold rounded-lg hover:bg-blue-50 transition shadow-lg">
-                        Consultar mi certificado
-                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                    </a>
-                    <a href="{{ route('verificar') }}" class="inline-flex items-center px-6 py-3 bg-amber-500 border-2 border-amber-400 text-white font-semibold rounded-lg hover:bg-amber-600 transition">
-                        Verificar certificado
-                    </a>
-                </div>
-            </div>
+    {{-- Imagen de fondo completa --}}
+    <div class="absolute inset-0">
+        <img src="{{ asset('images/capacitacion-grupal-docencia.jpg') }}"
+             alt="Capacitación grupal EDCSST"
+             class="w-full h-full object-cover"
+             style="object-position: 35% 35%;">
+        {{-- Gradiente: azul sólido a la izquierda, transparente a la derecha --}}
+        <div class="absolute inset-0"
+             style="background: linear-gradient(to right, #1e3a8a 0%, rgba(30,58,138,0.95) 15%, rgba(30,58,138,0.75) 35%, rgba(30,58,138,0.2) 60%, transparent 100%);"></div>
+    </div>
 
-            {{-- Foto real de capacitación --}}
-            <div class="hidden lg:block">
-                <div class="relative rounded-3xl overflow-hidden shadow-2xl">
-                    <img src="{{ asset('images/capacitacion-grupal-docencia.jpg') }}"
-                        alt="Capacitación grupal EDCSST"
-                        class="w-full h-full object-cover">
-                </div>
+    {{-- Texto sobre el gradiente --}}
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14 lg:py-24">
+        <div class="w-[55%] lg:w-[48%]">
+            <span class="inline-block px-2 py-0.5 sm:px-3 sm:py-1 bg-amber-500 text-white rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wider mb-2 sm:mb-4">
+                Capacitación profesional
+            </span>
+            <h1 class="text-xl sm:text-4xl lg:text-6xl font-bold leading-tight mb-3 sm:mb-6">
+                Forma tu futuro con<br>
+                <span class="text-amber-300">certificaciones reales</span>
+            </h1>
+            <p class="hidden sm:block text-base sm:text-lg lg:text-xl text-blue-100 mb-6 sm:mb-8 leading-relaxed">
+                En el Instituto EDCSST capacitamos profesionales con certificados verificables <br> digitalmente. Educación práctica para el mundo laboral actual.
+            </p>
+            <div class="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4">
+                <a href="{{ route('consulta') }}" class="inline-flex items-center justify-center px-3 py-2 sm:px-6 sm:py-3 bg-white text-blue-900 font-semibold rounded-lg hover:bg-blue-50 transition shadow-lg text-xs sm:text-base">
+                    Consultar mi certificado
+                    <svg class="w-4 h-4 ml-1 sm:w-5 sm:h-5 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+                <a href="{{ route('verificar') }}" class="inline-flex items-center justify-center px-3 py-2 sm:px-6 sm:py-3 bg-amber-500 border-2 border-amber-400 text-white font-semibold rounded-lg hover:bg-amber-600 transition text-xs sm:text-base">
+                    Verificar certificado
+                </a>
             </div>
         </div>
     </div>
