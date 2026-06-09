@@ -8,6 +8,7 @@ use App\Models\Certificado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 
 class ConsultaCertificadoController extends Controller
 {
@@ -50,7 +51,7 @@ class ConsultaCertificadoController extends Controller
             }
 
             if (!$capacitado || $certificados->isEmpty()) {
-                $mensajeError = 'No encontramos certificados asociados a este documento. Verifica el número o contacta al instituto.';
+                $mensajeError = 'No encontramos certificados con esos datos. Verifica la información o contacta al instituto.';
             }
         } else {
             // Buscar por código único del certificado
@@ -60,7 +61,7 @@ class ConsultaCertificadoController extends Controller
                 $capacitado = $certificado->capacitado;
                 $certificados = collect([$certificado->load('curso.categoria')]);
             } else {
-                $mensajeError = 'No encontramos un certificado con ese código. Verifica que esté escrito correctamente.';
+                $mensajeError = 'No encontramos certificados con esos datos. Verifica la información o contacta al instituto.';
             }
         }
 
@@ -97,10 +98,14 @@ class ConsultaCertificadoController extends Controller
 
         $nombreArchivo = sprintf(
             'Certificado_%s_%s.pdf',
-            str_replace(' ', '_', $certificado->capacitado->nombre_completo),
+            Str::slug($certificado->capacitado->nombre_completo, '_'),
             $certificado->codigo_unico
         );
 
-        return Storage::disk('certificados')->download($path, $nombreArchivo);
+        return response()->download(
+            Storage::disk('certificados')->path($path),
+            $nombreArchivo,
+            ['Content-Type' => 'application/pdf']
+        );
     }
 }

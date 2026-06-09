@@ -45,12 +45,12 @@ Route::get('/contacto', [ContactoController::class, 'index'])->name('contacto');
 Route::post('/contacto', [ContactoController::class, 'enviar'])->name('contacto.enviar')->middleware('throttle:contacto-publica');
 
 // Consulta pública de certificados (capacitado busca sus certificados)
-Route::get('/consulta', [ConsultaCertificadoController::class, 'index'])->name('consulta');
+Route::get('/consulta', [ConsultaCertificadoController::class, 'index'])->name('consulta')->middleware('throttle:30,1');
 Route::post('/consulta', [ConsultaCertificadoController::class, 'buscar'])->name('consulta.buscar')->middleware('throttle:consulta-publica');
 Route::get('/consulta/descargar/{certificado}', [ConsultaCertificadoController::class, 'descargar'])->name('consulta.descargar')->middleware('signed');
 
 // Verificación pública (terceros verifican autenticidad)
-Route::get('/verificar', [VerificacionController::class, 'index'])->name('verificar');
+Route::get('/verificar', [VerificacionController::class, 'index'])->name('verificar')->middleware('throttle:30,1');
 Route::post('/verificar', [VerificacionController::class, 'verificar'])->name('verificar.verificar')->middleware('throttle:verificacion-publica');
 
 

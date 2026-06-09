@@ -18,9 +18,10 @@ class SecurityHeaders
         $csp = [
             "default-src 'self'",
             "script-src 'self' 'nonce-{$nonce}' https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net",
-            "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",
+            "style-src 'self' 'nonce-{$nonce}' 'unsafe-inline' https://fonts.bunny.net",
             "font-src 'self' https://fonts.bunny.net",
-            "img-src 'self' data: https:",
+            "img-src 'self' data: blob: https://www.gstatic.com",
+            "upgrade-insecure-requests",
             "frame-src https://www.google.com",
             "connect-src 'self'",
             "object-src 'none'",

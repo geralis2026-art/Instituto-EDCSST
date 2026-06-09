@@ -9,7 +9,8 @@ class CertificadoRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check();
+        $user = auth()->user();
+        return $user && ($user->isAdmin() || $user->isCapacitador());
     }
 
     /** Normaliza el código único a mayúsculas y convierte 'activo' a booleano antes de validar. */
@@ -42,7 +43,7 @@ class CertificadoRequest extends FormRequest
                 Rule::unique('certificados', 'codigo_unico')->ignore($certificadoId),
             ],
             'fecha_emision' => 'required|date',
-            'intensidad_horaria' => 'required|integer|min:1|max:10000',
+            'intensidad_horaria' => 'required|integer|min:1|max:500',
             'modalidad' => 'nullable|in:virtual,presencial',
             'archivo_pdf' => [$pdfRule, 'file', 'mimetypes:application/pdf', 'max:10240'],
             'activo' => 'boolean',
