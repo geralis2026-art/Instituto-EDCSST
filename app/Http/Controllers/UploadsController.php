@@ -12,6 +12,10 @@ class UploadsController extends Controller
      */
     public function serve(string $type, string $filename): \Symfony\Component\HttpFoundation\StreamedResponse
     {
+        if (!preg_match('/^[\w\-]+\.(jpg|jpeg|png|gif|webp|svg)$/i', $filename)) {
+            abort(404);
+        }
+
         $path = "{$type}/{$filename}";
 
         if (!Storage::disk('uploads')->exists($path)) {
