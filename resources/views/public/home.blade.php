@@ -5,8 +5,12 @@
 
 @push('styles')
 <style>
-#hero-principal { min-height: 50vh; }
-@@media (min-width: 1024px) { #hero-principal { min-height: 60vh; } }
+#hero-principal { min-height: 55vh; }
+@media (min-width: 1024px) { #hero-principal { min-height: 60vh; } }
+/* Móvil: gradiente vertical más fuerte para legibilidad */
+@media (max-width: 1023px) {
+    #hero-gradient { background: linear-gradient(to bottom, rgba(30,58,138,0.88) 0%, rgba(30,58,138,0.75) 50%, rgba(30,58,138,0.65) 100%) !important; }
+}
 </style>
 @endpush
 
@@ -18,17 +22,17 @@
     {{-- Imagen de fondo completa --}}
     <div class="absolute inset-0">
         <img src="{{ asset('images/capacitacion-grupal-docencia.jpg') }}"
-             alt="Capacitación grupal EDCSST"
-             class="w-full h-full object-cover"
-             style="object-position: 35% 35%;">
+            alt="Capacitación grupal EDCSST"
+            class="w-full h-full object-cover"
+            style="object-position: 35% 35%;">
         {{-- Gradiente: azul sólido a la izquierda, transparente a la derecha --}}
-        <div class="absolute inset-0"
-             style="background: linear-gradient(to right, #1e3a8a 0%, rgba(30,58,138,0.95) 15%, rgba(30,58,138,0.75) 35%, rgba(30,58,138,0.2) 60%, transparent 100%);"></div>
+        <div id="hero-gradient" class="absolute inset-0"
+            style="background: linear-gradient(to right, #1e3a8a 0%, rgba(30,58,138,0.95) 15%, rgba(30,58,138,0.75) 35%, rgba(30,58,138,0.2) 60%, transparent 100%);"></div>
     </div>
 
     {{-- Texto sobre el gradiente --}}
     <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14 lg:py-24">
-        <div class="w-[55%] lg:w-[48%]">
+        <div class="w-[90%] lg:w-[48%]">
             <span class="inline-block px-2 py-0.5 sm:px-3 sm:py-1 bg-amber-500 text-white rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wider mb-2 sm:mb-4">
                 Capacitación profesional
             </span>
