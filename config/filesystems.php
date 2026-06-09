@@ -52,6 +52,7 @@ return [
         'uploads' => [
             'driver' => 'local',
             'root' => env('UPLOADS_DISK_ROOT', storage_path('app/uploads')),
+            'visibility' => 'public',
             'throw' => false,
             'report' => false,
         ],
