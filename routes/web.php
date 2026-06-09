@@ -63,7 +63,7 @@ Route::post('/verificar', [VerificacionController::class, 'verificar'])->name('v
 */
 
 // ── Rutas accesibles para todos los roles autenticados ──────────────────────
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'throttle:admin-general'])->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -74,22 +74,31 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo'])->group(fu
 
     // Certificados — ver, crear y descargar PDF
     Route::get('certificados/{certificado}/pdf', [CertificadoController::class, 'verPdf'])->name('certificados.pdf')->whereNumber('certificado');
-    Route::resource('certificados', CertificadoController::class)->only(['index', 'create', 'store', 'show']);
+    Route::get('certificados',           [CertificadoController::class, 'index'])->name('certificados.index');
+    Route::get('certificados/create',    [CertificadoController::class, 'create'])->name('certificados.create');
+    Route::get('certificados/{certificado}', [CertificadoController::class, 'show'])->name('certificados.show')->whereNumber('certificado');
+    Route::post('certificados',          [CertificadoController::class, 'store'])->name('certificados.store')->middleware('throttle:admin-escritura');
 });
 
 // ── Rutas exclusivas para administradores ───────────────────────────────────
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'admin'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'admin', 'throttle:admin-general'])->group(function () {
 
-    // Capacitados — CRUD completo
-    Route::resource('capacitados', CapacitadoController::class)->only(['create', 'store', 'edit', 'update', 'destroy']);
-    Route::get('capacitados-plantilla', [CapacitadoController::class, 'descargarPlantilla'])->name('capacitados.descargarPlantilla');
-    Route::post('capacitados-importar',  [CapacitadoController::class, 'importar'])->name('capacitados.importar');
+    // Capacitados — CRUD completo (escritura con límite más estricto)
+    Route::get('capacitados/create',          [CapacitadoController::class, 'create'])->name('capacitados.create');
+    Route::post('capacitados',                [CapacitadoController::class, 'store'])->name('capacitados.store')->middleware('throttle:admin-escritura');
+    Route::get('capacitados/{capacitado}/edit',  [CapacitadoController::class, 'edit'])->name('capacitados.edit')->whereNumber('capacitado');
+    Route::put('capacitados/{capacitado}',    [CapacitadoController::class, 'update'])->name('capacitados.update')->whereNumber('capacitado')->middleware('throttle:admin-escritura');
+    Route::delete('capacitados/{capacitado}', [CapacitadoController::class, 'destroy'])->name('capacitados.destroy')->whereNumber('capacitado')->middleware('throttle:admin-escritura');
+    Route::get('capacitados-plantilla',       [CapacitadoController::class, 'descargarPlantilla'])->name('capacitados.descargarPlantilla');
+    Route::post('capacitados-importar',       [CapacitadoController::class, 'importar'])->name('capacitados.importar')->middleware('throttle:admin-escritura');
 
     // Certificados — editar, eliminar, activar/desactivar, masivos
-    Route::resource('certificados', CertificadoController::class)->only(['edit', 'update', 'destroy']);
-    Route::patch('certificados/{certificado}/toggle-activo', [CertificadoController::class, 'toggleActivo'])->name('certificados.toggle-activo');
+    Route::get('certificados/{certificado}/edit',  [CertificadoController::class, 'edit'])->name('certificados.edit')->whereNumber('certificado');
+    Route::put('certificados/{certificado}',    [CertificadoController::class, 'update'])->name('certificados.update')->whereNumber('certificado')->middleware('throttle:admin-escritura');
+    Route::delete('certificados/{certificado}', [CertificadoController::class, 'destroy'])->name('certificados.destroy')->whereNumber('certificado')->middleware('throttle:admin-escritura');
+    Route::patch('certificados/{certificado}/toggle-activo', [CertificadoController::class, 'toggleActivo'])->name('certificados.toggle-activo')->middleware('throttle:admin-escritura');
     Route::get('certificados-masivos',  [CertificadoController::class, 'masivosForm'])->name('certificados.masivos');
-    Route::post('certificados-masivos', [CertificadoController::class, 'generarMasivos'])->name('certificados.generar-masivos');
+    Route::post('certificados-masivos', [CertificadoController::class, 'generarMasivos'])->name('certificados.generar-masivos')->middleware('throttle:admin-escritura');
 
     // Cursos y categorías
     Route::resource('cursos',     CursoController::class);
