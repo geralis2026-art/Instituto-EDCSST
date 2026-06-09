@@ -85,7 +85,7 @@ class Curso extends Model
     public function getImagenUrlAttribute(): string
     {
         if (!$this->imagen) {
-            return asset('img/curso-default.png');
+            return asset('img/curso-default.svg');
         }
 
         [$type, $filename] = explode('/', $this->imagen, 2);

@@ -9,7 +9,7 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
         <x-app-assets />
-        <style>
+        <style nonce="{{ $cspNonce }}">
             /* ── Layout ── */
             .login-wrap { display: flex; min-height: 100vh; }
             .login-image { display: none; position: relative; overflow: hidden; }

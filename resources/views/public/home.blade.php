@@ -4,7 +4,7 @@
 @section('descripcion', 'Instituto EDCSST - Capacitación y certificación profesional en seguridad y salud en el trabajo.')
 
 @push('styles')
-<style>
+<style nonce="{{ $cspNonce }}">
 #hero-principal { min-height: 42vh; }
 @media (min-width: 1024px) { #hero-principal { min-height: 60vh; } }
 /* Móvil: gradiente vertical más fuerte para legibilidad */
@@ -27,7 +27,7 @@
             style="object-position: 35% 35%;">
         {{-- Gradiente: azul sólido a la izquierda, transparente a la derecha --}}
         <div id="hero-gradient" class="absolute inset-0"
-            style="background: linear-gradient(to right, #1e3a8a 0%, rgba(30,58,138,0.95) 15%, rgba(30,58,138,0.75) 35%, rgba(30,58,138,0.2) 60%, transparent 100%);"></div>
+            style="background: linear-gradient(to right, #1e3a8a 0%, #1e3a8a 8%, rgba(30,58,138,0.98) 25%, rgba(30,58,138,0.92) 48%, rgba(30,58,138,0.40) 65%, transparent 100%);"></div>
     </div>
 
     {{-- Texto sobre el gradiente --}}
@@ -36,7 +36,7 @@
             <span class="badge-gold mb-2 sm:mb-4 inline-block text-[10px] sm:text-xs">
                 Capacitación profesional
             </span>
-            <h1 class="text-xl sm:text-4xl lg:text-6xl font-bold leading-tight mb-3 sm:mb-6">
+            <h1 class="text-xl sm:text-4xl lg:text-6xl font-bold leading-tight mb-3 sm:mb-6" style="text-shadow: 0 2px 12px rgba(0,0,0,0.45);">
                 Forma tu futuro con<br>
                 <span class="text-amber-300">certificaciones reales</span>
             </h1>

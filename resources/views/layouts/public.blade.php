@@ -8,10 +8,13 @@
     <title>@yield('titulo', 'Instituto EDCSST') - Instituto EDCSST</title>
     <meta name="description" content="@yield('descripcion', 'Instituto EDCSST - Capacitación y certificación profesional en seguridad y salud en el trabajo.')">
 
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet">
+
     {{-- Tailwind compilado por Vite --}}
     <x-app-assets />
 
-    <style>
+    <style nonce="{{ $cspNonce }}">
         :root {
             --gold:       #D4A017;
             --gold-dark:  #A87C0D;

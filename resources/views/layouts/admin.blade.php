@@ -7,8 +7,11 @@
     <link rel="icon" type="image/png" href="{{ asset('img/logo-edcsst.png') }}">
     <title>@yield('titulo', 'Panel') - Admin Instituto EDCSST</title>
 
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet">
+
     <x-app-assets />
-    <style>
+    <style nonce="{{ $cspNonce }}">
         :root { --gold: #D4A017; --gold-soft: #F59E0B; }
 
         /* ===== BTN GOLD (shimmer) ===== */
