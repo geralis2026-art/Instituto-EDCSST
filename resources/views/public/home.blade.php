@@ -43,7 +43,7 @@
             <p class="hidden sm:block text-base sm:text-lg lg:text-xl text-blue-100 mb-6 sm:mb-8 leading-relaxed">
                 En el Instituto EDCSST capacitamos profesionales con certificados verificables <br> digitalmente. Educación práctica para el mundo laboral actual.
             </p>
-            <div class="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4">
+            <div class="flex flex-row flex-wrap gap-2 sm:gap-4">
                 <a href="{{ route('consulta') }}" class="inline-flex items-center justify-center px-3 py-2 sm:px-6 sm:py-3 bg-white text-blue-900 font-semibold rounded-lg hover:bg-blue-50 transition shadow-lg text-xs sm:text-base">
                     Consultar mi certificado
                     <svg class="w-4 h-4 ml-1 sm:w-5 sm:h-5 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
