@@ -9,7 +9,7 @@ Sistema web para el **Instituto EDCSST** (Entidad de Certificación en Seguridad
 - MySQL
 - Tailwind CSS + Alpine.js + Vite
 - Autenticación: Laravel Breeze (sesiones)
-- reCAPTCHA v3 en formularios públicos
+- reCAPTCHA v2 en formularios públicos
 - Almacenamiento local para PDFs (`storage/app/certificados/`)
 
 **Repositorio / Producción:** deploy en Railway (ver `.env` → `APP_URL`)
@@ -221,7 +221,7 @@ Existen dos roles de usuario:
 |---------------------------|-------------------------------------------------|
 | CSRF tokens               | Todos los formularios POST/PATCH/DELETE         |
 | Rate limiting             | Login (5/IP, 5/email), contacto (3/min), consulta/verificación (10/min) |
-| reCAPTCHA v3              | Formulario de contacto público                  |
+| reCAPTCHA v2              | Formulario de contacto público                  |
 | CSP, HSTS, X-Frame-Options| Todos los requests (middleware `SecurityHeaders`) |
 | Roles + middleware        | Rutas admin protegidas por `activo` y `admin`   |
 | URLs firmadas             | Descarga de PDFs desde el sitio público         |
@@ -242,7 +242,7 @@ DB_DATABASE=
 DB_USERNAME=
 DB_PASSWORD=
 
-RECAPTCHA_SITE_KEY=       # Google reCAPTCHA v3
+RECAPTCHA_SITE_KEY=       # Google reCAPTCHA v2
 RECAPTCHA_SECRET_KEY=
 
 MAIL_*                    # Para recuperación de contraseña
