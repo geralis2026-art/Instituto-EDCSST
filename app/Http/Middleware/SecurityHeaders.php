@@ -21,13 +21,16 @@ class SecurityHeaders
             "style-src 'self' 'nonce-{$nonce}' 'unsafe-inline' https://fonts.bunny.net",
             "font-src 'self' https://fonts.bunny.net",
             "img-src 'self' data: blob: https://www.gstatic.com",
-            "upgrade-insecure-requests",
             "frame-src https://www.google.com",
             "connect-src 'self'",
             "object-src 'none'",
             "base-uri 'self'",
             "form-action 'self'",
         ];
+
+        if (app()->environment('production')) {
+            $csp[] = "upgrade-insecure-requests";
+        }
 
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $response->headers->set('X-Content-Type-Options', 'nosniff');
