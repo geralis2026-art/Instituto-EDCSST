@@ -11,7 +11,7 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet">
 
     <x-app-assets />
-    <style nonce="{{ $cspNonce }}">
+    <style>
         :root { --gold: #D4A017; --gold-soft: #F59E0B; }
 
         /* ===== BTN GOLD (shimmer) ===== */

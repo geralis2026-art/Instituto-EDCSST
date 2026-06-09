@@ -4,7 +4,7 @@
 @section('descripcion', 'Instituto EDCSST - Capacitación y certificación profesional en seguridad y salud en el trabajo.')
 
 @push('styles')
-<style nonce="{{ $cspNonce }}">
+<style>
 #hero-principal { min-height: 42vh; }
 @media (min-width: 1024px) { #hero-principal { min-height: 60vh; } }
 /* Móvil: gradiente vertical más fuerte para legibilidad */

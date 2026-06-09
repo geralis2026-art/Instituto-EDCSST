@@ -14,7 +14,7 @@
     {{-- Tailwind compilado por Vite --}}
     <x-app-assets />
 
-    <style nonce="{{ $cspNonce }}">
+    <style>
         :root {
             --gold:       #D4A017;
             --gold-dark:  #A87C0D;

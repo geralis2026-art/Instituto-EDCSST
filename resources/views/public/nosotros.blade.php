@@ -4,7 +4,7 @@
 @section('descripcion', 'Conoce el Instituto EDCSST: nuestra misión, visión, valores y compromiso con la formación profesional en seguridad y salud en el trabajo.')
 
 @push('styles')
-<style nonce="{{ $cspNonce }}">
+<style>
     #hero-nosotros { min-height: 45vh; display: flex; align-items: center; }
     @media (min-width: 1024px) { #hero-nosotros { min-height: 58vh; } }
     @keyframes nosotrosKenBurns {
