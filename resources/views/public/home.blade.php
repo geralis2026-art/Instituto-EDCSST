@@ -5,7 +5,7 @@
 
 @push('styles')
 <style>
-#hero-principal { min-height: 55vh; }
+#hero-principal { min-height: 42vh; }
 @media (min-width: 1024px) { #hero-principal { min-height: 60vh; } }
 /* Móvil: gradiente vertical más fuerte para legibilidad */
 @media (max-width: 1023px) {
