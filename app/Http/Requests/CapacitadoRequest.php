@@ -12,7 +12,7 @@ class CapacitadoRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check();
+        return auth()->user()?->isAdmin() ?? false;
     }
 
     /**
