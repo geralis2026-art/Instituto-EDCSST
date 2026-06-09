@@ -17,8 +17,8 @@ class CertificadoController extends Controller
     /** Lista paginada de certificados con búsqueda por código/capacitado y filtro por curso. */
     public function index(Request $request)
     {
-        $busqueda = $request->query('busqueda', '');
-        $cursoId = $request->query('curso_id', '');
+        $busqueda = substr(trim((string) $request->query('busqueda', '')), 0, 100);
+        $cursoId  = (int) $request->query('curso_id', 0) ?: '';
 
         $cursos = Curso::orderBy('nombre')->get();
 

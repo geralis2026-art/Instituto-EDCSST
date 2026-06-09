@@ -14,7 +14,7 @@ class CapacitadoController extends Controller
      */
     public function index(Request $request)
     {
-        $busqueda = $request->query('busqueda', '');
+        $busqueda = substr(trim((string) $request->query('busqueda', '')), 0, 100);
         
         $capacitados = Capacitado::query()
             ->when($busqueda, function ($query, $busqueda) {
@@ -105,7 +105,7 @@ class CapacitadoController extends Controller
      */
     public function buscar(Request $request)
     {
-        $q = trim($request->query('q', ''));
+        $q = substr(trim((string) $request->query('q', '')), 0, 100);
 
         if (strlen($q) < 2) {
             return response()->json([]);

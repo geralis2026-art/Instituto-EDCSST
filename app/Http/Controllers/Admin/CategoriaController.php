@@ -12,7 +12,7 @@ class CategoriaController extends Controller
     /** Lista paginada de categorías con búsqueda y conteo de cursos asociados. */
     public function index(Request $request)
     {
-        $busqueda = $request->query('busqueda', '');
+        $busqueda = substr(trim((string) $request->query('busqueda', '')), 0, 100);
 
         $categorias = Categoria::withCount('cursos')
             ->when($busqueda, function ($query, $busqueda) {

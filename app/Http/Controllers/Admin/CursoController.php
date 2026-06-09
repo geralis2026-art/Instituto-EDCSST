@@ -14,8 +14,8 @@ class CursoController extends Controller
     /** Lista paginada de cursos con búsqueda por nombre/descripción y filtro por categoría. */
     public function index(Request $request)
     {
-        $busqueda = $request->query('busqueda', '');
-        $categoriaId = $request->query('categoria_id', '');
+        $busqueda    = substr(trim((string) $request->query('busqueda', '')), 0, 100);
+        $categoriaId = (int) $request->query('categoria_id', 0) ?: '';
 
         $categorias = Categoria::orderBy('nombre')->get();
 
