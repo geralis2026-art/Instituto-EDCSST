@@ -1,4 +1,8 @@
 {
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [
       "Bash(npm run *)",
@@ -63,7 +67,9 @@
       "Bash(curl -s http://instituto-edcsst.test/cursos -o /tmp/page2.html -w \"%{http_code}\\\\n\")",
       "Bash(curl -s -I http://instituto-edcsst.test/cursos)",
       "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -p 65002 u446350578@5.183.10.126 \"bash ~/backup_diario.sh\")",
-      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -p 65002 u446350578@5.183.10.126 \"ls -la ~/backup_daily/ | tail -5\")"
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -p 65002 u446350578@5.183.10.126 \"ls -la ~/backup_daily/ | tail -5\")",
+      "Skill(update-config)",
+      "Skill(update-config:*)"
     ],
     "additionalDirectories": [
       "c:\\laragon\\bin\\php\\php-8.3.30-Win32-vs16-x64"
