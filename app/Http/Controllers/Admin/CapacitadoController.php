@@ -7,6 +7,11 @@ use App\Http\Requests\CapacitadoRequest;
 use App\Models\Capacitado;
 use Illuminate\Http\Request;
 
+/**
+ * Gestión de capacitados (personas que reciben certificados).
+ * Lectura disponible para admin y capacitador; crear, editar y
+ * eliminar solo para admin (ver routes/web.php).
+ */
 class CapacitadoController extends Controller
 {
     /**
@@ -121,7 +126,8 @@ class CapacitadoController extends Controller
     }
 
     /**
-     * Descargar plantilla Excel para importar capacitados masivamente.
+     * Pendiente: descarga de plantilla Excel para importar capacitados
+     * masivamente (Fase 2, no implementado).
      */
     public function descargarPlantilla()
     {
@@ -131,7 +137,8 @@ class CapacitadoController extends Controller
     }
 
     /**
-     * Importar capacitados desde archivo Excel.
+     * Pendiente: importación masiva de capacitados desde Excel
+     * (Fase 2, no implementado).
      */
     public function importar(Request $request)
     {

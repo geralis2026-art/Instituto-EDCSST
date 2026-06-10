@@ -7,6 +7,10 @@ use App\Models\Curso;
 use App\Models\Categoria;
 use Illuminate\Http\Request;
 
+/**
+ * Catálogo público de cursos, organizado por categoría y con
+ * filtro opcional por categoría (vía slug en la URL).
+ */
 class CatalogoController extends Controller
 {
     /**

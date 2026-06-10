@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Persona que recibe capacitaciones y certificados del instituto.
+ *
+ * El campo `horas_capacitadas` es un total acumulado que se recalcula
+ * automáticamente cada vez que se crea, actualiza o elimina uno de
+ * sus certificados (ver Certificado::booted()).
+ */
 class Capacitado extends Model
 {
     use HasFactory;
@@ -26,6 +33,7 @@ class Capacitado extends Model
         'horas_capacitadas' => 'integer',
     ];
 
+    /** Todos los certificados emitidos a este capacitado. */
     public function certificados(): HasMany
     {
         return $this->hasMany(Certificado::class);

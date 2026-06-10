@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Curso;
 use App\Models\ConfiguracionSitio;
 
+/**
+ * Páginas generales del sitio público (inicio y "Sobre nosotros").
+ */
 class HomeController extends Controller
 {
     /**

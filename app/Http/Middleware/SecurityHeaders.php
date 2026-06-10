@@ -6,6 +6,15 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Agrega cabeceras de seguridad a todas las respuestas: CSP, HSTS
+ * (solo producción), X-Frame-Options, X-Content-Type-Options,
+ * Referrer-Policy y Permissions-Policy.
+ *
+ * Genera un nonce CSP por petición (disponible como
+ * `$request->attributes->get('csp_nonce')`) para permitir scripts
+ * inline confiables sin habilitar 'unsafe-inline' en script-src.
+ */
 class SecurityHeaders
 {
     public function handle(Request $request, Closure $next): Response
@@ -17,7 +26,8 @@ class SecurityHeaders
 
         $csp = [
             "default-src 'self'",
-            "script-src 'self' 'nonce-{$nonce}' https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net",
+            // 'unsafe-eval' es requerido por Alpine.js (usa new Function() para evaluar x-data, :class, @click, etc.)
+            "script-src 'self' 'unsafe-eval' 'nonce-{$nonce}' https://www.google.com https://www.gstatic.com https://cdn.jsdelivr.net",
             "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",
             "font-src 'self' https://fonts.bunny.net",
             "img-src 'self' data: blob: https://www.gstatic.com",
@@ -28,6 +38,7 @@ class SecurityHeaders
             "form-action 'self'",
         ];
 
+        // Solo en producción: fuerza que recursos http:// se carguen por https://
         if (app()->environment('production')) {
             $csp[] = "upgrade-insecure-requests";
         }

@@ -7,6 +7,10 @@ use App\Http\Requests\CategoriaRequest;
 use App\Models\Categoria;
 use Illuminate\Http\Request;
 
+/**
+ * CRUD de categorías de cursos. Acceso exclusivo para admin
+ * (ver routes/web.php).
+ */
 class CategoriaController extends Controller
 {
     /** Lista paginada de categorías con búsqueda y conteo de cursos asociados. */

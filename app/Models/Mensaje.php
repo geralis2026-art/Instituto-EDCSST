@@ -5,6 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Mensaje recibido a través del formulario de contacto público.
+ * Independiente del resto del modelo de datos (no se relaciona con
+ * capacitados, cursos ni certificados).
+ */
 class Mensaje extends Model
 {
     use HasFactory;

@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Certificado emitido a un capacitado por haber completado un curso.
+ *
+ * Al guardarse o eliminarse, recalcula automáticamente las horas
+ * capacitadas acumuladas del capacitado asociado (ver booted()).
+ */
 class Certificado extends Model
 {
     use HasFactory;
@@ -34,16 +40,19 @@ class Certificado extends Model
         'activo'             => 'boolean',
     ];
 
+    /** Persona que recibió el certificado. */
     public function capacitado(): BelongsTo
     {
         return $this->belongsTo(Capacitado::class);
     }
 
+    /** Curso por el cual se emitió el certificado. */
     public function curso(): BelongsTo
     {
         return $this->belongsTo(Curso::class);
     }
 
+    /** Empleado (admin/capacitador) que emitió el certificado. */
     public function emitidoPor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'emitido_por');

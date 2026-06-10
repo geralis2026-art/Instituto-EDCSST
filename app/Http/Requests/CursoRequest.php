@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
+/** Validación para crear/editar cursos. Solo admin (ver authorize()). */
 class CursoRequest extends FormRequest
 {
     public function authorize(): bool

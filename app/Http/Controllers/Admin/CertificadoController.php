@@ -12,6 +12,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+/**
+ * Gestión de certificados emitidos a capacitados.
+ * Acceso de lectura/creación para admin y capacitador; edición,
+ * eliminación y activación/desactivación solo para admin (ver routes/web.php).
+ */
 class CertificadoController extends Controller
 {
     /** Lista paginada de certificados con búsqueda por código/capacitado y filtro por curso. */
@@ -101,6 +106,7 @@ class CertificadoController extends Controller
         return view('admin.certificados.edit', compact('certificado', 'categorias', 'categoriasJson'));
     }
 
+    /** Convierte las categorías y sus cursos a JSON para el selector dependiente del formulario. */
     private function buildCategoriasJson($categorias): string
     {
         return json_encode($categorias->map(fn ($cat) => [
@@ -159,12 +165,14 @@ class CertificadoController extends Controller
             ->with('success', 'Certificado eliminado correctamente.');
     }
 
+    /** Pendiente: formulario de generación masiva de certificados (Fase 2, no implementado). */
     public function masivosForm()
     {
         return redirect()->route('admin.certificados.index')
             ->with('info', 'La generación masiva estará disponible próximamente.');
     }
 
+    /** Pendiente: procesamiento de generación masiva de certificados (Fase 2, no implementado). */
     public function generarMasivos(Request $request)
     {
         return redirect()->route('admin.certificados.index')

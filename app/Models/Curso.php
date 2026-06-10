@@ -9,6 +9,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
+/**
+ * Programa de capacitación ofrecido por el instituto.
+ *
+ * `intensidad_horaria` es el valor oficial de horas del curso; se copia
+ * a cada certificado emitido para preservar el dato aunque el curso
+ * cambie después.
+ */
 class Curso extends Model
 {
     use HasFactory;
@@ -47,11 +54,13 @@ class Curso extends Model
         });
     }
 
+    /** Categoría a la que pertenece el curso. */
     public function categoria(): BelongsTo
     {
         return $this->belongsTo(Categoria::class);
     }
 
+    /** Certificados emitidos para este curso. */
     public function certificados(): HasMany
     {
         return $this->hasMany(Certificado::class);

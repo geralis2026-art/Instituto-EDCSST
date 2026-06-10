@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
+/** Validación para crear/editar categorías. Solo admin (ver authorize()). */
 class CategoriaRequest extends FormRequest
 {
     public function authorize(): bool

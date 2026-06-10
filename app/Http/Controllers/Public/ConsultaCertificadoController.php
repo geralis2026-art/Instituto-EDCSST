@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
+/**
+ * Consulta pública de certificados por documento o código único,
+ * con descarga de PDF mediante enlaces firmados temporales
+ * (30 minutos). Solo certificados activos y no vencidos son
+ * descargables.
+ */
 class ConsultaCertificadoController extends Controller
 {
     /**
@@ -78,7 +84,10 @@ class ConsultaCertificadoController extends Controller
     }
 
     /**
-     * Descarga el PDF del certificado.
+     * Descarga el PDF del certificado (acceso solo vía URL firmada
+     * temporal generada en buscar()). Verifica nuevamente que el
+     * certificado esté activo y vigente, y valida la ruta del
+     * archivo para evitar path traversal.
      */
     public function descargar(Certificado $certificado)
     {
