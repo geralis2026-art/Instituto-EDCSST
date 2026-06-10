@@ -4,6 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Configuración global del sitio (datos institucionales, redes sociales,
+ * logo y plantilla de certificado). Es una tabla "singleton": siempre
+ * existe una única fila con id = 1, accedida vía obtener().
+ */
 class ConfiguracionSitio extends Model
 {
     protected $table = 'configuracion_sitio';

@@ -8,6 +8,16 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * Empleado del instituto con acceso al panel administrativo.
+ *
+ * Roles:
+ * - admin: acceso total (CRUD de cursos, categorías, usuarios, mensajes, etc.)
+ * - capacitador: solo lectura de capacitados y creación/consulta de certificados
+ *
+ * Los usuarios nuevos se crean con `activo = false`; un admin debe
+ * activarlos para que puedan iniciar sesión (ver EnsureUserIsActivo).
+ */
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;

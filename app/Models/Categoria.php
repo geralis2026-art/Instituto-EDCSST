@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
+/**
+ * Agrupación temática de cursos (ej: "Alturas", "Espacios confinados").
+ */
 class Categoria extends Model
 {
     use HasFactory;
@@ -36,6 +39,7 @@ class Categoria extends Model
         });
     }
 
+    /** Cursos que pertenecen a esta categoría. */
     public function cursos(): HasMany
     {
         return $this->hasMany(Curso::class);

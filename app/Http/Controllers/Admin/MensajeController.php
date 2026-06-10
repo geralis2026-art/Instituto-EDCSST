@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Mensaje;
 use Illuminate\Http\Request;
 
+/**
+ * Bandeja de mensajes del formulario de contacto público.
+ * Acceso exclusivo para admin (ver routes/web.php).
+ */
 class MensajeController extends Controller
 {
     /** Bandeja de mensajes paginada con búsqueda por nombre/correo y filtro por estado. */

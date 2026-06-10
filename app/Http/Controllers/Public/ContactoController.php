@@ -9,6 +9,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Formulario de contacto público. Valida los datos, verifica el
+ * captcha (reCAPTCHA v2) contra la API de Google y guarda el
+ * mensaje en la bandeja de entrada del admin.
+ */
 class ContactoController extends Controller
 {
     /**

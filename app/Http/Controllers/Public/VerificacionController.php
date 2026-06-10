@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Certificado;
 use Illuminate\Http\Request;
 
+/**
+ * Verificación pública de autenticidad de certificados por código
+ * único (para que terceros confirmen validez y vigencia).
+ */
 class VerificacionController extends Controller
 {
     /**

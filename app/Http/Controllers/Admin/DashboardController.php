@@ -9,6 +9,11 @@ use App\Models\Certificado;
 use App\Models\Mensaje;
 use Carbon\Carbon;
 
+/**
+ * Página de inicio del panel administrativo: estadísticas generales,
+ * gráfica de certificados emitidos por mes y rankings (top capacitados,
+ * cursos más usados).
+ */
 class DashboardController extends Controller
 {
     /**

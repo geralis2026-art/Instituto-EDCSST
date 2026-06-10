@@ -9,6 +9,10 @@ use App\Models\Curso;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * CRUD de cursos. Acceso exclusivo para admin (ver routes/web.php).
+ * Las imágenes se guardan en el disco "uploads".
+ */
 class CursoController extends Controller
 {
     /** Lista paginada de cursos con búsqueda por nombre/descripción y filtro por categoría. */

@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+/** Validación para crear/editar certificados. Admin y capacitador (ver authorize()). */
 class CertificadoRequest extends FormRequest
 {
     public function authorize(): bool

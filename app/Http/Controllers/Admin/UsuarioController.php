@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 
+/**
+ * Gestión de usuarios (empleados) del sistema. Acceso exclusivo
+ * para admin (ver routes/web.php).
+ */
 class UsuarioController extends Controller
 {
     /** Lista todos los usuarios (empleados) del sistema. */

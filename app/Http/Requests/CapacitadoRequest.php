@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+/** Validación para crear/editar capacitados. Solo admin (ver authorize()). */
 class CapacitadoRequest extends FormRequest
 {
     /**
