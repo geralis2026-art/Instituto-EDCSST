@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Oculta elementos con x-data antes de que Alpine.js inicialice (evita parpadeo del lightbox) */
+[x-cloak] {
+    display: none !important;
+}

@@ -69,7 +69,16 @@
       "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -p 65002 u446350578@5.183.10.126 \"bash ~/backup_diario.sh\")",
       "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -p 65002 u446350578@5.183.10.126 \"ls -la ~/backup_daily/ | tail -5\")",
       "Skill(update-config)",
-      "Skill(update-config:*)"
+      "Skill(update-config:*)",
+      "Bash(npm root *)",
+      "Read(//c/Users/guavi/AppData/Roaming/npm/node_modules/**)",
+      "Bash(npx --yes -p playwright node /tmp/shot.js)",
+      "Bash(mkdir -p /tmp/pw)",
+      "Bash(npm install *)",
+      "Bash(npx playwright *)",
+      "Bash(cp /tmp/shot.js .)",
+      "Bash(node shot.js)",
+      "Read(//c/tmp/**)"
     ],
     "additionalDirectories": [
       "c:\\laragon\\bin\\php\\php-8.3.30-Win32-vs16-x64"

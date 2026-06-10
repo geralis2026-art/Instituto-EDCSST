@@ -198,6 +198,13 @@ Estas opciones existen como referencia en el sistema pero **aún no están activ
 
 ## Registro de Cambios
 
+### 2026-06-10 — Galería con vista ampliada en "Nosotros"
+
+**Página "Nosotros" (`/nosotros`)**
+- Se mejoró la sección "Nuestro portafolio de cursos": título y etiqueta con el mismo estilo dorado del resto del sitio, animaciones de aparición y efecto de zoom al pasar el mouse sobre las imágenes.
+- Al hacer clic en cualquier imagen del portafolio, se abre una vista ampliada (lightbox) a pantalla completa. Se cierra haciendo clic fuera de la imagen, con el botón "X" o con la tecla Escape.
+- Se agregó la regla `[x-cloak]` en `resources/css/app.css` para evitar parpadeos de elementos controlados por Alpine.js mientras la página carga.
+
 ### 2026-06-10 — Tarjetas de cursos con efecto flip y ajuste de CSP
 
 **Catálogo de cursos (`/cursos`)**
