@@ -229,36 +229,51 @@
 </section>
 
 {{-- PORTAFOLIO DE CURSOS --}}
-<section class="py-16 bg-gray-50">
+{{-- Galería con efecto de zoom al pasar el mouse y lightbox (vista ampliada) al hacer clic --}}
+<section class="py-16 bg-gray-50" x-data="{ lightbox: null }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-10">
-            <span class="text-amber-600 font-semibold text-sm uppercase tracking-wider">Material informativo</span>
-            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mt-2 mb-3">Nuestro portafolio de cursos</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto">Más de 80 cursos disponibles en salud y seguridad en el trabajo, avalados por la normativa colombiana vigente.</p>
+        <div class="text-center mb-10 reveal">
+            <span class="badge-gold mb-3 inline-block">Material informativo</span>
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mt-2 mb-3 section-title-center">Nuestro portafolio de cursos</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">Más de 80 cursos disponibles en salud y seguridad en el trabajo, avalados por la normativa colombiana vigente. Haz clic en una imagen para verla en grande.</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition h-96">
-                <img src="{{ asset('images/portafolio-cursos-salud-fotos.jpg') }}"
-                     alt="Portafolio de cursos en salud - EDCSST"
-                     class="w-full h-full object-cover object-top">
+            @foreach([
+                ['src' => 'images/portafolio-cursos-salud-fotos.jpg', 'alt' => 'Portafolio de cursos en salud - EDCSST'],
+                ['src' => 'images/portafolio-cursos-salud-iconos.jpg', 'alt' => 'Portafolio de cursos Resolución 3100 - EDCSST'],
+                ['src' => 'images/flyer-kit-cursos-salud.jpg', 'alt' => 'Kit de cursos en salud - EDCSST'],
+                ['src' => 'images/flyer-cursos-sst-alturas.jpg', 'alt' => 'Cursos en Seguridad y Salud en el Trabajo - EDCSST'],
+            ] as $item)
+            <div class="group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition cursor-zoom-in h-96 reveal delay-{{ $loop->index + 1 }}"
+                 @click="lightbox = '{{ asset($item['src']) }}'">
+                <img src="{{ asset($item['src']) }}"
+                     alt="{{ $item['alt'] }}"
+                     loading="lazy"
+                     class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105">
+                {{-- Overlay con icono de lupa al pasar el mouse --}}
+                <div class="absolute inset-0 bg-blue-950/0 group-hover:bg-blue-950/40 transition flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition">
+                        <svg class="w-6 h-6 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16zM11 8v6m-3-3h6"/></svg>
+                    </div>
+                </div>
             </div>
-            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition h-96">
-                <img src="{{ asset('images/portafolio-cursos-salud-iconos.jpg') }}"
-                     alt="Portafolio de cursos Resolución 3100 - EDCSST"
-                     class="w-full h-full object-cover object-top">
-            </div>
-            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition h-96">
-                <img src="{{ asset('images/flyer-kit-cursos-salud.jpg') }}"
-                     alt="Kit de cursos en salud - EDCSST"
-                     class="w-full h-full object-cover object-top">
-            </div>
-            <div class="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition h-96">
-                <img src="{{ asset('images/flyer-cursos-sst-alturas.jpg') }}"
-                     alt="Cursos en Seguridad y Salud en el Trabajo - EDCSST"
-                     class="w-full h-full object-cover object-top">
-            </div>
+            @endforeach
         </div>
+    </div>
+
+    {{-- Lightbox: vista ampliada de la imagen seleccionada --}}
+    <div x-show="lightbox"
+         x-cloak
+         @click="lightbox = null"
+         @keydown.window.escape="lightbox = null"
+         x-transition.opacity
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 sm:p-8 cursor-zoom-out">
+        <button @click="lightbox = null"
+                class="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <img :src="lightbox" alt="Vista ampliada" @click.stop class="max-w-full max-h-full rounded-lg shadow-2xl object-contain">
     </div>
 </section>
 
