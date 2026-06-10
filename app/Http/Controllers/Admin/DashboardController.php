@@ -30,9 +30,6 @@ class DashboardController extends Controller
         // Certificados emitidos en los últimos 12 meses (para la gráfica)
         $certificadosPorMes = $this->certificadosPorMes();
 
-        // Últimos 5 capacitados registrados (resumen rápido)
-        $ultimosCapacitados = Capacitado::latest()->take(5)->get();
-
         // Últimos 5 certificados emitidos
         $ultimosCertificados = Certificado::with(['capacitado', 'curso', 'emitidoPor'])
             ->where('activo', true)
@@ -75,7 +72,6 @@ class DashboardController extends Controller
             'horasCapacitadasTotal',
             'mensajesNuevos',
             'certificadosPorMes',
-            'ultimosCapacitados',
             'ultimosCertificados',
             'topCapacitados',
             'cursosMasUsados',

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Mensaje;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ContactoController extends Controller
 {
@@ -36,13 +38,24 @@ class ContactoController extends Controller
             'g-recaptcha-response.required' => 'Por favor completa el captcha.',
         ]);
 
-        $recaptcha = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret'   => config('services.recaptcha.secret'),
-            'response' => $request->input('g-recaptcha-response'),
-            'remoteip' => $request->ip(),
-        ]);
+        try {
+            $recaptcha = Http::timeout(5)->asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret'   => config('services.recaptcha.secret'),
+                'response' => $request->input('g-recaptcha-response'),
+                'remoteip' => $request->ip(),
+            ]);
+        } catch (ConnectionException $e) {
+            Log::warning('reCAPTCHA: fallo de conexión con Google', ['error' => $e->getMessage()]);
+            return back()
+                ->withInput()
+                ->withErrors(['g-recaptcha-response' => 'No se pudo verificar el captcha. Inténtalo de nuevo.']);
+        }
 
-        if (!($recaptcha->json('success') === true)) {
+        if (!$recaptcha->successful() || $recaptcha->json('success') !== true) {
+            Log::warning('reCAPTCHA v2: verificación fallida', [
+                'errors' => $recaptcha->json('error-codes'),
+                'ip'     => $request->ip(),
+            ]);
             return back()
                 ->withInput()
                 ->withErrors(['g-recaptcha-response' => 'La verificación del captcha falló. Inténtalo de nuevo.']);

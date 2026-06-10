@@ -34,11 +34,16 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Rate limiters para las rutas públicas sensibles.
-     * Todos limitan por IP para evitar abuso desde una misma conexión.
-     *   - consulta-publica:    10/min  (búsqueda de certificados)
-     *   - verificacion-publica: 10/min (verificación de autenticidad)
-     *   - contacto-publica:      3/min (formulario de contacto)
+     * Rate limiters para rutas públicas y panel admin.
+     *
+     * Públicas — limitan por IP:
+     *   - consulta-publica:      10/min  (búsqueda de certificados)
+     *   - verificacion-publica:  10/min  (verificación de autenticidad)
+     *   - contacto-publica:       3/min  (formulario de contacto)
+     *
+     * Admin — limitan por ID de usuario autenticado:
+     *   - admin-general:        120/min  (navegación y lectura — 2 req/s)
+     *   - admin-escritura:       30/min  (create/store/update/destroy)
      */
     protected function configureRateLimiting(): void
     {
@@ -61,6 +66,20 @@ class AppServiceProvider extends ServiceProvider
                 ->response(fn() => back()
                     ->withInput()
                     ->withErrors(['mensaje' => 'Has enviado demasiados mensajes. Espera unos minutos antes de intentar de nuevo.'])
+                );
+        });
+
+        RateLimiter::for('admin-general', function (Request $request) {
+            return Limit::perMinute(120)->by($request->user()?->id ?? $request->ip())
+                ->response(fn() => redirect()->back()
+                    ->withErrors(['throttle' => 'Demasiadas solicitudes. Espera un momento e intenta de nuevo.'])
+                );
+        });
+
+        RateLimiter::for('admin-escritura', function (Request $request) {
+            return Limit::perMinute(30)->by($request->user()?->id ?? $request->ip())
+                ->response(fn() => redirect()->back()
+                    ->withErrors(['throttle' => 'Has realizado demasiadas operaciones seguidas. Espera un momento.'])
                 );
         });
     }
