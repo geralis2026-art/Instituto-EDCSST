@@ -2,6 +2,8 @@
 
 Documentación funcional y técnica del sistema web del Instituto EDCSST (Entidad de Certificación en Seguridad Social y Trabajo), preparada para la entrega al cliente.
 
+**Versión del documento:** 1.2 — Última actualización: 2026-06-10
+
 ---
 
 ## Índice
@@ -14,9 +16,10 @@ Documentación funcional y técnica del sistema web del Instituto EDCSST (Entida
 6. [Información que maneja el sistema](#información-que-maneja-el-sistema)
 7. [Seguridad implementada](#seguridad-implementada)
 8. [Mantenimiento y tareas automáticas](#mantenimiento-y-tareas-automáticas)
-9. [Funcionalidades pendientes / a futuro](#funcionalidades-pendientes--a-futuro)
-10. [Accesos y datos técnicos](#accesos-y-datos-técnicos)
-11. [Registro de cambios](#registro-de-cambios)
+9. [Requisitos y compatibilidad](#requisitos-y-compatibilidad)
+10. [Funcionalidades pendientes / a futuro](#funcionalidades-pendientes--a-futuro)
+11. [Accesos y datos técnicos](#accesos-y-datos-técnicos)
+12. [Registro de cambios](#registro-de-cambios)
 
 ---
 
@@ -44,7 +47,7 @@ El sistema está dividido en dos partes:
 |---|---|
 | **Inicio** | Presenta la información general del instituto y hasta 4 cursos destacados. |
 | **Nosotros** | Información institucional (misión, descripción, etc.). |
-| **Cursos** | Catálogo completo de cursos, organizado por categorías. Permite filtrar por categoría. |
+| **Cursos** | Catálogo completo de cursos, organizado por categorías. Cada curso se muestra en una tarjeta compacta (nombre, imagen y duración) que **se voltea al hacer clic/tap** para mostrar la descripción completa, la intensidad horaria y un botón para solicitar información. |
 | **Contacto** | Formulario para que cualquier visitante envíe un mensaje al instituto. Protegido con reCAPTCHA y limitado a 3 envíos por minuto por visitante para evitar spam. |
 | **Consulta de certificados** | El capacitado busca sus certificados ingresando su número de documento o el código único del certificado. Si los encuentra, puede descargar el PDF mediante un enlace seguro y temporal (válido 30 minutos). Solo se pueden descargar certificados activos y vigentes (no vencidos). |
 | **Verificación de autenticidad** | Cualquier tercero (empresa, entidad gubernamental, etc.) puede ingresar el código de un certificado (ej: `EDCSST-2026-00001`) y ver sus datos: persona, curso, fecha de emisión y si está vigente o vencido. No requiere descargar nada. |
@@ -89,6 +92,7 @@ Acceso limitado, pensado para el personal que dicta los cursos:
 - Las cuentas nuevas se crean **inactivas** por defecto — un administrador debe activarlas manualmente desde "Usuarios".
 - Si un administrador desactiva a un usuario que tiene una sesión abierta, esa sesión se cierra automáticamente en su siguiente acción.
 - Un usuario no puede desactivarse ni eliminarse a sí mismo (para evitar quedarse sin acceso por error).
+- **Recuperación de contraseña**: cualquier empleado puede solicitar el restablecimiento de su contraseña desde la pantalla de inicio de sesión ("¿Olvidaste tu contraseña?"); el sistema envía un enlace temporal de recuperación al correo registrado.
 
 ---
 
@@ -97,11 +101,12 @@ Acceso limitado, pensado para el personal que dicta los cursos:
 ### Emisión de un certificado
 1. El administrador o capacitador entra a "Certificados → Nuevo".
 2. Selecciona el capacitado (o lo busca por documento/nombre), el curso, la fecha de emisión y carga el PDF del certificado (máximo 10 MB, solo PDF).
-3. El sistema calcula automáticamente:
+3. Indica la **modalidad** en que se realizó la capacitación: virtual o presencial.
+4. El sistema calcula automáticamente:
    - Un **código único** con formato `EDCSST-AÑO-00001` (correlativo).
    - La **fecha de vencimiento**: un año después de la fecha de emisión.
    - La **intensidad horaria**, copiada del curso seleccionado (queda fija en el certificado aunque el curso cambie después).
-4. El total de **horas capacitadas** de la persona se recalcula automáticamente sumando todos sus certificados activos.
+5. El total de **horas capacitadas** de la persona se recalcula automáticamente sumando todos sus certificados activos.
 
 ### Consulta pública de certificados
 1. El capacitado entra a "Consulta de certificados" en el sitio público.
@@ -130,7 +135,7 @@ Acceso limitado, pensado para el personal que dicta los cursos:
 | **Capacitados** | Personas que han recibido cursos (nombre, documento, correo, teléfono, RH, horas acumuladas). |
 | **Cursos** | Programas de capacitación ofrecidos (nombre, descripción, duración, intensidad horaria, imagen, categoría). |
 | **Categorías** | Agrupaciones temáticas de cursos. |
-| **Certificados** | Documentos emitidos: capacitado, curso, código único, fechas de emisión/vencimiento, intensidad horaria, PDF, estado (activo/inactivo). |
+| **Certificados** | Documentos emitidos: capacitado, curso, código único, fechas de emisión/vencimiento, intensidad horaria, modalidad (virtual/presencial), PDF, estado (activo/inactivo). |
 | **Usuarios** | Empleados del instituto con acceso al panel (admin / capacitador). |
 | **Mensajes** | Mensajes recibidos por el formulario de contacto público. |
 | **Configuración del sitio** | Datos institucionales: nombre, descripción, teléfono, correo, dirección, WhatsApp, redes sociales, logo y plantilla de certificado. |
@@ -155,8 +160,17 @@ Acceso limitado, pensado para el personal que dicta los cursos:
 
 ## Mantenimiento y Tareas Automáticas
 
-- **Limpieza de PDFs vencidos**: una tarea programada revisa diariamente los certificados vencidos hace más de 1 año (es decir, 2 años desde su emisión) y elimina **únicamente el archivo PDF** del servidor para liberar espacio. El registro del certificado se conserva siempre — sigue siendo verificable y cuenta para las horas capacitadas.
-- **Respaldos (backups)**: se realizan copias de seguridad periódicas de la base de datos, certificados PDF e imágenes del sitio.
+- **Limpieza de PDFs vencidos**: una tarea programada (`certificados:limpiar-pdfs-vencidos`) revisa diariamente los certificados vencidos hace más de 1 año (es decir, 2 años desde su emisión) y elimina **únicamente el archivo PDF** del servidor para liberar espacio. El registro del certificado se conserva siempre — sigue siendo verificable y cuenta para las horas capacitadas. La tarea se ejecuta mediante el programador de Laravel (`schedule:run`), configurado en el servidor como tarea cron diaria.
+- **Respaldos (backups)**: se realizan copias de seguridad periódicas de la base de datos, certificados PDF e imágenes del sitio mediante un script automático en el servidor, complementadas con copias locales de respaldo.
+
+---
+
+## Requisitos y Compatibilidad
+
+- **Navegadores soportados**: versiones recientes de Chrome, Edge, Firefox y Safari (escritorio y móvil).
+- **Diseño responsivo**: tanto el sitio público como el panel administrativo se adaptan a computadores, tablets y celulares.
+- **Conexión a internet**: requerida para el uso del sitio público y del panel administrativo (no funciona sin conexión).
+- **Cuenta de correo**: necesaria para la recuperación de contraseñas y, opcionalmente, para notificaciones del sistema.
 
 ---
 
@@ -175,12 +189,26 @@ Estas opciones existen como referencia en el sistema pero **aún no están activ
 
 - **Tecnología**: PHP / Laravel, base de datos MySQL, Tailwind CSS.
 - **Hospedaje (producción)**: Hostinger.
+- **Sitio web**: `https://institutoedcsst.com`
 - **Acceso al panel administrativo**: `https://institutoedcsst.com/admin` (requiere usuario y contraseña creados por un administrador).
+- **Tareas programadas**: ejecutadas mediante el programador de tareas (cron) de Hostinger, que invoca periódicamente el programador interno de Laravel.
 - **Respaldo de archivos**: certificados en PDF e imágenes se almacenan en el servidor, fuera del acceso público directo, y se sirven mediante enlaces controlados por el sistema.
 
 ---
 
 ## Registro de Cambios
+
+### 2026-06-10 — Tarjetas de cursos con efecto flip y ajuste de CSP
+
+**Catálogo de cursos (`/cursos`)**
+- Se rediseñaron las tarjetas de curso: ahora muestran solo nombre, imagen y duración, y al hacer clic/tap se voltean (efecto 3D) para mostrar la descripción completa, la intensidad horaria y un botón "Solicitar información".
+- Implementado con Alpine.js (ya incluido en el proyecto) y CSS, sin dependencias nuevas. Funciona igual en escritorio y móvil (interacción por clic/tap, no por hover).
+
+**Ajuste de seguridad (CSP)**
+- Se agregó `'unsafe-eval'` a la directiva `script-src` de la Content Security Policy (`app/Http/Middleware/SecurityHeaders.php`). Es requerido por Alpine.js para evaluar sus directivas (`x-data`, `:class`, `@click`, etc.). Sin este cambio, las interacciones con Alpine (incluyendo menús desplegables existentes) no se ejecutaban.
+
+**Mantenimiento de assets**
+- Se eliminó un archivo `public/hot` obsoleto (residuo de una sesión de desarrollo con `npm run dev`) que hacía que el sitio intentara cargar los assets desde el servidor de Vite en lugar de los archivos compilados, y se recompilaron los assets de producción (`npm run build`).
 
 ### 2026-06-10 — Documentación del código
 - Se agregaron comentarios explicativos en el código del backend (modelos, controladores, validaciones, middleware y rutas) para facilitar el mantenimiento futuro y la entrega de documentación técnica al cliente.
@@ -198,7 +226,7 @@ Estas opciones existen como referencia en el sistema pero **aún no están activ
 **Limpieza automática de PDFs vencidos**
 - Se creó un proceso automático que, una vez al año después del vencimiento de un certificado (2 años desde su emisión), elimina únicamente el archivo PDF del servidor para liberar espacio.
 - El registro del certificado se conserva siempre: sigue siendo verificable y cuenta para las horas capacitadas de la persona.
-- **Pendiente:** confirmar configuración en hPanel (Hostinger → Avanzado → Cron Jobs) de la tarea programada que ejecuta este proceso diariamente.
+- Se configuró en Hostinger (hPanel → Avanzado → Cron Jobs) la tarea programada que ejecuta este proceso diariamente. **Implementado y activo en producción.**
 
 **Backup**
 - Se realizó respaldo completo (base de datos, certificados PDF e imágenes) antes de aplicar los cambios anteriores.
