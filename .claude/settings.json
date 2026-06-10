@@ -1,4 +1,8 @@
 {
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [
       "Bash(npm run *)",
@@ -13,7 +17,62 @@
       "Bash(ls \"C:\\\\Users\\\\guavi\\\\OneDrive\\\\Documentos\\\\Instituto EDCSST\\\\Imagenes\")",
       "Read(//c/Users/guavi/OneDrive/Documentos/Instituto EDCSST/Imagenes/**)",
       "PowerShell(php artisan storage:link 2>&1)",
-      "Read(//c/laragon/www/Instituto-edcsst/storage/app/public/**)"
+      "Read(//c/laragon/www/Instituto-edcsst/storage/app/public/**)",
+      "Bash(sed -i '1s/^\\\\xEF\\\\xBB\\\\xBF//' routes/web.php)",
+      "Bash(xxd routes/web.php)",
+      "Bash(python3 -c \"from PIL import Image; img = Image.open\\('c:/laragon/www/instituto-edcsst/public/images/capacitacion-grupal-docencia.jpg'\\); print\\(img.size\\)\")",
+      "Bash(git merge *)",
+      "PowerShell(& \"c:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64\\\\php.exe\" artisan view:clear)",
+      "PowerShell(& \"c:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64\\\\php.exe\" artisan optimize 2>&1)",
+      "Bash(Get-ChildItem -Path \"c:\\\\laragon\\\\www\\\\instituto-edcsst\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(k\\) for k in d.get\\('require',{}\\).keys\\(\\)]\")",
+      "Bash(composer remove *)",
+      "Bash(Remove-Item \"c:\\\\laragon\\\\www\\\\instituto-edcsst\\\\public\\\\img\\\\curso-default.png\" -Force)",
+      "PowerShell($css = Get-Content \"c:\\\\laragon\\\\www\\\\instituto-edcsst\\\\public\\\\build\\\\assets\\\\app-DSL0-OIL.css\" -Raw; $css.Substring\\(0, 1000\\))",
+      "Bash(git stash *)",
+      "Bash(git checkout *)",
+      "Bash(git rm *)",
+      "PowerShell(php artisan cache:clear)",
+      "PowerShell(php artisan config:clear)",
+      "PowerShell(php artisan view:clear)",
+      "PowerShell(php artisan route:clear)",
+      "PowerShell($php = \"C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64\\\\php.exe\"; & $php artisan cache:clear; & $php artisan config:clear; & $php artisan view:clear; & $php artisan route:clear)",
+      "PowerShell($php = \"C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64\\\\php.exe\"; & $php artisan view:clear; & $php artisan config:clear)",
+      "Bash(ssh -p 65002 -o StrictHostKeyChecking=accept-new u446350578@5.183.10.126 \"crontab -l; echo '---'; find ~ -maxdepth 4 -iname '*backup*' 2>/dev/null\")",
+      "Bash(ls -la ~/.ssh/ 2>/dev/null; echo '---'; which sshpass ssh-copy-id)",
+      "Read(//c/Users/guavi/.ssh/**)",
+      "Bash(ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_hostinger -N \"\" -C \"edcsst-backup\")",
+      "Bash(ssh-copy-id -i ~/.ssh/id_ed25519_hostinger.pub -p 65002 -o StrictHostKeyChecking=accept-new u446350578@5.183.10.126)",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -p 65002 -o StrictHostKeyChecking=accept-new u446350578@5.183.10.126 \"echo OK && pwd\")",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -p 65002 -o StrictHostKeyChecking=accept-new -o BatchMode=yes u446350578@5.183.10.126 \"echo OK && pwd\")",
+      "Bash(git push *)",
+      "Bash(curl -s -D - https://institutoedcsst.com/contacto -o /tmp/contacto.html)",
+      "Read(//tmp/**)",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -p 65002 -o BatchMode=yes u446350578@5.183.10.126 'APP=~/domains/institutoedcsst.com/public_html *)",
+      "Bash(curl -s -D - -o /dev/null https://institutoedcsst.com/contacto --http1.1 -A \"test\")",
+      "Bash(curl -sv -o /dev/null https://institutoedcsst.com/contacto)",
+      "Bash(curl -s -X POST \"https://www.google.com/recaptcha/api/siteverify\" -d \"secret=6LfAvRQtAAAAaDaMUsohnekvr5MFLTaAgrfu3krj\" -d \"response=test123\")",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -p 65002 -o BatchMode=yes u446350578@5.183.10.126 \"crontab -l 2>/dev/null\")",
+      "Bash(/c/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe artisan *)",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -p 65002 -o BatchMode=yes u446350578@5.183.10.126 \"which crontab; /usr/bin/crontab -l 2>/dev/null; echo done\")",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -p 65002 -o BatchMode=yes u446350578@5.183.10.126 \"cat /var/spool/cron/crontabs/u446350578 2>/dev/null; cat /var/spool/cron/u446350578 2>/dev/null; echo done\")",
+      "Bash(findstr /i \"documentacion resumen\")",
+      "Bash(grep -i -E \"documentacion|resumen|.md$\")",
+      "Bash(curl -s -o /tmp/page.html -w \"%{http_code}\\\\n\" http://instituto-edcsst.test/cursos)",
+      "Bash(pkill -f \"vite\")",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(npx --yes chromium-cli --version)",
+      "Bash(curl -s http://instituto-edcsst.test/cursos -o /tmp/page2.html -w \"%{http_code}\\\\n\")",
+      "Bash(curl -s -I http://instituto-edcsst.test/cursos)",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -p 65002 u446350578@5.183.10.126 \"bash ~/backup_diario.sh\")",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -p 65002 u446350578@5.183.10.126 \"ls -la ~/backup_daily/ | tail -5\")",
+      "Skill(update-config)",
+      "Skill(update-config:*)"
+    ],
+    "additionalDirectories": [
+      "c:\\laragon\\bin\\php\\php-8.3.30-Win32-vs16-x64"
     ]
   }
 }
