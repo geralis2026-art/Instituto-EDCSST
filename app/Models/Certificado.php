@@ -60,12 +60,25 @@ class Certificado extends Model
 
     /**
      * Genera un código único para el certificado.
-     * Formato: EDCSST-{AÑO}-{ID_5_DIGITOS}
+     * Formato: EDCSST-{AÑO}-{NUMERO_5_DIGITOS}
      * Ej: EDCSST-2026-00001
+     *
+     * El número se calcula a partir del más alto ya usado en el año (incluyendo
+     * códigos cargados manualmente), para evitar choques con códigos atrasados.
      */
-    public static function generarCodigoUnico(int $id): string
+    public static function generarCodigoUnico(): string
     {
-        return sprintf('EDCSST-%d-%05d', now()->year, $id);
+        $anio = now()->year;
+        $prefijo = "EDCSST-{$anio}-";
+
+        $maximo = static::where('codigo_unico', 'like', "{$prefijo}%")
+            ->get()
+            ->map(fn ($cert) => (int) substr($cert->codigo_unico, strlen($prefijo)))
+            ->max();
+
+        $siguiente = ($maximo ?? 0) + 1;
+
+        return sprintf('%s%05d', $prefijo, $siguiente);
     }
 
     /**
