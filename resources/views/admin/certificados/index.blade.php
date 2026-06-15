@@ -141,7 +141,7 @@
     </div>
 
     <div class="mt-6">
-        <x-paginador :paginator="$certificados" />
+        {{ $certificados->appends(request()->query())->onEachSide(1)->links() }}
     </div>
 </div>
 @endsection
