@@ -69,39 +69,47 @@
             @enderror
         </div>
 
-        {{-- Selector de categoría + curso dependiente --}}
-        <div x-data="selectorCurso({{ $categoriasJson }}, '{{ old('curso_id', $certificado->curso_id ?? '') }}')"
-             class="contents">
+        {{-- Búsqueda de curso por nombre --}}
+        <div class="md:col-span-2"
+             x-data="selectorCurso({{ $categoriasJson }}, '{{ old('curso_id', $certificado->curso_id ?? '') }}')">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Curso *</label>
 
-            {{-- Categoría --}}
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
-                <select x-model="categoriaSeleccionada"
-                        @change="cursoSeleccionado = ''"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required>
-                    <option value="">Seleccionar categoría</option>
-                    <template x-for="cat in categorias" :key="cat.id">
-                        <option :value="cat.id" x-text="cat.nombre"></option>
-                    </template>
-                </select>
+            {{-- Campo oculto con el ID real --}}
+            <input type="hidden" name="curso_id" :value="seleccionado.id">
+
+            {{-- Curso ya seleccionado --}}
+            <div x-show="seleccionado.id" style="display:none" class="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg mb-2">
+                <div class="flex-1">
+                    <p class="font-medium text-gray-900" x-text="seleccionado.nombre"></p>
+                    <p class="text-sm text-gray-500" x-text="seleccionado.categoria"></p>
+                </div>
+                <button type="button" @click="limpiar()" class="text-sm text-red-600 hover:text-red-800">Cambiar</button>
             </div>
 
-            {{-- Curso (depende de la categoría) --}}
-            <div>
-                <label for="curso_id" class="block text-sm font-medium text-gray-700 mb-1">Curso *</label>
-                <select id="curso_id" name="curso_id"
-                        x-model="cursoSeleccionado"
-                        :disabled="!categoriaSeleccionada"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed @error('curso_id') border-red-500 @enderror"
-                        required>
-                    <option value="">Seleccionar curso</option>
-                    <template x-for="curso in cursosFiltrados" :key="curso.id">
-                        <option :value="curso.id" x-text="curso.nombre"></option>
+            {{-- Buscador (visible cuando no hay seleccionado) --}}
+            <div x-show="!seleccionado.id">
+                <input type="text"
+                       x-model="query"
+                       @keydown.escape="query = ''"
+                       placeholder="Buscar curso por nombre..."
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('curso_id') border-red-500 @enderror">
+
+                {{-- Resultados --}}
+                <div x-show="resultados.length > 0" class="border border-gray-200 rounded-lg mt-1 divide-y divide-gray-100 shadow-sm bg-white">
+                    <template x-for="curso in resultados" :key="curso.id">
+                        <button type="button"
+                                @click="elegir(curso)"
+                                class="w-full text-left px-4 py-2.5 hover:bg-blue-50 transition">
+                            <span class="font-medium text-gray-900" x-text="curso.nombre"></span>
+                            <span class="text-sm text-gray-500 ml-2" x-text="curso.categoria"></span>
+                        </button>
                     </template>
-                </select>
-                @error('curso_id')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                <p x-show="query.length > 0 && resultados.length === 0" class="text-sm text-gray-500 mt-1">No se encontró ningún curso.</p>
             </div>
+
+            @error('curso_id')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
         </div>{{-- /selectorCurso --}}
 
         <div>
@@ -222,19 +230,32 @@ function buscadorCapacitado(idInicial, nombreInicial, documentoInicial) {
 }
 
 function selectorCurso(categorias, cursoInicial) {
-    const categoriaInicial = categorias.find(cat =>
-        cat.cursos.some(c => String(c.id) === String(cursoInicial))
+    const cursos = categorias.flatMap(cat =>
+        cat.cursos.map(c => ({ id: c.id, nombre: c.nombre, categoria: cat.nombre }))
     );
 
-    return {
-        categorias,
-        categoriaSeleccionada: categoriaInicial ? String(categoriaInicial.id) : '',
-        cursoSeleccionado: cursoInicial ? String(cursoInicial) : '',
+    const inicial = cursos.find(c => String(c.id) === String(cursoInicial));
 
-        get cursosFiltrados() {
-            if (!this.categoriaSeleccionada) return [];
-            const cat = this.categorias.find(c => String(c.id) === String(this.categoriaSeleccionada));
-            return cat ? cat.cursos : [];
+    return {
+        cursos,
+        query: '',
+        seleccionado: inicial
+            ? { id: inicial.id, nombre: inicial.nombre, categoria: inicial.categoria }
+            : { id: null, nombre: '', categoria: '' },
+
+        get resultados() {
+            const q = this.query.trim().toLowerCase();
+            if (q.length < 2) return [];
+            return this.cursos.filter(c => c.nombre.toLowerCase().includes(q));
+        },
+
+        elegir(curso) {
+            this.seleccionado = curso;
+            this.query = '';
+        },
+
+        limpiar() {
+            this.seleccionado = { id: null, nombre: '', categoria: '' };
         }
     };
 }
