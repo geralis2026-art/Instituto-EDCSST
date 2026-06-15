@@ -9,16 +9,19 @@
  * etiquetas fijas de la plantilla (en puntos PDF, origen inferior izquierdo)
  * convertidas a mm con origen superior izquierdo (que es el que usa FPDF).
  * 'x' => null en campos centrados significa "centrar en el ancho de página".
+ * 'fuente' es opcional, por defecto 'Helvetica'.
+ *
+ * Esta plantilla no tiene un campo de "fecha de vencimiento", por lo que
+ * ese dato no se imprime (el certificado sigue venciendo internamente).
  */
 return [
     'campos' => [
-        'nombre_completo'   => ['x' => null,  'y' => 91.6,  'size' => 20, 'estilo' => 'B', 'align' => 'C'],
-        'documento'         => ['x' => 136.2, 'y' => 103.0, 'size' => 9,  'estilo' => '',  'align' => 'L'],
-        'curso'             => ['x' => null,  'y' => 119.6, 'size' => 12, 'estilo' => 'B', 'align' => 'C'],
-        'modalidad'         => ['x' => 136.2, 'y' => 129.5, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
-        'duracion'          => ['x' => 174.7, 'y' => 129.5, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
-        'fecha_emision'     => ['x' => 118.9, 'y' => 138.6, 'size' => 9,  'estilo' => '',  'align' => 'L'],
-        'fecha_vencimiento' => ['x' => 182.5, 'y' => 138.6, 'size' => 9,  'estilo' => '',  'align' => 'L'],
-        'codigo_unico'      => ['x' => 157.4, 'y' => 144.1, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
+        'nombre_completo'   => ['x' => null,  'y' => 97.0,  'size' => 20, 'estilo' => 'I', 'fuente' => 'Times', 'align' => 'C'],
+        'documento'         => ['x' => 134.0, 'y' => 105.5, 'size' => 9,  'estilo' => '',  'align' => 'L'],
+        'curso'             => ['x' => null,  'y' => 121.0, 'size' => 12, 'estilo' => 'B', 'align' => 'C'],
+        'modalidad'         => ['x' => 129.0, 'y' => 130.5, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
+        'duracion'          => ['x' => 168.0, 'y' => 130.5, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
+        'fecha_emision'     => ['x' => 150.0, 'y' => 139.0, 'size' => 9,  'estilo' => '',  'align' => 'L'],
+        'codigo_unico'      => ['x' => 150.0, 'y' => 143.2, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
     ],
 ];

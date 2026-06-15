@@ -52,7 +52,7 @@ class CertificadoPdfService
         $campos = config('certificado_plantilla.campos');
 
         $pdf = new Fpdi('L', 'mm');
-        $tplId = $pdf->setSourceFile($plantilla);
+        $pdf->setSourceFile($plantilla);
         $pagina = $pdf->importPage(1);
         $tamano = $pdf->getTemplateSize($pagina);
 
@@ -65,9 +65,8 @@ class CertificadoPdfService
         $this->escribirCampo($pdf, $campos['documento'], $certificado->capacitado->documento, $tamano['width']);
         $this->escribirCampo($pdf, $campos['curso'], $certificado->curso->nombre, $tamano['width']);
         $this->escribirCampo($pdf, $campos['modalidad'], $certificado->modalidad ? ucfirst($certificado->modalidad) : 'No especificada', $tamano['width']);
-        $this->escribirCampo($pdf, $campos['duracion'], "{$certificado->intensidad_horaria} horas", $tamano['width']);
+        $this->escribirCampo($pdf, $campos['duracion'], (string) $certificado->intensidad_horaria, $tamano['width']);
         $this->escribirCampo($pdf, $campos['fecha_emision'], $certificado->fecha_emision->format('d/m/Y'), $tamano['width']);
-        $this->escribirCampo($pdf, $campos['fecha_vencimiento'], $certificado->fecha_vencimiento?->format('d/m/Y') ?? 'No aplica', $tamano['width']);
         $this->escribirCampo($pdf, $campos['codigo_unico'], $certificado->codigo_unico, $tamano['width']);
 
         return $pdf->Output('S');
@@ -78,7 +77,7 @@ class CertificadoPdfService
     {
         $texto = mb_convert_encoding($texto, 'ISO-8859-1', 'UTF-8');
 
-        $pdf->SetFont('Helvetica', $campo['estilo'], $campo['size']);
+        $pdf->SetFont($campo['fuente'] ?? 'Helvetica', $campo['estilo'], $campo['size']);
 
         if ($campo['align'] === 'C') {
             $ancho = $pdf->GetStringWidth($texto);
