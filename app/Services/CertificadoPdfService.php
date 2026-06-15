@@ -68,7 +68,7 @@ class CertificadoPdfService
         $pdf->SetTextColor(31, 41, 55);
 
         $this->escribirCampo($pdf, $campos['nombre_completo'], $certificado->capacitado->nombre_completo, $tamano['width']);
-        $this->escribirCampo($pdf, $campos['documento'], $certificado->capacitado->documento, $tamano['width']);
+        $this->escribirCampo($pdf, $campos['documento'], $this->formatearDocumento($certificado->capacitado->documento), $tamano['width']);
         $this->escribirCampo($pdf, $campos['curso'], $certificado->curso->nombre, $tamano['width']);
         $this->escribirCampo($pdf, $campos['modalidad'], $certificado->modalidad ? ucfirst($certificado->modalidad) : 'No especificada', $tamano['width']);
         $this->escribirCampo($pdf, $campos['duracion'], (string) $certificado->intensidad_horaria, $tamano['width']);
@@ -76,6 +76,12 @@ class CertificadoPdfService
         $this->escribirCampo($pdf, $campos['codigo_unico'], $certificado->codigo_unico, $tamano['width']);
 
         return $pdf->Output('S');
+    }
+
+    /** Formatea el documento con puntos cada 3 dígitos (ej: 1234567890 → 1.234.567.890). */
+    private function formatearDocumento(string $documento): string
+    {
+        return preg_replace('/\B(?=(\d{3})+(?!\d))/', '.', $documento);
     }
 
     /** Escribe un campo individual respetando alineación, fuente y posición definidas en config. */
