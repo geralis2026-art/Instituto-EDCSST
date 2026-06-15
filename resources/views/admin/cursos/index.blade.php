@@ -105,7 +105,7 @@
     </div>
 
     <div class="mt-6">
-        {{ $cursos->appends(request()->query())->links() }}
+        <x-paginador :paginator="$cursos" />
     </div>
 </div>
 @endsection
