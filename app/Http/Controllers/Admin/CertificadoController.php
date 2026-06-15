@@ -75,7 +75,7 @@ class CertificadoController extends Controller
         $certificado = Certificado::create($datos);
 
         if (!$codigoManual) {
-            $certificado->codigo_unico = Certificado::generarCodigoUnico($certificado->id);
+            $certificado->codigo_unico = Certificado::generarCodigoUnico();
             $certificado->saveQuietly();
         }
 
