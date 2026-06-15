@@ -13,12 +13,12 @@
 return [
     'campos' => [
         'nombre_completo'   => ['x' => null,  'y' => 91.6,  'size' => 20, 'estilo' => 'B', 'align' => 'C'],
-        'documento'         => ['x' => 136.2, 'y' => 104.3, 'size' => 9,  'estilo' => '',  'align' => 'L'],
+        'documento'         => ['x' => 136.2, 'y' => 103.0, 'size' => 9,  'estilo' => '',  'align' => 'L'],
         'curso'             => ['x' => null,  'y' => 119.6, 'size' => 12, 'estilo' => 'B', 'align' => 'C'],
-        'modalidad'         => ['x' => 136.2, 'y' => 130.8, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
-        'duracion'          => ['x' => 174.7, 'y' => 130.8, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
-        'fecha_emision'     => ['x' => 118.9, 'y' => 139.9, 'size' => 9,  'estilo' => '',  'align' => 'L'],
-        'fecha_vencimiento' => ['x' => 182.5, 'y' => 139.9, 'size' => 9,  'estilo' => '',  'align' => 'L'],
+        'modalidad'         => ['x' => 136.2, 'y' => 129.5, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
+        'duracion'          => ['x' => 174.7, 'y' => 129.5, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
+        'fecha_emision'     => ['x' => 118.9, 'y' => 138.6, 'size' => 9,  'estilo' => '',  'align' => 'L'],
+        'fecha_vencimiento' => ['x' => 182.5, 'y' => 138.6, 'size' => 9,  'estilo' => '',  'align' => 'L'],
         'codigo_unico'      => ['x' => 157.4, 'y' => 144.1, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
     ],
 ];
