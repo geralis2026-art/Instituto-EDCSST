@@ -16,8 +16,8 @@
  */
 return [
     'campos' => [
-        'nombre_completo'   => ['x' => null,  'y' => 97.0,  'size' => 50, 'estilo' => '',  'fuente' => 'OptiDianna', 'align' => 'C'],
-        'documento'         => ['x' => 131.0, 'y' => 105.5, 'size' => 14, 'estilo' => '',  'fuente' => 'CenturyGothic', 'align' => 'L'],
+        'nombre_completo'   => ['x' => null,  'y' => 95.0,  'size' => 50, 'estilo' => '',  'fuente' => 'OptiDianna', 'align' => 'C'],
+        'documento'         => ['x' => 129.0, 'y' => 104.5, 'size' => 14, 'estilo' => '',  'fuente' => 'CenturyGothic', 'align' => 'L'],
         'curso'             => ['x' => null,  'y' => 121.0, 'size' => 12, 'estilo' => 'B', 'align' => 'C'],
         'modalidad'         => ['x' => 129.0, 'y' => 130.5, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
         'duracion'          => ['x' => 168.0, 'y' => 130.5, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
