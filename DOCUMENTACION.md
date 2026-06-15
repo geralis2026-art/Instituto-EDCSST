@@ -237,3 +237,10 @@ Estas opciones existen como referencia en el sistema pero **aún no están activ
 
 **Backup**
 - Se realizó respaldo completo (base de datos, certificados PDF e imágenes) antes de aplicar los cambios anteriores.
+
+### 2026-06-15 — Generación de PDF sobre la plantilla oficial (overlay)
+
+- Se cambió la forma de generar el PDF del certificado: en lugar de construir el diseño completo con dompdf, ahora se usa la plantilla oficial del instituto (`storage/app/public/plantillas/certificado.pdf`, registrada en `configuracion_sitio.plantilla_certificado`) como fondo y se escriben encima, con FPDI/FPDF, los datos variables de cada certificado: nombre, documento, curso, modalidad, intensidad horaria, fechas de emisión/vencimiento y código único.
+- Las coordenadas de cada campo sobre la plantilla están centralizadas en `config/certificado_plantilla.php` para poder ajustarlas sin tocar el código del servicio.
+- `App\Services\CertificadoPdfService` mantiene como respaldo la plantilla Blade anterior (`resources/views/pdf/certificado.blade.php` con dompdf) para el caso en que no haya plantilla configurada o el archivo no exista.
+- No se implementó código QR de verificación (queda pendiente para una fase futura).
