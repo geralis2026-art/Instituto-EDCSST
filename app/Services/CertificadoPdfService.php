@@ -52,6 +52,11 @@ class CertificadoPdfService
         $campos = config('certificado_plantilla.campos');
 
         $pdf = new Fpdi('L', 'mm');
+
+        // Fuentes personalizadas en resources/fonts/ (AddFont acepta $dir explícito)
+        $fontDir = resource_path('fonts') . DIRECTORY_SEPARATOR;
+        $pdf->AddFont('OptiDianna', '', 'OptiDianna.json', $fontDir);
+
         $pdf->setSourceFile($plantilla);
         $pagina = $pdf->importPage(1);
         $tamano = $pdf->getTemplateSize($pagina);

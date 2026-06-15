@@ -16,7 +16,7 @@
  */
 return [
     'campos' => [
-        'nombre_completo'   => ['x' => null,  'y' => 97.0,  'size' => 20, 'estilo' => 'I', 'fuente' => 'Times', 'align' => 'C'],
+        'nombre_completo'   => ['x' => null,  'y' => 97.0,  'size' => 50, 'estilo' => '',  'fuente' => 'OptiDianna', 'align' => 'C'],
         'documento'         => ['x' => 134.0, 'y' => 105.5, 'size' => 9,  'estilo' => '',  'align' => 'L'],
         'curso'             => ['x' => null,  'y' => 121.0, 'size' => 12, 'estilo' => 'B', 'align' => 'C'],
         'modalidad'         => ['x' => 129.0, 'y' => 130.5, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
