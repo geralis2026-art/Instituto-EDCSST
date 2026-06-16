@@ -55,8 +55,9 @@ class CertificadoPdfService
 
         // Fuentes personalizadas en resources/fonts/ (AddFont acepta $dir explícito)
         $fontDir = resource_path('fonts') . DIRECTORY_SEPARATOR;
-        $pdf->AddFont('OptiDianna',    '', 'OptiDianna.json', $fontDir);
-        $pdf->AddFont('CenturyGothic', '', 'GOTHIC.json',     $fontDir);
+        $pdf->AddFont('OptiDianna',    '',  'OptiDianna.json', $fontDir);
+        $pdf->AddFont('CenturyGothic', '',  'GOTHIC.json',    $fontDir);
+        $pdf->AddFont('CenturyGothic', 'B', 'GOTHICB.json',   $fontDir);
 
         $pdf->setSourceFile($plantilla);
         $pagina = $pdf->importPage(1);
@@ -91,13 +92,19 @@ class CertificadoPdfService
 
         $pdf->SetFont($campo['fuente'] ?? 'Helvetica', $campo['estilo'], $campo['size']);
 
+        if (isset($campo['color'])) {
+            $pdf->SetTextColor(...$campo['color']);
+        }
+
         if ($campo['align'] === 'C') {
             $ancho = $pdf->GetStringWidth($texto);
             $pdf->Text(($anchoPagina - $ancho) / 2, $campo['y'], $texto);
-
-            return;
+        } else {
+            $pdf->Text($campo['x'], $campo['y'], $texto);
         }
 
-        $pdf->Text($campo['x'], $campo['y'], $texto);
+        if (isset($campo['color'])) {
+            $pdf->SetTextColor(31, 41, 55);
+        }
     }
 }
