@@ -8,6 +8,8 @@ use App\Models\Capacitado;
 use App\Models\Categoria;
 use App\Models\Certificado;
 use App\Models\Curso;
+use App\Services\CertificadoPdfService;
+use App\Services\GeneracionMasivaCertificadosService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -63,21 +65,31 @@ class CertificadoController extends Controller
      * Guarda el certificado: genera código único, calcula fecha de vencimiento (+1 año)
      * y almacena el PDF en storage/app/certificados/.
      */
-    public function store(CertificadoRequest $request)
+    public function store(CertificadoRequest $request, CertificadoPdfService $pdfService)
     {
         $datos = $request->validated();
         $codigoManual = $datos['codigo_unico'] ?: null;
         $datos['codigo_unico'] = $codigoManual ?? (string) Str::uuid();
         $datos['emitido_por'] = auth()->id();
-        $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados', 'certificados');
         $datos['fecha_vencimiento'] = \Carbon\Carbon::parse($datos['fecha_emision'])->addYear()->toDateString();
+
+        if ($request->hasFile('archivo_pdf')) {
+            $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados', 'certificados');
+        } else {
+            unset($datos['archivo_pdf']);
+        }
 
         $certificado = Certificado::create($datos);
 
         if (!$codigoManual) {
             $certificado->codigo_unico = Certificado::generarCodigoUnico();
-            $certificado->saveQuietly();
         }
+
+        if (!$request->hasFile('archivo_pdf')) {
+            $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
+        }
+
+        $certificado->saveQuietly();
 
         return redirect()
             ->route('admin.certificados.show', $certificado)
@@ -140,14 +152,13 @@ class CertificadoController extends Controller
     }
 
     /** Sirve el PDF del certificado directamente en el navegador (inline). */
-    public function verPdf(Certificado $certificado)
+    public function verPdf(Certificado $certificado, CertificadoPdfService $pdfService)
     {
-        if (!$certificado->archivo_pdf || !Storage::disk('certificados')->exists($certificado->archivo_pdf)) {
-            abort(404, 'El archivo PDF no se encuentra.');
-        }
+        $pdf = $pdfService->generarPdf($certificado);
 
-        return Storage::disk('certificados')->response($certificado->archivo_pdf, null, [
-            'Content-Type' => 'application/pdf',
+        return response($pdf, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $certificado->codigo_unico . '.pdf"',
         ]);
     }
 
@@ -165,18 +176,62 @@ class CertificadoController extends Controller
             ->with('success', 'Certificado eliminado correctamente.');
     }
 
-    /** Pendiente: formulario de generación masiva de certificados (Fase 2, no implementado). */
-    public function masivosForm()
+    /** Formulario de generación masiva: lista las solicitudes de certificación pendientes. */
+    public function masivosForm(GeneracionMasivaCertificadosService $servicio)
     {
-        return redirect()->route('admin.certificados.index')
-            ->with('info', 'La generación masiva estará disponible próximamente.');
+        $solicitudes = $servicio->solicitudesPendientes();
+        $cursos = Curso::activos()->orderBy('nombre')->get();
+
+        return view('admin.certificados.masivos', compact('solicitudes', 'cursos'));
     }
 
-    /** Pendiente: procesamiento de generación masiva de certificados (Fase 2, no implementado). */
-    public function generarMasivos(Request $request)
+    /** Genera en lote los certificados de las solicitudes seleccionadas. */
+    public function generarMasivos(Request $request, GeneracionMasivaCertificadosService $servicio, CertificadoPdfService $pdfService)
     {
-        return redirect()->route('admin.certificados.index')
-            ->with('info', 'La generación masiva estará disponible próximamente.');
+        $datos = $request->validate([
+            'solicitudes' => 'array',
+            'solicitudes.*.incluir' => 'nullable|boolean',
+            'solicitudes.*.curso_id' => 'required_with:solicitudes.*.incluir|nullable|exists:cursos,id',
+            'solicitudes.*.fecha_emision' => 'required_with:solicitudes.*.incluir|nullable|date',
+            'solicitudes.*.intensidad_horaria' => 'required_with:solicitudes.*.incluir|nullable|integer|min:1|max:500',
+            'solicitudes.*.modalidad' => 'nullable|in:virtual,presencial',
+            'solicitudes.*.codigo_unico' => 'nullable|string|max:255|unique:certificados,codigo_unico',
+            'solicitudes.*.archivo_pdf' => 'nullable|file|mimetypes:application/pdf|max:10240',
+        ]);
+
+        $filas = [];
+
+        foreach ($datos['solicitudes'] ?? [] as $solicitudId => $fila) {
+            if (empty($fila['incluir'])) {
+                continue;
+            }
+
+            $filas[] = [
+                'solicitud_id' => (int) $solicitudId,
+                'curso_id' => (int) $fila['curso_id'],
+                'fecha_emision' => $fila['fecha_emision'],
+                'intensidad_horaria' => (int) $fila['intensidad_horaria'],
+                'modalidad' => $fila['modalidad'] ?? null,
+                'codigo_unico' => $fila['codigo_unico'] ?? null,
+                'archivo_pdf' => $fila['archivo_pdf'] ?? null,
+            ];
+        }
+
+        if (empty($filas)) {
+            return back()->with('error', 'No seleccionaste ninguna solicitud para generar.');
+        }
+
+        $resultado = $servicio->generar($filas, auth()->id(), $pdfService);
+
+        $mensaje = "{$resultado['generados']} certificado(s) generado(s) correctamente.";
+
+        if (!empty($resultado['errores'])) {
+            $mensaje .= ' Errores: ' . implode(' | ', $resultado['errores']);
+
+            return redirect()->route('admin.certificados.masivos')->with('error', $mensaje);
+        }
+
+        return redirect()->route('admin.certificados.index')->with('success', $mensaje);
     }
 
     /** Activa o desactiva el certificado sin eliminarlo. Recalcula horas del capacitado vía evento. */
