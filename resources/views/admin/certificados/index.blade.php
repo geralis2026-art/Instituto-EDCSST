@@ -10,9 +10,17 @@
             <h1 class="text-3xl font-bold text-gray-900">Gestion de Certificados</h1>
             <p class="text-gray-600 mt-1">Registra y administra certificados PDF existentes</p>
         </div>
-        <a href="{{ route('admin.certificados.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-            Nuevo Certificado
-        </a>
+        <div class="flex gap-2">
+            @if(auth()->user()->isAdmin())
+                <a href="{{ route('admin.certificados.masivos') }}" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    Generación masiva
+                </a>
+            @endif
+            <a href="{{ route('admin.certificados.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                Nuevo Certificado
+            </a>
+        </div>
     </div>
 
     <div class="bg-white rounded-lg shadow p-4">

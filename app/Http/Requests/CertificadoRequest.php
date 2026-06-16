@@ -26,13 +26,12 @@ class CertificadoRequest extends FormRequest
     }
 
     /**
-     * El PDF es obligatorio en creación y opcional en edición.
+     * El PDF es opcional: si no se sube, se genera automáticamente con la plantilla del instituto.
      * Si no se provee código único, se genera automáticamente post-insert.
      */
     public function rules(): array
     {
         $certificadoId = $this->route('certificado')?->id;
-        $pdfRule = $certificadoId ? 'nullable' : 'required';
 
         return [
             'capacitado_id' => 'required|exists:capacitados,id',
@@ -46,7 +45,7 @@ class CertificadoRequest extends FormRequest
             'fecha_emision' => 'required|date',
             'intensidad_horaria' => 'required|integer|min:1|max:500',
             'modalidad' => 'nullable|in:virtual,presencial',
-            'archivo_pdf' => [$pdfRule, 'file', 'mimetypes:application/pdf', 'max:10240'],
+            'archivo_pdf' => ['nullable', 'file', 'mimetypes:application/pdf', 'max:10240'],
             'activo' => 'boolean',
         ];
     }
@@ -61,7 +60,6 @@ class CertificadoRequest extends FormRequest
             'codigo_unico.unique' => 'Este codigo de certificado ya existe.',
             'fecha_emision.required' => 'La fecha de emision es requerida.',
             'intensidad_horaria.required' => 'La intensidad horaria es requerida.',
-            'archivo_pdf.required' => 'Debes cargar el PDF del certificado.',
             'archivo_pdf.mimetypes' => 'El archivo debe ser un PDF válido.',
             'archivo_pdf.max' => 'El PDF no puede pesar mas de 10 MB.',
             'modalidad.in' => 'La modalidad debe ser virtual o presencial.',

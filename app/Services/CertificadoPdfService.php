@@ -70,11 +70,11 @@ class CertificadoPdfService
 
         $this->escribirCampo($pdf, $campos['nombre_completo'], $certificado->capacitado->nombre_completo, $tamano['width']);
         $this->escribirCampo($pdf, $campos['documento'], $this->formatearDocumento($certificado->capacitado->documento), $tamano['width']);
-        $this->escribirCampo($pdf, $campos['curso'], $certificado->curso->nombre, $tamano['width']);
-        $this->escribirCampo($pdf, $campos['modalidad'], $certificado->modalidad ? ucfirst($certificado->modalidad) : 'No especificada', $tamano['width']);
-        $this->escribirCampo($pdf, $campos['duracion'], (string) $certificado->intensidad_horaria, $tamano['width']);
-        $this->escribirCampo($pdf, $campos['fecha_emision'], $certificado->fecha_emision->format('d/m/Y'), $tamano['width']);
-        $this->escribirCampo($pdf, $campos['codigo_unico'], $certificado->codigo_unico, $tamano['width']);
+        $this->escribirCampo($pdf, $campos['curso'], mb_strtoupper($certificado->curso->nombre, 'UTF-8'), $tamano['width']);
+        $this->escribirCampo($pdf, $campos['modalidad'], ucfirst(strtolower($certificado->modalidad ?? 'No especificada')), $tamano['width']);
+        $this->escribirCampo($pdf, $campos['duracion'], $certificado->intensidad_horaria . ' Horas', $tamano['width']);
+        $this->escribirCampo($pdf, $campos['fecha_emision'], strtoupper($certificado->fecha_emision->format('Y/m/d')), $tamano['width']);
+        $this->escribirCampo($pdf, $campos['codigo_unico'], mb_strtoupper($certificado->codigo_unico, 'UTF-8'), $tamano['width']);
 
         return $pdf->Output('S');
     }

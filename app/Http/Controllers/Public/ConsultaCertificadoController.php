@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Capacitado;
 use App\Models\Certificado;
+use App\Services\MergePdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -77,7 +78,13 @@ class ConsultaCertificadoController extends Controller
                 $c->id => URL::temporarySignedRoute('consulta.descargar', now()->addMinutes(30), $c)
             ]);
 
-        return view('public.consulta', compact('certificados', 'capacitado', 'mensajeError', 'urlsDescarga'))
+        $urlDescargarTodos = null;
+
+        if ($capacitado && $urlsDescarga->count() >= 2) {
+            $urlDescargarTodos = URL::temporarySignedRoute('consulta.descargarTodos', now()->addMinutes(30), $capacitado);
+        }
+
+        return view('public.consulta', compact('certificados', 'capacitado', 'mensajeError', 'urlsDescarga', 'urlDescargarTodos'))
             ->with('busquedaRealizada', true)
             ->with('tipoBusqueda', $datos['tipo_busqueda'])
             ->with('valorBuscado', $valor);
@@ -116,5 +123,35 @@ class ConsultaCertificadoController extends Controller
             $nombreArchivo,
             ['Content-Type' => 'application/pdf']
         );
+    }
+
+    /**
+     * Descarga, en un solo PDF, todos los certificados activos y vigentes
+     * del capacitado (acceso solo vía URL firmada temporal generada en buscar()).
+     */
+    public function descargarTodos(Capacitado $capacitado, MergePdfService $merge)
+    {
+        $certificados = $capacitado->certificados()
+            ->where('activo', true)
+            ->get()
+            ->filter(fn ($c) => !$c->isVencido() && $c->archivo_pdf)
+            ->filter(fn ($c) => str_starts_with($c->archivo_pdf, 'certificados/')
+                && !str_contains($c->archivo_pdf, '..')
+                && Storage::disk('certificados')->exists($c->archivo_pdf));
+
+        if ($certificados->isEmpty()) {
+            abort(404, 'No hay certificados disponibles para descargar.');
+        }
+
+        $rutas = $certificados->map(fn ($c) => Storage::disk('certificados')->path($c->archivo_pdf))->values()->all();
+
+        $pdf = $merge->fusionar($rutas);
+
+        $nombreArchivo = sprintf('Certificados_%s.pdf', Str::slug($capacitado->nombre_completo, '_'));
+
+        return response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $nombreArchivo . '"',
+        ]);
     }
 }

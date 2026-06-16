@@ -48,6 +48,7 @@ Route::post('/contacto', [ContactoController::class, 'enviar'])->name('contacto.
 Route::get('/consulta', [ConsultaCertificadoController::class, 'index'])->name('consulta')->middleware('throttle:30,1');
 Route::post('/consulta', [ConsultaCertificadoController::class, 'buscar'])->name('consulta.buscar')->middleware('throttle:consulta-publica');
 Route::get('/consulta/descargar/{certificado}', [ConsultaCertificadoController::class, 'descargar'])->name('consulta.descargar')->middleware('signed');
+Route::get('/consulta/descargar-todos/{capacitado}', [ConsultaCertificadoController::class, 'descargarTodos'])->name('consulta.descargarTodos')->middleware('signed');
 
 // Verificación pública (terceros verifican autenticidad)
 Route::get('/verificar', [VerificacionController::class, 'index'])->name('verificar')->middleware('throttle:30,1');
@@ -71,6 +72,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'throttle:
     Route::get('capacitados',              [CapacitadoController::class, 'index'])->name('capacitados.index');
     Route::get('capacitados/buscar',       [CapacitadoController::class, 'buscar'])->name('capacitados.buscar');
     Route::get('capacitados/{capacitado}', [CapacitadoController::class, 'show'])->name('capacitados.show')->whereNumber('capacitado');
+    Route::get('capacitados/{capacitado}/certificados-pdf', [CapacitadoController::class, 'descargarCertificados'])->name('capacitados.descargarCertificados')->whereNumber('capacitado');
 
     // Certificados — ver, crear y descargar PDF
     Route::get('certificados/{certificado}/pdf', [CertificadoController::class, 'verPdf'])->name('certificados.pdf')->whereNumber('certificado');
@@ -90,7 +92,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'admin', '
     Route::put('capacitados/{capacitado}',    [CapacitadoController::class, 'update'])->name('capacitados.update')->whereNumber('capacitado')->middleware('throttle:admin-escritura');
     Route::delete('capacitados/{capacitado}', [CapacitadoController::class, 'destroy'])->name('capacitados.destroy')->whereNumber('capacitado')->middleware('throttle:admin-escritura');
     Route::get('capacitados-plantilla',       [CapacitadoController::class, 'descargarPlantilla'])->name('capacitados.descargarPlantilla');
+    Route::get('capacitados-importar',        [CapacitadoController::class, 'importarForm'])->name('capacitados.importar.form');
     Route::post('capacitados-importar',       [CapacitadoController::class, 'importar'])->name('capacitados.importar')->middleware('throttle:admin-escritura');
+    Route::post('capacitados-importar/confirmar', [CapacitadoController::class, 'importarConfirmar'])->name('capacitados.importar.confirmar')->middleware('throttle:admin-escritura');
 
     // Certificados — editar, eliminar, activar/desactivar, masivos
     Route::get('certificados/{certificado}/edit',  [CertificadoController::class, 'edit'])->name('certificados.edit')->whereNumber('certificado');

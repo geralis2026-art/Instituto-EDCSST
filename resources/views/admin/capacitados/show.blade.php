@@ -81,6 +81,15 @@
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="bg-gray-50 border-b px-6 py-4 flex justify-between items-center">
             <h2 class="text-xl font-bold text-gray-900">Certificados ({{ count($certificados) }})</h2>
+            @if($certificados->count() >= 2)
+                <a href="{{ route('admin.capacitados.descargarCertificados', $capacitado) }}"
+                   class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition flex items-center gap-2 text-sm font-medium">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Descargar todos en PDF
+                </a>
+            @endif
         </div>
 
         @if($certificados->isNotEmpty())

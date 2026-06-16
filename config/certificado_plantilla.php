@@ -19,9 +19,9 @@ return [
         'nombre_completo'   => ['x' => null,  'y' => 95.0,  'size' => 50, 'estilo' => '',  'fuente' => 'OptiDianna', 'align' => 'C'],
         'documento'         => ['x' => 129.0, 'y' => 105.0, 'size' => 14, 'estilo' => '',  'fuente' => 'CenturyGothic', 'align' => 'L'],
         'curso'             => ['x' => null,  'y' => 119.5, 'size' => 14, 'estilo' => 'B', 'fuente' => 'CenturyGothic', 'align' => 'C', 'color' => [89, 89, 89]],
-        'modalidad'         => ['x' => 122.0, 'y' => 130.0, 'size' => 14, 'estilo' => 'B', 'fuente' => 'CenturyGothic', 'align' => 'L', 'color' => [89, 89, 89]],
-        'duracion'          => ['x' => 168.0, 'y' => 130.5, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
-        'fecha_emision'     => ['x' => 150.0, 'y' => 139.0, 'size' => 9,  'estilo' => '',  'align' => 'L'],
-        'codigo_unico'      => ['x' => 150.0, 'y' => 143.2, 'size' => 9,  'estilo' => 'B', 'align' => 'L'],
+        'modalidad'         => ['x' => 122.0, 'y' => 129.7, 'size' => 11, 'estilo' => 'B', 'fuente' => 'CenturyGothic', 'align' => 'L', 'color' => [89, 89, 89]],
+        'duracion'          => ['x' => 170.3, 'y' => 129.7, 'size' => 11, 'estilo' => 'B', 'fuente' => 'CenturyGothic', 'align' => 'L', 'color' => [89, 89, 89]],
+        'fecha_emision'     => ['x' => 146.5, 'y' => 138.5, 'size' => 10, 'estilo' => '',  'fuente' => 'CenturyGothic', 'align' => 'L'],
+        'codigo_unico'      => ['x' => 146.5, 'y' => 143.0, 'size' => 10, 'estilo' => '',  'fuente' => 'CenturyGothic', 'align' => 'L'],
     ],
 ];
