@@ -244,6 +244,10 @@ Estas opciones existen como referencia en el sistema pero **aún no están activ
 - Se corrigió una vulnerabilidad potencial: la ruta de la plantilla de certificado (almacenada en BD) se usaba directamente en `file_exists()` y `setSourceFile()` sin validar que apuntara dentro del directorio permitido. Un valor malicioso podría haber revelado existencia de archivos del sistema o permitido leer archivos arbitrarios del servidor.
 - Solución: se usa `realpath()` para resolver la ruta canónica y se verifica con `str_starts_with()` que esté estrictamente dentro de `storage/app/public/` antes de usarla.
 
+**Botones destructivos ocultos para capacitadores (`admin/certificados/show.blade.php`)**
+- Los botones "Editar", "Desactivar/Reactivar" y "Eliminar" eran visibles para usuarios con rol `capacitador`, quienes recibían un error 403 al pulsarlos. Las rutas correspondientes ya estaban protegidas por middleware, pero la vista no reflejaba la restricción.
+- Solución: los tres botones se agruparon bajo un único `@if(auth()->user()->isAdmin())`, dejando visible solo "Ver PDF" para todos los roles autenticados.
+
 **Desacoplamiento transacción DB / escritura de PDF en certificados masivos (`GeneracionMasivaCertificadosService`)**
 - La generación del PDF ocurría dentro de `DB::transaction()`. Si `$solicitud->update()` fallaba y hacía rollback, el PDF ya estaba escrito en disco como archivo huérfano (sin certificado asociado en BD).
 - Solución: se divide el proceso en dos fases. Fase 1 (dentro de la transacción): crear el certificado y marcar la solicitud como procesada de forma atómica. Fase 2 (fuera de la transacción): generar y guardar el PDF. Si la fase 2 falla, el certificado queda sin PDF pero `verPdf()` lo regenera al vuelo.
