@@ -191,9 +191,17 @@ class ImportacionCapacitadosService
             $datos[$encabezado] = trim((string) ($filaExcel[$indice] ?? ''));
         }
 
+        // Acepta "curso" (singular) como alias de "cursos"
+        if (empty($datos['cursos']) && !empty($datos['curso'])) {
+            $datos['cursos'] = $datos['curso'];
+        }
+
         foreach (self::COLUMNAS as $columna) {
             $datos[$columna] ??= '';
         }
+
+        // Limpia comillas que Excel a veces agrega alrededor de los valores
+        $datos['cursos'] = trim($datos['cursos'], " \"'\t");
 
         return $datos;
     }
