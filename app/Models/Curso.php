@@ -34,8 +34,6 @@ class Curso extends Model
         'activo',
     ];
 
-    protected $appends = ['imagen_url'];
-
     protected $casts = [
         'destacado' => 'boolean',
         'activo' => 'boolean',
@@ -93,7 +91,7 @@ class Curso extends Model
      */
     public function getImagenUrlAttribute(): string
     {
-        if (!$this->imagen) {
+        if (!$this->imagen || !str_contains($this->imagen, '/')) {
             return asset('img/curso-default.svg');
         }
 
