@@ -16,6 +16,8 @@ use setasign\Fpdi\Fpdi;
  */
 class CertificadoPdfService
 {
+    /** Color de texto predeterminado para el overlay (gray-900 Tailwind ≈ rgb 31,41,55). */
+    private const COLOR_TEXTO_BASE = [31, 41, 55];
     /**
      * Renderiza el certificado y devuelve el binario del PDF.
      * Usa Storage::disk('public') para verificar y resolver la plantilla:
@@ -71,7 +73,7 @@ class CertificadoPdfService
         $pdf->AddPage($tamano['orientation'], [$tamano['width'], $tamano['height']]);
         $pdf->useTemplate($pagina, 0, 0, $tamano['width'], $tamano['height']);
 
-        $pdf->SetTextColor(31, 41, 55);
+        $pdf->SetTextColor(...self::COLOR_TEXTO_BASE);
 
         $this->escribirCampo($pdf, $campos['nombre_completo'], $certificado->capacitado->nombre_completo, $tamano['width']);
         $this->escribirCampo($pdf, $campos['documento'], $this->formatearDocumento($certificado->capacitado->documento), $tamano['width']);
@@ -109,7 +111,7 @@ class CertificadoPdfService
         }
 
         if (isset($campo['color'])) {
-            $pdf->SetTextColor(31, 41, 55);
+            $pdf->SetTextColor(...self::COLOR_TEXTO_BASE);
         }
     }
 }
