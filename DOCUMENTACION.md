@@ -244,6 +244,10 @@ Estas opciones existen como referencia en el sistema pero **aún no están activ
 - Se corrigió una vulnerabilidad potencial: la ruta de la plantilla de certificado (almacenada en BD) se usaba directamente en `file_exists()` y `setSourceFile()` sin validar que apuntara dentro del directorio permitido. Un valor malicioso podría haber revelado existencia de archivos del sistema o permitido leer archivos arbitrarios del servidor.
 - Solución: se usa `realpath()` para resolver la ruta canónica y se verifica con `str_starts_with()` que esté estrictamente dentro de `storage/app/public/` antes de usarla.
 
+**Codificación JSON segura en selector de cursos (`CertificadoController::buildCategoriasJson`)**
+- `json_encode()` retorna `false` ante caracteres inválidos, lo que inyectaba el literal `false` en el atributo `x-data` de Alpine.js, rompiendo silenciosamente el selector de cursos.
+- Solución: se agrega `JSON_THROW_ON_ERROR` (lanza `JsonException` en lugar de retornar `false`, garantizando que el tipo de retorno sea siempre `string`) y `JSON_UNESCAPED_UNICODE` (preserva tildes y ñ sin escaparlos como secuencias `\uXXXX`, mejorando legibilidad en el HTML generado).
+
 **FormRequest para configuración del sitio (`ConfiguracionController` + `ConfiguracionRequest`)**
 - `ConfiguracionController::update()` usaba `$request->validate()` inline sin `authorize()` explícito, inconsistente con el resto del proyecto que usa FormRequests con autorización declarada en la clase.
 - Solución: se creó `App\Http\Requests\ConfiguracionRequest` con `authorize()` que exige rol admin, `rules()` con las mismas reglas, y `messages()` con mensajes en español. El controller queda reducido a una línea por método, y la autorización tiene doble respaldo: middleware de ruta + `authorize()` del FormRequest.

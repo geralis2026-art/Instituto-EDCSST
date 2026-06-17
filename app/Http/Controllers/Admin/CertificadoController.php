@@ -130,14 +130,21 @@ class CertificadoController extends Controller
         return view('admin.certificados.edit', compact('certificado', 'categorias', 'categoriasJson'));
     }
 
-    /** Convierte las categorías y sus cursos a JSON para el selector dependiente del formulario. */
+    /**
+     * Convierte las categorías y sus cursos a JSON para el selector dependiente del formulario.
+     * JSON_THROW_ON_ERROR garantiza que nunca se inyecte `false` literal en el atributo x-data.
+     * JSON_UNESCAPED_UNICODE preserva tildes y ñ en los nombres sin secuencias \uXXXX.
+     */
     private function buildCategoriasJson($categorias): string
     {
-        return json_encode($categorias->map(fn ($cat) => [
-            'id'     => $cat->id,
-            'nombre' => $cat->nombre,
-            'cursos' => $cat->cursos->map(fn ($c) => ['id' => $c->id, 'nombre' => $c->nombre])->values(),
-        ])->values());
+        return json_encode(
+            $categorias->map(fn ($cat) => [
+                'id'     => $cat->id,
+                'nombre' => $cat->nombre,
+                'cursos' => $cat->cursos->map(fn ($c) => ['id' => $c->id, 'nombre' => $c->nombre])->values(),
+            ])->values(),
+            JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE
+        );
     }
 
     /** Actualiza el certificado. Si se sube PDF manual lo usa; si no, regenera desde la plantilla. */
