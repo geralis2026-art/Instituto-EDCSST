@@ -286,6 +286,24 @@ class CertificadoController extends Controller
         return redirect()->route('admin.certificados.index')->with('success', $mensaje);
     }
 
+    /**
+     * Regenera el PDF del certificado desde la plantilla institucional y
+     * actualiza el archivo almacenado, sin modificar ningún otro dato.
+     */
+    public function regenerarPdf(Certificado $certificado, CertificadoPdfService $pdfService)
+    {
+        if ($certificado->archivo_pdf) {
+            Storage::disk('certificados')->delete($certificado->archivo_pdf);
+        }
+
+        $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
+        $certificado->saveQuietly();
+
+        return redirect()
+            ->route('admin.certificados.show', $certificado)
+            ->with('success', 'PDF regenerado correctamente.');
+    }
+
     /** Activa o desactiva el certificado sin eliminarlo. Recalcula horas del capacitado vía evento. */
     public function toggleActivo(Certificado $certificado)
     {

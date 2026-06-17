@@ -19,6 +19,10 @@
             {{-- Acciones exclusivas de administrador --}}
             @if(auth()->user()->isAdmin())
                 <a href="{{ route('admin.certificados.edit', $certificado) }}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">Editar</a>
+                <form action="{{ route('admin.certificados.regenerar-pdf', $certificado) }}" method="POST" onsubmit="return confirm('Regenerar el PDF desde la plantilla? El archivo actual sera reemplazado.');">
+                    @csrf
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Regenerar PDF</button>
+                </form>
                 <form action="{{ route('admin.certificados.toggle-activo', $certificado) }}" method="POST" onsubmit="return confirm('{{ $certificado->activo ? 'Desactivar este certificado?' : 'Reactivar este certificado?' }}');">
                     @csrf
                     @method('PATCH')

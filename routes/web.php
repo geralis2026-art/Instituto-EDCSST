@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\CategoriaController;
 use App\Http\Controllers\Admin\CertificadoController;
 use App\Http\Controllers\Admin\MensajeController;
 use App\Http\Controllers\Admin\UsuarioController;
+use App\Http\Controllers\Admin\ConfiguracionController;
 use App\Http\Controllers\ProfileController;
 
 use Illuminate\Support\Facades\Route;
@@ -101,6 +102,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'admin', '
     Route::put('certificados/{certificado}',    [CertificadoController::class, 'update'])->name('certificados.update')->whereNumber('certificado')->middleware('throttle:admin-escritura');
     Route::delete('certificados/{certificado}', [CertificadoController::class, 'destroy'])->name('certificados.destroy')->whereNumber('certificado')->middleware('throttle:admin-escritura');
     Route::patch('certificados/{certificado}/toggle-activo', [CertificadoController::class, 'toggleActivo'])->name('certificados.toggle-activo')->middleware('throttle:admin-escritura');
+    Route::post('certificados/{certificado}/regenerar-pdf', [CertificadoController::class, 'regenerarPdf'])->name('certificados.regenerar-pdf')->whereNumber('certificado')->middleware('throttle:admin-escritura');
     Route::get('certificados-masivos',  [CertificadoController::class, 'masivosForm'])->name('certificados.masivos');
     Route::post('certificados-masivos', [CertificadoController::class, 'generarMasivos'])->name('certificados.generar-masivos')->middleware('throttle:admin-escritura');
 
@@ -114,6 +116,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'admin', '
     // Gestión de usuarios
     Route::resource('usuarios', UsuarioController::class)->only(['index', 'create', 'store', 'destroy']);
     Route::patch('usuarios/{usuario}/toggle-activo', [UsuarioController::class, 'toggleActivo'])->name('usuarios.toggle-activo');
+
+    // Configuración del sitio
+    Route::get('configuracion',  [ConfiguracionController::class, 'edit'])->name('configuracion.edit');
+    Route::put('configuracion',  [ConfiguracionController::class, 'update'])->name('configuracion.update');
 });
 
 Route::redirect('/dashboard', '/admin')

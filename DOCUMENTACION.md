@@ -244,6 +244,10 @@ Estas opciones existen como referencia en el sistema pero **aún no están activ
 - Se corrigió una vulnerabilidad potencial: la ruta de la plantilla de certificado (almacenada en BD) se usaba directamente en `file_exists()` y `setSourceFile()` sin validar que apuntara dentro del directorio permitido. Un valor malicioso podría haber revelado existencia de archivos del sistema o permitido leer archivos arbitrarios del servidor.
 - Solución: se usa `realpath()` para resolver la ruta canónica y se verifica con `str_starts_with()` que esté estrictamente dentro de `storage/app/public/` antes de usarla.
 
+**Acción dedicada para regenerar PDF de certificado (`CertificadoController::regenerarPdf`)**
+- El botón "Regenerar PDF" en el detalle de certificado apuntaba al mismo formulario de edición que el botón "Editar", sin ejecutar ninguna regeneración por sí mismo.
+- Solución: se creó la ruta `POST admin/certificados/{id}/regenerar-pdf` (solo admin, con throttle de escritura), el método `regenerarPdf()` en el controller (elimina el PDF anterior, genera el nuevo desde la plantilla y redirige con mensaje), y el botón en la vista ahora es un formulario POST con confirmación. El botón "Editar" queda exclusivamente para modificar los datos del certificado.
+
 **Consistencia de Storage y refuerzo de seguridad en plantilla PDF (`CertificadoPdfService`)**
 - `generarPdf()` usaba `file_exists()` sobre una ruta absoluta construida manualmente, inconsistente con el resto del proyecto que usa `Storage::disk()`. El fix #1 (path traversal) agregó una validación manual con `realpath()` + `str_starts_with()`.
 - Solución definitiva: se reemplaza por `Storage::disk('public')->exists()` y `Storage::disk('public')->path()` operando sobre la ruta relativa (`plantilla_certificado`). Flysystem confina todas las operaciones al root del disco (`storage/app/public/`) de forma inherente, haciendo la validación manual innecesaria y más frágil por comparación. El código queda más simple, consistente y seguro.
