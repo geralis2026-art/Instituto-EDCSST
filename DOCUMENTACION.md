@@ -244,6 +244,10 @@ Estas opciones existen como referencia en el sistema pero **aún no están activ
 - Se corrigió una vulnerabilidad potencial: la ruta de la plantilla de certificado (almacenada en BD) se usaba directamente en `file_exists()` y `setSourceFile()` sin validar que apuntara dentro del directorio permitido. Un valor malicioso podría haber revelado existencia de archivos del sistema o permitido leer archivos arbitrarios del servidor.
 - Solución: se usa `realpath()` para resolver la ruta canónica y se verifica con `str_starts_with()` que esté estrictamente dentro de `storage/app/public/` antes de usarla.
 
+**FormRequest para configuración del sitio (`ConfiguracionController` + `ConfiguracionRequest`)**
+- `ConfiguracionController::update()` usaba `$request->validate()` inline sin `authorize()` explícito, inconsistente con el resto del proyecto que usa FormRequests con autorización declarada en la clase.
+- Solución: se creó `App\Http\Requests\ConfiguracionRequest` con `authorize()` que exige rol admin, `rules()` con las mismas reglas, y `messages()` con mensajes en español. El controller queda reducido a una línea por método, y la autorización tiene doble respaldo: middleware de ruta + `authorize()` del FormRequest.
+
 **Acción dedicada para regenerar PDF de certificado (`CertificadoController::regenerarPdf`)**
 - El botón "Regenerar PDF" en el detalle de certificado apuntaba al mismo formulario de edición que el botón "Editar", sin ejecutar ninguna regeneración por sí mismo.
 - Solución: se creó la ruta `POST admin/certificados/{id}/regenerar-pdf` (solo admin, con throttle de escritura), el método `regenerarPdf()` en el controller (elimina el PDF anterior, genera el nuevo desde la plantilla y redirige con mensaje), y el botón en la vista ahora es un formulario POST con confirmación. El botón "Editar" queda exclusivamente para modificar los datos del certificado.
