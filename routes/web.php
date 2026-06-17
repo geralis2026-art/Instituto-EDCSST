@@ -121,7 +121,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'admin', '
 
     // Configuración del sitio
     Route::get('configuracion',  [ConfiguracionController::class, 'edit'])->name('configuracion.edit');
-    Route::put('configuracion',  [ConfiguracionController::class, 'update'])->name('configuracion.update');
+    Route::put('configuracion',  [ConfiguracionController::class, 'update'])->name('configuracion.update')->middleware('throttle:admin-escritura');
 });
 
 Route::redirect('/dashboard', '/admin')

@@ -35,7 +35,7 @@ class CategoriaRequest extends FormRequest
                 'max:255',
                 Rule::unique('categorias', 'slug')->ignore($categoriaId),
             ],
-            'descripcion' => 'nullable|string',
+            'descripcion' => 'nullable|string|max:2000',
             'activo' => 'boolean',
         ];
     }
