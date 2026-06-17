@@ -244,6 +244,10 @@ Estas opciones existen como referencia en el sistema pero **aún no están activ
 - Se corrigió una vulnerabilidad potencial: la ruta de la plantilla de certificado (almacenada en BD) se usaba directamente en `file_exists()` y `setSourceFile()` sin validar que apuntara dentro del directorio permitido. Un valor malicioso podría haber revelado existencia de archivos del sistema o permitido leer archivos arbitrarios del servidor.
 - Solución: se usa `realpath()` para resolver la ruta canónica y se verifica con `str_starts_with()` que esté estrictamente dentro de `storage/app/public/` antes de usarla.
 
+**Desacoplamiento transacción DB / escritura de PDF en certificados masivos (`GeneracionMasivaCertificadosService`)**
+- La generación del PDF ocurría dentro de `DB::transaction()`. Si `$solicitud->update()` fallaba y hacía rollback, el PDF ya estaba escrito en disco como archivo huérfano (sin certificado asociado en BD).
+- Solución: se divide el proceso en dos fases. Fase 1 (dentro de la transacción): crear el certificado y marcar la solicitud como procesada de forma atómica. Fase 2 (fuera de la transacción): generar y guardar el PDF. Si la fase 2 falla, el certificado queda sin PDF pero `verPdf()` lo regenera al vuelo.
+
 **Optimización de visualización de PDF (`CertificadoController::verPdf`)**
 - `verPdf()` regeneraba el PDF con FPDI (carga de fuentes + plantilla) en cada request, lo que era costoso en CPU y podía ser abusado por clicks repetidos.
 - Solución: si el certificado ya tiene `archivo_pdf` almacenado en disco, se sirve directamente desde el disco. Solo se regenera cuando no existe archivo (ej: certificados muy antiguos sin PDF guardado).

@@ -33,8 +33,7 @@ class GeneracionMasivaCertificadosService
      *     fecha_emision: string,
      *     intensidad_horaria: int,
      *     modalidad: ?string,
-     *     codigo_unico: ?string,
-     *     archivo_pdf: ?\Illuminate\Http\UploadedFile,
+     *     anios_vigencia: int,
      * }>  $filas
      * @return array{generados: int, errores: array<int, string>}
      */
@@ -45,37 +44,29 @@ class GeneracionMasivaCertificadosService
 
         foreach ($filas as $fila) {
             try {
-                DB::transaction(function () use ($fila, $emitidoPor, $pdfService) {
+                /**
+                 * Fase 1 — transacción DB: crea el certificado y marca la solicitud
+                 * como procesada de forma atómica. El PDF queda fuera de la transacción
+                 * para evitar archivos huérfanos en disco si el rollback ocurre.
+                 */
+                $certificado = null;
+
+                DB::transaction(function () use ($fila, $emitidoPor, &$certificado) {
                     $solicitud = SolicitudCertificado::pendientes()->findOrFail($fila['solicitud_id']);
 
-                    $codigoManual = $fila['codigo_unico'] ?: null;
-
-                    $datos = [
+                    $certificado = Certificado::create([
                         'capacitado_id' => $solicitud->capacitado_id,
                         'curso_id' => $fila['curso_id'],
                         'emitido_por' => $emitidoPor,
-                        'codigo_unico' => $codigoManual ?? (string) Str::uuid(),
+                        'codigo_unico' => (string) Str::uuid(),
                         'fecha_emision' => $fila['fecha_emision'],
-                        'fecha_vencimiento' => Carbon::parse($fila['fecha_emision'])->addYear()->toDateString(),
+                        'fecha_vencimiento' => Carbon::parse($fila['fecha_emision'])->addYears($fila['anios_vigencia'])->toDateString(),
                         'intensidad_horaria' => $fila['intensidad_horaria'],
                         'modalidad' => $fila['modalidad'],
-                        'activo' => true,
-                    ];
+                        'activo' => $fila['activo'],
+                    ]);
 
-                    if ($fila['archivo_pdf']) {
-                        $datos['archivo_pdf'] = $fila['archivo_pdf']->store('certificados', 'certificados');
-                    }
-
-                    $certificado = Certificado::create($datos);
-
-                    if (!$codigoManual) {
-                        $certificado->codigo_unico = Certificado::generarCodigoUnico();
-                    }
-
-                    if (!$fila['archivo_pdf']) {
-                        $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
-                    }
-
+                    $certificado->codigo_unico = Certificado::generarCodigoUnico();
                     $certificado->saveQuietly();
 
                     $solicitud->update([
@@ -83,6 +74,14 @@ class GeneracionMasivaCertificadosService
                         'certificado_id' => $certificado->id,
                     ]);
                 });
+
+                /**
+                 * Fase 2 — generación del PDF fuera de la transacción.
+                 * Si falla, el certificado queda sin PDF pero es recuperable:
+                 * verPdf() lo regenera al vuelo bajo demanda.
+                 */
+                $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
+                $certificado->saveQuietly();
 
                 $generados++;
             } catch (\Throwable $e) {
