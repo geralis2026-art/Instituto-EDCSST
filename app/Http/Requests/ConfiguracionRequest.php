@@ -15,24 +15,27 @@ class ConfiguracionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre_instituto' => 'required|string|max:255',
-            'descripcion'      => 'nullable|string|max:2000',
-            'telefono'         => 'nullable|string|max:30',
-            'correo_contacto'  => 'nullable|email|max:255',
-            'direccion'        => 'nullable|string|max:500',
-            'whatsapp'         => 'nullable|string|max:30',
-            'facebook'         => 'nullable|url|max:500',
-            'instagram'        => 'nullable|url|max:500',
+            'nombre_instituto'    => 'required|string|max:255',
+            'descripcion'         => 'nullable|string|max:2000',
+            'telefono'            => 'nullable|string|max:30',
+            'correo_contacto'     => 'nullable|email|max:255',
+            'direccion'           => 'nullable|string|max:500',
+            'whatsapp'            => 'nullable|string|max:30',
+            'facebook'            => 'nullable|url|max:500',
+            'instagram'           => 'nullable|url|max:500',
+            'plantilla_certificado_archivo' => ['nullable', 'file', 'mimetypes:application/pdf', 'max:10240'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'nombre_instituto.required' => 'El nombre del instituto es requerido.',
-            'correo_contacto.email'     => 'El correo de contacto debe ser una dirección válida.',
-            'facebook.url'              => 'El enlace de Facebook debe ser una URL válida.',
-            'instagram.url'             => 'El enlace de Instagram debe ser una URL válida.',
+            'nombre_instituto.required'              => 'El nombre del instituto es requerido.',
+            'correo_contacto.email'                  => 'El correo de contacto debe ser una dirección válida.',
+            'facebook.url'                           => 'El enlace de Facebook debe ser una URL válida.',
+            'instagram.url'                          => 'El enlace de Instagram debe ser una URL válida.',
+            'plantilla_certificado_archivo.mimetypes' => 'La plantilla debe ser un PDF válido.',
+            'plantilla_certificado_archivo.max'       => 'La plantilla no puede pesar más de 10 MB.',
         ];
     }
 }

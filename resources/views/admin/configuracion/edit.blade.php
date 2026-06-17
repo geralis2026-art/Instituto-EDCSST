@@ -82,6 +82,31 @@
             </div>
         </div>
 
+        {{-- Plantilla de certificado --}}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 reveal delay-2">
+            <h2 class="text-base font-semibold text-gray-800 mb-5 pb-3 border-b border-gray-100">Plantilla de certificado</h2>
+
+            <div class="space-y-3">
+                @if($config->plantilla_certificado)
+                    <p class="text-sm text-gray-600">
+                        Plantilla actual: <span class="font-medium text-gray-800">{{ basename($config->plantilla_certificado) }}</span>
+                    </p>
+                @else
+                    <p class="text-sm text-amber-600 font-medium">No hay plantilla configurada. Los certificados se generarán con la plantilla por defecto.</p>
+                @endif
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        {{ $config->plantilla_certificado ? 'Reemplazar plantilla (PDF)' : 'Subir plantilla (PDF)' }}
+                    </label>
+                    <input type="file" name="plantilla_certificado_archivo" accept="application/pdf"
+                        class="block text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400 file:mr-3 file:py-2 file:px-4 file:border-0 file:bg-amber-500 file:text-white file:rounded-l-lg file:cursor-pointer hover:file:bg-amber-600 @error('plantilla_certificado_archivo') border-red-400 @enderror">
+                    @error('plantilla_certificado_archivo') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    <p class="text-xs text-gray-500 mt-1">PDF, máx. 10 MB. Se guardará como <code>plantillas/certificado.pdf</code>.</p>
+                </div>
+            </div>
+        </div>
+
         {{-- Botón guardar --}}
         <div class="flex justify-end pb-6">
             <button type="submit" class="btn-gold px-6 py-2.5 text-sm">
