@@ -244,6 +244,10 @@ Estas opciones existen como referencia en el sistema pero **aún no están activ
 - Se corrigió una vulnerabilidad potencial: la ruta de la plantilla de certificado (almacenada en BD) se usaba directamente en `file_exists()` y `setSourceFile()` sin validar que apuntara dentro del directorio permitido. Un valor malicioso podría haber revelado existencia de archivos del sistema o permitido leer archivos arbitrarios del servidor.
 - Solución: se usa `realpath()` para resolver la ruta canónica y se verifica con `str_starts_with()` que esté estrictamente dentro de `storage/app/public/` antes de usarla.
 
+**Consistencia de Storage y refuerzo de seguridad en plantilla PDF (`CertificadoPdfService`)**
+- `generarPdf()` usaba `file_exists()` sobre una ruta absoluta construida manualmente, inconsistente con el resto del proyecto que usa `Storage::disk()`. El fix #1 (path traversal) agregó una validación manual con `realpath()` + `str_starts_with()`.
+- Solución definitiva: se reemplaza por `Storage::disk('public')->exists()` y `Storage::disk('public')->path()` operando sobre la ruta relativa (`plantilla_certificado`). Flysystem confina todas las operaciones al root del disco (`storage/app/public/`) de forma inherente, haciendo la validación manual innecesaria y más frágil por comparación. El código queda más simple, consistente y seguro.
+
 **Mensaje de éxito incorrecto al editar certificado (`CertificadoController::update`)**
 - El mensaje de confirmación siempre decía "PDF regenerado correctamente" aunque el usuario hubiera subido un PDF manual (en cuyo caso no se regenera, sino que se almacena el archivo subido).
 - Solución: el mensaje se condiciona según si se subió un archivo — "Certificado actualizado correctamente." cuando hay PDF manual, "Certificado actualizado y PDF regenerado correctamente." cuando se regeneró desde la plantilla.

@@ -16,21 +16,20 @@ use setasign\Fpdi\Fpdi;
  */
 class CertificadoPdfService
 {
-    /** Renderiza el certificado y devuelve el binario del PDF. */
+    /**
+     * Renderiza el certificado y devuelve el binario del PDF.
+     * Usa Storage::disk('public') para verificar y resolver la plantilla:
+     * Flysystem confina las operaciones al root del disco, previniendo
+     * path traversal sin validación manual adicional.
+     */
     public function generarPdf(Certificado $certificado): string
     {
         $certificado->loadMissing(['capacitado', 'curso.categoria']);
 
-        $plantilla = ConfiguracionSitio::obtener()->plantilla_url;
+        $rutaRelativa = ConfiguracionSitio::obtener()->plantilla_certificado;
 
-        if ($plantilla) {
-            $rutaReal = realpath($plantilla);
-            $dirPermitido = realpath(storage_path('app/public'));
-
-            if ($rutaReal !== false && $dirPermitido !== false
-                && str_starts_with($rutaReal, $dirPermitido . DIRECTORY_SEPARATOR)) {
-                return $this->generarConPlantilla($certificado, $rutaReal);
-            }
+        if ($rutaRelativa && Storage::disk('public')->exists($rutaRelativa)) {
+            return $this->generarConPlantilla($certificado, Storage::disk('public')->path($rutaRelativa));
         }
 
         return Pdf::loadView('pdf.certificado', compact('certificado'))
