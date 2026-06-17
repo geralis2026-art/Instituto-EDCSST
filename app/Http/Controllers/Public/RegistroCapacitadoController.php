@@ -43,16 +43,19 @@ class RegistroCapacitadoController extends Controller
             'correo'          => 'nullable|email|max:255',
             'telefono'        => 'nullable|string|max:30',
             'rh'              => 'nullable|string|max:10',
-            'modalidad'       => 'required|in:virtual,presencial',
             'cursos'          => 'required|array|min:1',
             'cursos.*'        => 'required|integer|exists:cursos,id',
+            'modalidades'     => 'required|array|min:1',
+            'modalidades.*'   => 'required|in:virtual,presencial',
         ], [
             'nombre_completo.required' => 'El nombre completo es requerido.',
             'documento.required'       => 'El número de documento es requerido.',
-            'modalidad.required'       => 'Debes seleccionar la modalidad.',
             'cursos.required'          => 'Debes seleccionar al menos un curso.',
             'cursos.min'               => 'Debes seleccionar al menos un curso.',
             'cursos.*.exists'          => 'Uno de los cursos seleccionados no es válido.',
+            'modalidades.required'     => 'Debes seleccionar la modalidad de cada curso.',
+            'modalidades.*.required'   => 'Selecciona la modalidad de cada curso marcado.',
+            'modalidades.*.in'         => 'La modalidad debe ser presencial o virtual.',
         ]);
 
         $capacitado = Capacitado::updateOrCreate(
@@ -75,7 +78,7 @@ class RegistroCapacitadoController extends Controller
                     'estado'        => 'pendiente',
                 ],
                 [
-                    'modalidad' => $datos['modalidad'],
+                    'modalidad' => $datos['modalidades'][$cursoId] ?? 'presencial',
                     'origen'    => 'registro_link',
                 ]
             );

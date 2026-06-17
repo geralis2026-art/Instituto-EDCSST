@@ -74,29 +74,15 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Grupo sanguíneo (RH)</label>
-                        <select name="rh" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('rh') border-red-400 @enderror">
-                            <option value="">— Seleccionar —</option>
-                            @foreach(['O+','O-','A+','A-','B+','B-','AB+','AB-'] as $tipo)
-                                <option value="{{ $tipo }}" {{ old('rh') === $tipo ? 'selected' : '' }}>{{ $tipo }}</option>
-                            @endforeach
-                        </select>
-                        @error('rh') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Modalidad <span class="text-red-500">*</span>
-                        </label>
-                        <select name="modalidad" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('modalidad') border-red-400 @enderror">
-                            <option value="">— Seleccionar —</option>
-                            <option value="presencial" {{ old('modalidad') === 'presencial' ? 'selected' : '' }}>Presencial</option>
-                            <option value="virtual"    {{ old('modalidad') === 'virtual'    ? 'selected' : '' }}>Virtual</option>
-                        </select>
-                        @error('modalidad') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Grupo sanguíneo (RH)</label>
+                    <select name="rh" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('rh') border-red-400 @enderror">
+                        <option value="">— Seleccionar —</option>
+                        @foreach(['O+','O-','A+','A-','B+','B-','AB+','AB-'] as $tipo)
+                            <option value="{{ $tipo }}" {{ old('rh') === $tipo ? 'selected' : '' }}>{{ $tipo }}</option>
+                        @endforeach
+                    </select>
+                    @error('rh') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
         </div>
@@ -110,6 +96,8 @@
 
             @error('cursos') <p class="text-red-500 text-sm mb-3">{{ $message }}</p> @enderror
             @error('cursos.*') <p class="text-red-500 text-sm mb-3">{{ $message }}</p> @enderror
+            @error('modalidades') <p class="text-red-500 text-sm mb-3">{{ $message }}</p> @enderror
+            @error('modalidades.*') <p class="text-red-500 text-sm mb-3">{{ $message }}</p> @enderror
 
             @if($cursos->isEmpty())
                 <p class="text-gray-500 text-sm">No hay cursos disponibles en este momento.</p>
@@ -120,19 +108,34 @@
                             <p class="text-xs font-semibold text-amber-700 uppercase tracking-wider mb-2">{{ $categoria }}</p>
                             <div class="space-y-2">
                                 @foreach($listaCursos as $curso)
-                                    <label class="flex items-start gap-3 p-3 rounded-lg border border-gray-200 hover:border-amber-300 hover:bg-amber-50 cursor-pointer transition group">
-                                        <input type="checkbox"
-                                               name="cursos[]"
-                                               value="{{ $curso->id }}"
-                                               {{ in_array($curso->id, old('cursos', [])) ? 'checked' : '' }}
-                                               class="mt-0.5 w-4 h-4 text-amber-500 border-gray-300 rounded focus:ring-amber-400">
-                                        <div>
-                                            <span class="text-sm font-medium text-gray-800 group-hover:text-amber-700 transition">{{ $curso->nombre }}</span>
-                                            @if($curso->intensidad_horaria)
-                                                <span class="ml-2 text-xs text-gray-400">{{ $curso->intensidad_horaria }}h</span>
-                                            @endif
+                                    @php $oldModal = old("modalidades.{$curso->id}"); @endphp
+                                    <div x-data="{ marcado: {{ in_array($curso->id, old('cursos', [])) ? 'true' : 'false' }} }"
+                                         class="rounded-lg border transition"
+                                         :class="marcado ? 'border-amber-400 bg-amber-50' : 'border-gray-200'">
+                                        <label class="flex items-start gap-3 p-3 cursor-pointer group">
+                                            <input type="checkbox"
+                                                   name="cursos[]"
+                                                   value="{{ $curso->id }}"
+                                                   x-model="marcado"
+                                                   class="mt-0.5 w-4 h-4 text-amber-500 border-gray-300 rounded focus:ring-amber-400">
+                                            <div class="flex-1 min-w-0">
+                                                <span class="text-sm font-medium text-gray-800 group-hover:text-amber-700 transition">{{ $curso->nombre }}</span>
+                                                @if($curso->intensidad_horaria)
+                                                    <span class="ml-2 text-xs text-gray-400">{{ $curso->intensidad_horaria }}h</span>
+                                                @endif
+                                            </div>
+                                        </label>
+                                        <div x-show="marcado" x-cloak class="px-3 pb-3">
+                                            <label class="text-xs font-medium text-gray-600 mb-1 block">
+                                                Modalidad <span class="text-red-500">*</span>
+                                            </label>
+                                            <select name="modalidades[{{ $curso->id }}]"
+                                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent">
+                                                <option value="presencial" {{ $oldModal === 'presencial' ? 'selected' : '' }}>Presencial</option>
+                                                <option value="virtual"    {{ $oldModal === 'virtual'    ? 'selected' : '' }}>Virtual</option>
+                                            </select>
                                         </div>
-                                    </label>
+                                    </div>
                                 @endforeach
                             </div>
                         </div>

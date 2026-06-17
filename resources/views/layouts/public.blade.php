@@ -130,6 +130,9 @@
         .float-b { animation: float2  9s ease-in-out infinite 2s; }
         .float-c { animation: float1 11s ease-in-out infinite 1s; }
 
+        /* Alpine x-cloak */
+        [x-cloak] { display: none !important; }
+
         /* ===== WHATSAPP PULSE ===== */
         @keyframes wa-pulse {
             0%, 100% { box-shadow: 0 4px 14px rgba(22,163,74,0.5), 0 0 0 0 rgba(22,163,74,0.45); }
