@@ -131,6 +131,21 @@
         </div>
 
         <div>
+            <label for="anios_vigencia" class="block text-sm font-medium text-gray-700 mb-1">Vigencia *</label>
+            <select id="anios_vigencia" name="anios_vigencia"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('anios_vigencia') border-red-500 @enderror">
+                @php
+                    $vigenciaActual = old('anios_vigencia', isset($certificado) && $certificado->fecha_vencimiento
+                        ? (int) $certificado->fecha_emision->diffInYears($certificado->fecha_vencimiento)
+                        : 1);
+                @endphp
+                <option value="1" @selected((int)$vigenciaActual === 1)>1 año</option>
+                <option value="2" @selected((int)$vigenciaActual === 2)>2 años</option>
+            </select>
+            @error('anios_vigencia')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
+        </div>
+
+        <div>
             <label for="intensidad_horaria" class="block text-sm font-medium text-gray-700 mb-1">Intensidad horaria *</label>
             <input type="number" id="intensidad_horaria" name="intensidad_horaria" min="1"
                    value="{{ old('intensidad_horaria', $certificado->intensidad_horaria ?? '') }}"

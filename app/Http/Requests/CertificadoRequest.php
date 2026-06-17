@@ -45,6 +45,7 @@ class CertificadoRequest extends FormRequest
             'fecha_emision' => 'required|date',
             'intensidad_horaria' => 'required|integer|min:1|max:500',
             'modalidad' => 'nullable|in:virtual,presencial',
+            'anios_vigencia' => 'required|integer|in:1,2',
             'archivo_pdf' => ['nullable', 'file', 'mimetypes:application/pdf', 'max:10240'],
             'activo' => 'boolean',
         ];
@@ -63,6 +64,8 @@ class CertificadoRequest extends FormRequest
             'archivo_pdf.mimetypes' => 'El archivo debe ser un PDF válido.',
             'archivo_pdf.max' => 'El PDF no puede pesar mas de 10 MB.',
             'modalidad.in' => 'La modalidad debe ser virtual o presencial.',
+            'anios_vigencia.required' => 'La vigencia es requerida.',
+            'anios_vigencia.in' => 'La vigencia debe ser 1 o 2 años.',
         ];
     }
 }

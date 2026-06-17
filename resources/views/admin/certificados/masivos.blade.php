@@ -4,7 +4,7 @@
 @section('titulo_topbar', 'Certificados masivos')
 
 @section('contenido')
-<div class="space-y-6" x-data="{ fechaGlobal: '{{ now()->toDateString() }}' }">
+<div class="space-y-6" x-data="{ fechaGlobal: '{{ now()->toDateString() }}', vigenciaGlobal: '1', activoGlobal: true }">
     <div class="flex justify-between items-center">
         <div>
             <h1 class="text-3xl font-bold text-gray-900">Generación Masiva de Certificados</h1>
@@ -26,17 +26,27 @@
         <form action="{{ route('admin.certificados.generar-masivos') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
 
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex flex-wrap items-end gap-3">
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex flex-wrap items-end gap-4">
                 <div>
                     <label class="block text-sm font-medium text-blue-800 mb-1">Fecha de emisión para todos</label>
                     <input type="date" x-model="fechaGlobal" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-blue-800 mb-1">Vigencia para todos</label>
+                    <select x-model="vigenciaGlobal" class="w-36 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="1">1 año</option>
+                        <option value="2">2 años</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="block text-sm font-medium text-blue-800">Activo para todos</label>
+                    <input type="checkbox" x-model="activoGlobal" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-5 h-5">
+                </div>
                 <button type="button"
-                        @click="document.querySelectorAll('.fecha-emision').forEach(el => el.value = fechaGlobal)"
+                        @click="document.querySelectorAll('.fecha-emision').forEach(el => el.value = fechaGlobal); document.querySelectorAll('.anios-vigencia').forEach(el => el.value = vigenciaGlobal); document.querySelectorAll('.activo-cert').forEach(el => el.checked = activoGlobal)"
                         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                    Aplicar fecha a todas las filas
+                    Aplicar a todas las filas
                 </button>
-                <p class="text-sm text-blue-700 self-center">El PDF es opcional: si no subes uno, se generará automáticamente con la plantilla del instituto.</p>
             </div>
 
             <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -50,8 +60,8 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Fecha emisión</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Intensidad (h)</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Modalidad</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Código único</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">PDF (opcional)</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Vigencia</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Activo</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
@@ -100,13 +110,17 @@
                                         </select>
                                     </td>
                                     <td class="px-4 py-3 align-top">
-                                        <input type="text" name="solicitudes[{{ $solicitud->id }}][codigo_unico]"
-                                               placeholder="Auto"
-                                               class="w-32 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <select name="solicitudes[{{ $solicitud->id }}][anios_vigencia]"
+                                                class="anios-vigencia w-28 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="1">1 año</option>
+                                            <option value="2">2 años</option>
+                                        </select>
                                     </td>
-                                    <td class="px-4 py-3 align-top">
-                                        <input type="file" name="solicitudes[{{ $solicitud->id }}][archivo_pdf]" accept="application/pdf"
-                                               class="block w-44 text-xs text-gray-700 border border-gray-300 rounded cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-2 file:py-1 file:px-2 file:border-0 file:bg-blue-600 file:text-white file:rounded file:cursor-pointer hover:file:bg-blue-700">
+                                    <td class="px-4 py-3 align-top text-center">
+                                        <input type="hidden" name="solicitudes[{{ $solicitud->id }}][activo]" value="0">
+                                        <input type="checkbox" name="solicitudes[{{ $solicitud->id }}][activo]" value="1"
+                                               checked
+                                               class="activo-cert rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-5 h-5">
                                     </td>
                                 </tr>
                             @endforeach
