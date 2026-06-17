@@ -171,10 +171,18 @@ class CertificadoController extends Controller
             ->with('success', 'Certificado actualizado y PDF regenerado correctamente.');
     }
 
-    /** Sirve el PDF del certificado directamente en el navegador (inline). */
+    /**
+     * Sirve el PDF del certificado directamente en el navegador (inline).
+     * Usa el archivo almacenado si existe; solo regenera si no hay archivo,
+     * evitando re-renderizado costoso con FPDI en cada visualización.
+     */
     public function verPdf(Certificado $certificado, CertificadoPdfService $pdfService)
     {
-        $pdf = $pdfService->generarPdf($certificado);
+        if ($certificado->archivo_pdf && Storage::disk('certificados')->exists($certificado->archivo_pdf)) {
+            $pdf = Storage::disk('certificados')->get($certificado->archivo_pdf);
+        } else {
+            $pdf = $pdfService->generarPdf($certificado);
+        }
 
         return response($pdf, 200, [
             'Content-Type'        => 'application/pdf',

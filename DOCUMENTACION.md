@@ -244,6 +244,10 @@ Estas opciones existen como referencia en el sistema pero **aún no están activ
 - Se corrigió una vulnerabilidad potencial: la ruta de la plantilla de certificado (almacenada en BD) se usaba directamente en `file_exists()` y `setSourceFile()` sin validar que apuntara dentro del directorio permitido. Un valor malicioso podría haber revelado existencia de archivos del sistema o permitido leer archivos arbitrarios del servidor.
 - Solución: se usa `realpath()` para resolver la ruta canónica y se verifica con `str_starts_with()` que esté estrictamente dentro de `storage/app/public/` antes de usarla.
 
+**Optimización de visualización de PDF (`CertificadoController::verPdf`)**
+- `verPdf()` regeneraba el PDF con FPDI (carga de fuentes + plantilla) en cada request, lo que era costoso en CPU y podía ser abusado por clicks repetidos.
+- Solución: si el certificado ya tiene `archivo_pdf` almacenado en disco, se sirve directamente desde el disco. Solo se regenera cuando no existe archivo (ej: certificados muy antiguos sin PDF guardado).
+
 **Race condition en código único de certificados (`CertificadoController::store`)**
 - Se corrigió una condición de carrera: al crear un certificado sin código manual, el sistema creaba el registro con un UUID temporal y luego lo sobreescribía con el código `EDCSST-YYYY-00001`. Si `saveQuietly()` fallaba (error de memoria, timeout, excepción al generar PDF), el certificado quedaba persistido en BD con el UUID, violando el formato oficial.
 - Solución: se envuelve `Certificado::create()` + generación de código + `saveQuietly()` en una `DB::transaction()`, de modo que cualquier fallo revierte el registro completo y la BD queda limpia.
