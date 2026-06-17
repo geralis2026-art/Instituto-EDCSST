@@ -167,9 +167,13 @@ class CertificadoController extends Controller
             $certificado->saveQuietly();
         }
 
+        $mensaje = $request->hasFile('archivo_pdf')
+            ? 'Certificado actualizado correctamente.'
+            : 'Certificado actualizado y PDF regenerado correctamente.';
+
         return redirect()
             ->route('admin.certificados.show', $certificado)
-            ->with('success', 'Certificado actualizado y PDF regenerado correctamente.');
+            ->with('success', $mensaje);
     }
 
     /**

@@ -244,6 +244,10 @@ Estas opciones existen como referencia en el sistema pero **aún no están activ
 - Se corrigió una vulnerabilidad potencial: la ruta de la plantilla de certificado (almacenada en BD) se usaba directamente en `file_exists()` y `setSourceFile()` sin validar que apuntara dentro del directorio permitido. Un valor malicioso podría haber revelado existencia de archivos del sistema o permitido leer archivos arbitrarios del servidor.
 - Solución: se usa `realpath()` para resolver la ruta canónica y se verifica con `str_starts_with()` que esté estrictamente dentro de `storage/app/public/` antes de usarla.
 
+**Mensaje de éxito incorrecto al editar certificado (`CertificadoController::update`)**
+- El mensaje de confirmación siempre decía "PDF regenerado correctamente" aunque el usuario hubiera subido un PDF manual (en cuyo caso no se regenera, sino que se almacena el archivo subido).
+- Solución: el mensaje se condiciona según si se subió un archivo — "Certificado actualizado correctamente." cuando hay PDF manual, "Certificado actualizado y PDF regenerado correctamente." cuando se regeneró desde la plantilla.
+
 **Validación contradictoria en certificados masivos (`CertificadoController::generarMasivos`)**
 - La validación aplicaba `required_with` y `nullable` simultáneamente sobre los campos de todas las filas (incluidas y no incluidas), generando comportamiento indefinido: si una fila no estaba marcada, sus campos eran "requeridos" pero también "nulos aceptables".
 - Solución: se filtra primero el array de solicitudes a solo las filas marcadas con `incluir`, se retorna temprano si ninguna fue seleccionada, y se valida únicamente ese subconjunto con reglas limpias (`required` sin `nullable` en campos obligatorios) usando `Validator::make()` para no alterar el request original. Los mensajes de error ahora son específicos y orientados al usuario.
