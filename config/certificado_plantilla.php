@@ -16,9 +16,9 @@
  */
 return [
     'campos' => [
-        'nombre_completo'   => ['x' => null,  'y' => 95.0,  'size' => 50, 'estilo' => '',  'fuente' => 'OptiDianna', 'align' => 'C'],
+        'nombre_completo'   => ['x' => null,  'y' => 95.0,  'size' => 50, 'min_size' => 20, 'margen' => 25, 'estilo' => '',  'fuente' => 'OptiDianna', 'align' => 'C'],
         'documento'         => ['x' => 129.0, 'y' => 105.0, 'size' => 14, 'estilo' => '',  'fuente' => 'CenturyGothic', 'align' => 'L'],
-        'curso'             => ['x' => null,  'y' => 122.5, 'size' => 18, 'estilo' => 'B', 'fuente' => 'CenturyGothic', 'align' => 'C', 'color' => [89, 89, 89]],
+        'curso'             => ['x' => null,  'y' => 122.5, 'size' => 18, 'min_size' => 10, 'margen' => 25, 'estilo' => 'B', 'fuente' => 'CenturyGothic', 'align' => 'C', 'color' => [89, 89, 89]],
         'modalidad'         => ['x' => 128.0, 'y' => 129.7, 'size' => 11, 'estilo' => 'B', 'fuente' => 'CenturyGothic', 'align' => 'L', 'color' => [89, 89, 89]],
         'duracion'          => ['x' => 172.3, 'y' => 129.7, 'size' => 11, 'estilo' => 'B', 'fuente' => 'CenturyGothic', 'align' => 'L', 'color' => [89, 89, 89]],
         'fecha_emision'     => ['x' => 147.8, 'y' => 139.0, 'size' => 10, 'estilo' => '',  'fuente' => 'CenturyGothic', 'align' => 'L'],

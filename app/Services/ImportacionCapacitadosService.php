@@ -191,6 +191,11 @@ class ImportacionCapacitadosService
             $datos[$encabezado] = trim((string) ($filaExcel[$indice] ?? ''));
         }
 
+        // Normaliza el nombre a Title Case para que no quede todo en mayúsculas
+        if (!empty($datos['nombre_completo'])) {
+            $datos['nombre_completo'] = mb_convert_case($datos['nombre_completo'], MB_CASE_TITLE, 'UTF-8');
+        }
+
         // Acepta "curso" (singular) como alias de "cursos"
         if (empty($datos['cursos']) && !empty($datos['curso'])) {
             $datos['cursos'] = $datos['curso'];

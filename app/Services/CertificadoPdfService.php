@@ -75,7 +75,8 @@ class CertificadoPdfService
 
         $pdf->SetTextColor(...self::COLOR_TEXTO_BASE);
 
-        $this->escribirCampo($pdf, $campos['nombre_completo'], $certificado->capacitado->nombre_completo, $tamano['width']);
+        $nombre = mb_convert_case($certificado->capacitado->nombre_completo, MB_CASE_TITLE, 'UTF-8');
+        $this->escribirCampo($pdf, $campos['nombre_completo'], $nombre, $tamano['width']);
         $this->escribirCampo($pdf, $campos['documento'], $this->formatearDocumento($certificado->capacitado->documento), $tamano['width']);
         $this->escribirCampo($pdf, $campos['curso'], mb_strtoupper($certificado->curso->nombre, 'UTF-8'), $tamano['width']);
         $this->escribirCampo($pdf, $campos['modalidad'], ucfirst(strtolower($certificado->modalidad ?? 'No especificada')), $tamano['width']);
@@ -97,7 +98,19 @@ class CertificadoPdfService
     {
         $texto = mb_convert_encoding($texto, 'ISO-8859-1', 'UTF-8');
 
-        $pdf->SetFont($campo['fuente'] ?? 'Helvetica', $campo['estilo'], $campo['size']);
+        $fuente   = $campo['fuente'] ?? 'Helvetica';
+        $estilo   = $campo['estilo'];
+        $size     = (float) $campo['size'];
+        $minSize  = (float) ($campo['min_size'] ?? 8);
+        $margen   = (float) ($campo['margen'] ?? 20);
+        $maxAncho = $anchoPagina - ($margen * 2);
+
+        // Reduce el tamaño de fuente hasta que el texto quepa en el ancho disponible.
+        $pdf->SetFont($fuente, $estilo, $size);
+        while ($size > $minSize && $pdf->GetStringWidth($texto) > $maxAncho) {
+            $size -= 0.5;
+            $pdf->SetFont($fuente, $estilo, $size);
+        }
 
         if (isset($campo['color'])) {
             $pdf->SetTextColor(...$campo['color']);
