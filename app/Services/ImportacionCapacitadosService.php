@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Capacitado;
 use App\Models\Curso;
 use App\Models\SolicitudCertificado;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -14,14 +15,14 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 /**
  * Procesa la importación masiva de capacitados desde un archivo Excel.
  *
- * Por cada fila crea o actualiza un Capacitado (por documento) y, si el
- * curso indicado coincide con uno activo, registra una SolicitudCertificado
- * pendiente para la generación masiva de certificados (Fase 2b).
+ * La columna "cursos" acepta uno o varios nombres separados por coma.
+ * La búsqueda de cursos es parcial: "violencia sexual" encuentra
+ * "Atención integral a víctimas de violencia sexual".
  */
 class ImportacionCapacitadosService
 {
     /** Columnas esperadas en la plantilla, en orden. */
-    public const COLUMNAS = ['nombre_completo', 'documento', 'correo', 'telefono', 'rh', 'curso', 'modalidad'];
+    public const COLUMNAS = ['nombre_completo', 'documento', 'correo', 'telefono', 'rh', 'cursos', 'modalidad'];
 
     private const CACHE_TTL_MINUTOS = 15;
 
@@ -39,21 +40,21 @@ class ImportacionCapacitadosService
         }
 
         $encabezados = $this->normalizarEncabezados(array_shift($filasExcel));
-        $cursosPorSlug = Curso::activos()->get()->keyBy(fn (Curso $curso) => Str::slug($curso->nombre));
+        $todosCursos = Curso::activos()->get();
+        $cursosPorSlug = $todosCursos->keyBy(fn (Curso $c) => Str::slug($c->nombre));
 
         $filas = [];
-        $numeroFila = 1; // la fila 1 del Excel es el encabezado
+        $numeroFila = 1;
 
         foreach ($filasExcel as $filaExcel) {
             $numeroFila++;
-
             $datos = $this->mapearFila($encabezados, $filaExcel);
 
             if ($this->filaVacia($datos)) {
                 continue;
             }
 
-            $filas[] = $this->procesarFila($numeroFila, $datos, $cursosPorSlug);
+            $filas[] = $this->procesarFila($numeroFila, $datos, $cursosPorSlug, $todosCursos);
         }
 
         $token = (string) Str::uuid();
@@ -81,10 +82,10 @@ class ImportacionCapacitadosService
         $seleccionadas = array_map('intval', $filasSeleccionadas);
 
         $contadores = [
-            'creados' => 0,
-            'actualizados' => 0,
+            'creados'            => 0,
+            'actualizados'       => 0,
             'solicitudes_creadas' => 0,
-            'omitidos' => 0,
+            'omitidos'           => 0,
         ];
 
         DB::transaction(function () use ($filas, $seleccionadas, &$contadores) {
@@ -100,23 +101,26 @@ class ImportacionCapacitadosService
                     ['documento' => $datos['documento']],
                     array_filter([
                         'nombre_completo' => $datos['nombre_completo'],
-                        'correo' => $datos['correo'] ?: null,
-                        'telefono' => $datos['telefono'] ?: null,
-                        'rh' => $datos['rh'] ?: null,
-                    ], fn ($valor) => $valor !== null)
+                        'correo'          => $datos['correo'] ?: null,
+                        'telefono'        => $datos['telefono'] ?: null,
+                        'rh'              => $datos['rh'] ?: null,
+                    ], fn ($v) => $v !== null)
                 );
 
                 $contadores[$fila['accion'] === 'crear' ? 'creados' : 'actualizados']++;
 
-                if ($fila['curso_id'] !== null) {
-                    SolicitudCertificado::create([
-                        'capacitado_id' => $capacitado->id,
-                        'curso_id' => $fila['curso_id'],
-                        'curso_texto' => $datos['curso'] ?: null,
-                        'modalidad' => $datos['modalidad'] ?: null,
-                        'estado' => 'pendiente',
-                        'origen' => 'importacion_excel',
-                    ]);
+                foreach ($fila['cursos'] as $curso) {
+                    SolicitudCertificado::firstOrCreate(
+                        [
+                            'capacitado_id' => $capacitado->id,
+                            'curso_id'      => $curso['id'],
+                            'estado'        => 'pendiente',
+                        ],
+                        [
+                            'modalidad' => $datos['modalidad'] ?: null,
+                            'origen'    => 'importacion_excel',
+                        ]
+                    );
 
                     $contadores['solicitudes_creadas']++;
                 }
@@ -129,8 +133,8 @@ class ImportacionCapacitadosService
     }
 
     /**
-     * Genera la plantilla Excel de importación con encabezados, una fila
-     * de ejemplo y una segunda hoja con los nombres de cursos disponibles.
+     * Genera la plantilla Excel con encabezados, fila de ejemplo
+     * y segunda hoja con los cursos disponibles.
      */
     public function generarPlantilla(): \PhpOffice\PhpSpreadsheet\Spreadsheet
     {
@@ -140,18 +144,20 @@ class ImportacionCapacitadosService
         $hoja->setTitle('Capacitados');
         $hoja->fromArray(self::COLUMNAS, null, 'A1');
         $hoja->fromArray([
-            'Juan Pérez Gómez', '1234567890', 'juan@correo.com', '3001234567', 'O+', 'Trabajo en alturas', 'virtual',
+            'Juan Pérez Gómez', '1234567890', 'juan@correo.com', '3001234567', 'O+',
+            'Trabajo en alturas, SST básico',
+            'virtual',
         ], null, 'A2');
 
-        foreach (range('A', 'G') as $columna) {
-            $hoja->getColumnDimension($columna)->setAutoSize(true);
+        foreach (range('A', 'G') as $col) {
+            $hoja->getColumnDimension($col)->setAutoSize(true);
         }
 
         $hojaCursos = $spreadsheet->createSheet();
         $hojaCursos->setTitle('Cursos disponibles');
         $hojaCursos->fromArray(['nombre'], null, 'A1');
         $hojaCursos->fromArray(
-            Curso::activos()->orderBy('nombre')->pluck('nombre')->map(fn ($nombre) => [$nombre])->toArray(),
+            Curso::activos()->orderBy('nombre')->pluck('nombre')->map(fn ($n) => [$n])->toArray(),
             null,
             'A2'
         );
@@ -162,20 +168,18 @@ class ImportacionCapacitadosService
         return $spreadsheet;
     }
 
-    /**
-     * Normaliza los encabezados del Excel a snake_case sin acentos para
-     * que coincidan con las columnas esperadas sin importar mayúsculas
-     * o espacios extra.
-     */
+    // ─────────────────────────────────────────────────────────────
+    // Métodos privados
+    // ─────────────────────────────────────────────────────────────
+
     private function normalizarEncabezados(array $fila): array
     {
         return array_map(
-            fn ($valor) => Str::of((string) $valor)->lower()->trim()->ascii()->snake()->toString(),
+            fn ($v) => Str::of((string) $v)->lower()->trim()->ascii()->snake()->toString(),
             $fila
         );
     }
 
-    /** Combina los encabezados con los valores de una fila por posición. */
     private function mapearFila(array $encabezados, array $filaExcel): array
     {
         $datos = [];
@@ -184,7 +188,6 @@ class ImportacionCapacitadosService
             if ($encabezado === '') {
                 continue;
             }
-
             $datos[$encabezado] = trim((string) ($filaExcel[$indice] ?? ''));
         }
 
@@ -200,9 +203,16 @@ class ImportacionCapacitadosService
         return $datos['nombre_completo'] === '' && $datos['documento'] === '';
     }
 
-    /** Valida una fila y determina la acción a realizar y el curso a vincular. */
-    private function procesarFila(int $numeroFila, array $datos, $cursosPorSlug): array
-    {
+    /**
+     * Valida una fila, resuelve los cursos (con búsqueda parcial)
+     * y determina la acción (crear / actualizar).
+     */
+    private function procesarFila(
+        int $numeroFila,
+        array $datos,
+        EloquentCollection $cursosPorSlug,
+        EloquentCollection $todosCursos
+    ): array {
         $errores = [];
 
         if ($datos['nombre_completo'] === '') {
@@ -222,12 +232,23 @@ class ImportacionCapacitadosService
         $modalidad = strtolower($datos['modalidad']);
         $datos['modalidad'] = in_array($modalidad, ['virtual', 'presencial'], true) ? $modalidad : '';
 
-        $cursoId = null;
-        $cursoEncontrado = null;
+        // Resolver cursos (acepta varios separados por coma)
+        $cursosEncontrados   = [];
+        $cursosNoEncontrados = [];
 
-        if ($datos['curso'] !== '') {
-            $cursoEncontrado = $cursosPorSlug->get(Str::slug($datos['curso']));
-            $cursoId = $cursoEncontrado?->id;
+        $textosCursos = array_filter(
+            array_map('trim', explode(',', $datos['cursos'])),
+            fn ($t) => $t !== ''
+        );
+
+        foreach ($textosCursos as $texto) {
+            $curso = $this->buscarCurso($texto, $cursosPorSlug, $todosCursos);
+
+            if ($curso !== null) {
+                $cursosEncontrados[] = ['id' => $curso->id, 'nombre' => $curso->nombre, 'texto' => $texto];
+            } else {
+                $cursosNoEncontrados[] = $texto;
+            }
         }
 
         $accion = 'crear';
@@ -237,13 +258,56 @@ class ImportacionCapacitadosService
         }
 
         return [
-            'fila' => $numeroFila,
-            'datos' => $datos,
-            'accion' => $accion,
-            'curso_id' => $cursoId,
-            'curso_nombre' => $cursoEncontrado?->nombre,
-            'errores' => $errores,
+            'fila'                 => $numeroFila,
+            'datos'                => $datos,
+            'accion'               => $accion,
+            'cursos'               => $cursosEncontrados,
+            'cursos_no_encontrados' => $cursosNoEncontrados,
+            'errores'              => $errores,
         ];
+    }
+
+    /**
+     * Busca un curso primero por slug exacto, luego por coincidencia
+     * parcial: todas las palabras del texto deben aparecer en el slug
+     * del nombre del curso. Devuelve el curso con nombre más corto
+     * (más específico) si hay varios candidatos.
+     */
+    private function buscarCurso(
+        string $texto,
+        EloquentCollection $cursosPorSlug,
+        EloquentCollection $todosCursos
+    ): ?Curso {
+        if ($texto === '') {
+            return null;
+        }
+
+        $slug = Str::slug($texto);
+
+        // 1. Coincidencia exacta por slug
+        if ($cursosPorSlug->has($slug)) {
+            return $cursosPorSlug->get($slug);
+        }
+
+        // 2. Coincidencia parcial: todas las palabras del texto están en el nombre del curso
+        $palabras = array_filter(explode('-', $slug), fn ($p) => strlen($p) >= 3);
+
+        if (empty($palabras)) {
+            return null;
+        }
+
+        return $todosCursos
+            ->filter(function (Curso $curso) use ($palabras) {
+                $slugCurso = Str::slug($curso->nombre);
+                foreach ($palabras as $palabra) {
+                    if (!str_contains($slugCurso, $palabra)) {
+                        return false;
+                    }
+                }
+                return true;
+            })
+            ->sortBy(fn (Curso $c) => strlen($c->nombre))
+            ->first();
     }
 
     private function resumir(array $filas): array
@@ -258,7 +322,7 @@ class ImportacionCapacitadosService
 
             $resumen[$fila['accion'] === 'crear' ? 'crear' : 'actualizar']++;
 
-            if ($fila['curso_id'] === null) {
+            if (empty($fila['cursos'])) {
                 $resumen['sin_curso']++;
             }
         }

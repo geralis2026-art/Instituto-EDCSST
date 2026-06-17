@@ -65,10 +65,21 @@
                                 <td class="px-4 py-3"><code class="bg-gray-100 px-2 py-1 rounded">{{ $fila['datos']['documento'] ?: '—' }}</code></td>
                                 <td class="px-4 py-3">{{ $fila['datos']['correo'] ?: '—' }}</td>
                                 <td class="px-4 py-3">
-                                    @if($fila['curso_id'])
-                                        {{ $fila['curso_nombre'] }}
-                                    @elseif($fila['datos']['curso'])
-                                        <span class="text-amber-600">"{{ $fila['datos']['curso'] }}" (no identificado)</span>
+                                    @if(!empty($fila['cursos']))
+                                        <div class="flex flex-wrap gap-1">
+                                            @foreach($fila['cursos'] as $curso)
+                                                <span class="inline-block bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-medium">{{ $curso['nombre'] }}</span>
+                                            @endforeach
+                                            @foreach($fila['cursos_no_encontrados'] as $noEncontrado)
+                                                <span class="inline-block bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs font-medium" title="No se encontró en la plataforma">"{{ $noEncontrado }}" (?)</span>
+                                            @endforeach
+                                        </div>
+                                    @elseif(!empty($fila['cursos_no_encontrados']))
+                                        <div class="flex flex-wrap gap-1">
+                                            @foreach($fila['cursos_no_encontrados'] as $noEncontrado)
+                                                <span class="inline-block bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs font-medium" title="No se encontró en la plataforma">"{{ $noEncontrado }}" (?)</span>
+                                            @endforeach
+                                        </div>
                                     @else
                                         <span class="text-gray-400">—</span>
                                     @endif
@@ -84,7 +95,7 @@
                                         <span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">Actualizar</span>
                                     @endif
 
-                                    @if(empty($fila['errores']) && !$fila['curso_id'])
+                                    @if(empty($fila['errores']) && empty($fila['cursos']))
                                         <span class="inline-block bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs font-semibold ml-1">Sin curso</span>
                                     @endif
                                 </td>
