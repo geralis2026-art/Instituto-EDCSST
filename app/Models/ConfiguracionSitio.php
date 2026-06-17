@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Configuración global del sitio (datos institucionales, redes sociales,
@@ -40,7 +41,7 @@ class ConfiguracionSitio extends Model
 
     public function getLogoUrlAttribute(): ?string
     {
-        if (!$this->logo) {
+        if (!$this->logo || !str_contains($this->logo, '/')) {
             return null;
         }
 
@@ -52,7 +53,7 @@ class ConfiguracionSitio extends Model
     public function getPlantillaUrlAttribute(): ?string
     {
         return $this->plantilla_certificado
-            ? storage_path('app/public/' . $this->plantilla_certificado)
+            ? Storage::disk('public')->url($this->plantilla_certificado)
             : null;
     }
 }
