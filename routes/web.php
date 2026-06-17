@@ -114,8 +114,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'admin', '
     Route::resource('mensajes', MensajeController::class)->only(['index', 'show', 'update', 'destroy']);
 
     // Gestión de usuarios
-    Route::resource('usuarios', UsuarioController::class)->only(['index', 'create', 'store', 'destroy']);
-    Route::patch('usuarios/{usuario}/toggle-activo', [UsuarioController::class, 'toggleActivo'])->name('usuarios.toggle-activo');
+    Route::resource('usuarios', UsuarioController::class)->only(['index', 'create']);
+    Route::post('usuarios',              [UsuarioController::class, 'store'])->name('usuarios.store')->middleware('throttle:admin-escritura');
+    Route::delete('usuarios/{usuario}',  [UsuarioController::class, 'destroy'])->name('usuarios.destroy')->middleware('throttle:admin-escritura');
+    Route::patch('usuarios/{usuario}/toggle-activo', [UsuarioController::class, 'toggleActivo'])->name('usuarios.toggle-activo')->middleware('throttle:admin-escritura');
 
     // Configuración del sitio
     Route::get('configuracion',  [ConfiguracionController::class, 'edit'])->name('configuracion.edit');

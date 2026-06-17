@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UsuarioRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
 
 /**
  * Gestión de usuarios (empleados) del sistema. Acceso exclusivo
@@ -29,20 +28,15 @@ class UsuarioController extends Controller
     }
 
     /** Crea el usuario con rol asignado. Se crea inactivo por defecto — el admin debe activarlo. */
-    public function store(Request $request)
+    public function store(UsuarioRequest $request)
     {
-        $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'rol'      => ['required', 'in:admin,capacitador'],
-        ]);
+        $datos = $request->validated();
 
         User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'rol'      => $request->rol,
+            'name'     => $datos['name'],
+            'email'    => $datos['email'],
+            'password' => Hash::make($datos['password']),
+            'rol'      => $datos['rol'],
             'activo'   => false,
         ]);
 
