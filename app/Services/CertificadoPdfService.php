@@ -23,8 +23,14 @@ class CertificadoPdfService
 
         $plantilla = ConfiguracionSitio::obtener()->plantilla_url;
 
-        if ($plantilla && file_exists($plantilla)) {
-            return $this->generarConPlantilla($certificado, $plantilla);
+        if ($plantilla) {
+            $rutaReal = realpath($plantilla);
+            $dirPermitido = realpath(storage_path('app/public'));
+
+            if ($rutaReal !== false && $dirPermitido !== false
+                && str_starts_with($rutaReal, $dirPermitido . DIRECTORY_SEPARATOR)) {
+                return $this->generarConPlantilla($certificado, $rutaReal);
+            }
         }
 
         return Pdf::loadView('pdf.certificado', compact('certificado'))
@@ -78,7 +84,7 @@ class CertificadoPdfService
 
         return $pdf->Output('S');
     }
-
+    
     /** Formatea el documento con puntos cada 3 dígitos (ej: 1234567890 → 1.234.567.890). */
     private function formatearDocumento(string $documento): string
     {

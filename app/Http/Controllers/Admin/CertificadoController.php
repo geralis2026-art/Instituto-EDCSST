@@ -11,6 +11,7 @@ use App\Models\Curso;
 use App\Services\CertificadoPdfService;
 use App\Services\GeneracionMasivaCertificadosService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -68,10 +69,12 @@ class CertificadoController extends Controller
     public function store(CertificadoRequest $request, CertificadoPdfService $pdfService)
     {
         $datos = $request->validated();
+        $aniosVigencia = (int) $datos['anios_vigencia'];
+        unset($datos['anios_vigencia']);
         $codigoManual = $datos['codigo_unico'] ?: null;
         $datos['codigo_unico'] = $codigoManual ?? (string) Str::uuid();
         $datos['emitido_por'] = auth()->id();
-        $datos['fecha_vencimiento'] = \Carbon\Carbon::parse($datos['fecha_emision'])->addYear()->toDateString();
+        $datos['fecha_vencimiento'] = \Carbon\Carbon::parse($datos['fecha_emision'])->addYears($aniosVigencia)->toDateString();
 
         if ($request->hasFile('archivo_pdf')) {
             $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados', 'certificados');
@@ -79,17 +82,25 @@ class CertificadoController extends Controller
             unset($datos['archivo_pdf']);
         }
 
-        $certificado = Certificado::create($datos);
+        /**
+         * Transacción atómica: si generarCodigoUnico() o saveQuietly() fallan,
+         * el rollback elimina el registro con UUID temporal y la BD queda limpia.
+         */
+        $certificado = DB::transaction(function () use ($datos, $codigoManual, $request, $pdfService) {
+            $certificado = Certificado::create($datos);
 
-        if (!$codigoManual) {
-            $certificado->codigo_unico = Certificado::generarCodigoUnico();
-        }
+            if (!$codigoManual) {
+                $certificado->codigo_unico = Certificado::generarCodigoUnico();
+            }
 
-        if (!$request->hasFile('archivo_pdf')) {
-            $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
-        }
+            if (!$request->hasFile('archivo_pdf')) {
+                $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
+            }
 
-        $certificado->saveQuietly();
+            $certificado->saveQuietly();
+
+            return $certificado;
+        });
 
         return redirect()
             ->route('admin.certificados.show', $certificado)
@@ -128,17 +139,18 @@ class CertificadoController extends Controller
         ])->values());
     }
 
-    /** Actualiza el certificado. Si se sube nuevo PDF, elimina el anterior del storage. */
-    public function update(CertificadoRequest $request, Certificado $certificado)
+    /** Actualiza el certificado. Si se sube PDF manual lo usa; si no, regenera desde la plantilla. */
+    public function update(CertificadoRequest $request, Certificado $certificado, CertificadoPdfService $pdfService)
     {
         $datos = $request->validated();
-        $datos['fecha_vencimiento'] = \Carbon\Carbon::parse($datos['fecha_emision'])->addYear()->toDateString();
+        $aniosVigencia = (int) $datos['anios_vigencia'];
+        unset($datos['anios_vigencia']);
+        $datos['fecha_vencimiento'] = \Carbon\Carbon::parse($datos['fecha_emision'])->addYears($aniosVigencia)->toDateString();
 
         if ($request->hasFile('archivo_pdf')) {
             if ($certificado->archivo_pdf) {
                 Storage::disk('certificados')->delete($certificado->archivo_pdf);
             }
-
             $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados', 'certificados');
         } else {
             unset($datos['archivo_pdf']);
@@ -146,9 +158,17 @@ class CertificadoController extends Controller
 
         $certificado->update($datos);
 
+        if (!$request->hasFile('archivo_pdf')) {
+            if ($certificado->archivo_pdf) {
+                Storage::disk('certificados')->delete($certificado->archivo_pdf);
+            }
+            $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
+            $certificado->saveQuietly();
+        }
+
         return redirect()
             ->route('admin.certificados.show', $certificado)
-            ->with('success', 'Certificado actualizado correctamente.');
+            ->with('success', 'Certificado actualizado y PDF regenerado correctamente.');
     }
 
     /** Sirve el PDF del certificado directamente en el navegador (inline). */
@@ -195,8 +215,8 @@ class CertificadoController extends Controller
             'solicitudes.*.fecha_emision' => 'required_with:solicitudes.*.incluir|nullable|date',
             'solicitudes.*.intensidad_horaria' => 'required_with:solicitudes.*.incluir|nullable|integer|min:1|max:500',
             'solicitudes.*.modalidad' => 'nullable|in:virtual,presencial',
-            'solicitudes.*.codigo_unico' => 'nullable|string|max:255|unique:certificados,codigo_unico',
-            'solicitudes.*.archivo_pdf' => 'nullable|file|mimetypes:application/pdf|max:10240',
+            'solicitudes.*.anios_vigencia' => 'nullable|integer|in:1,2',
+            'solicitudes.*.activo' => 'nullable|boolean',
         ]);
 
         $filas = [];
@@ -212,8 +232,8 @@ class CertificadoController extends Controller
                 'fecha_emision' => $fila['fecha_emision'],
                 'intensidad_horaria' => (int) $fila['intensidad_horaria'],
                 'modalidad' => $fila['modalidad'] ?? null,
-                'codigo_unico' => $fila['codigo_unico'] ?? null,
-                'archivo_pdf' => $fila['archivo_pdf'] ?? null,
+                'anios_vigencia' => (int) ($fila['anios_vigencia'] ?? 1),
+                'activo' => (bool) ($fila['activo'] ?? true),
             ];
         }
 
