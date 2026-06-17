@@ -49,16 +49,18 @@ class AppServiceProvider extends ServiceProvider
     {
         RateLimiter::for('consulta-publica', function (Request $request) {
             return Limit::perMinute(10)->by($request->ip())
-                ->response(fn() => response()->json(
-                    ['message' => 'Demasiadas consultas. Espera un momento antes de intentar de nuevo.'], 429
-                ));
+                ->response(fn() => back()
+                    ->withInput()
+                    ->withErrors(['valor' => 'Demasiadas consultas. Espera un momento antes de intentar de nuevo.'])
+                );
         });
 
         RateLimiter::for('verificacion-publica', function (Request $request) {
             return Limit::perMinute(10)->by($request->ip())
-                ->response(fn() => response()->json(
-                    ['message' => 'Demasiadas verificaciones. Espera un momento antes de intentar de nuevo.'], 429
-                ));
+                ->response(fn() => back()
+                    ->withInput()
+                    ->withErrors(['codigo' => 'Demasiadas verificaciones. Espera un momento antes de intentar de nuevo.'])
+                );
         });
 
         RateLimiter::for('contacto-publica', function (Request $request) {
