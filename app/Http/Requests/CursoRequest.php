@@ -37,7 +37,7 @@ class CursoRequest extends FormRequest
                 'max:255',
                 Rule::unique('cursos', 'slug')->ignore($cursoId),
             ],
-            'descripcion_corta' => 'required|string',
+            'descripcion_corta' => 'required|string|max:1000',
             'duracion' => 'required|string|max:255',
             'intensidad_horaria' => 'required|integer|min:1|max:10000',
             'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
