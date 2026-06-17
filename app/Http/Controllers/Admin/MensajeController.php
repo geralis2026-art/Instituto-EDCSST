@@ -15,12 +15,17 @@ class MensajeController extends Controller
     /** Bandeja de mensajes paginada con búsqueda por nombre/correo y filtro por estado. */
     public function index(Request $request)
     {
+        $busqueda = substr(trim((string) $request->query('busqueda', '')), 0, 100);
+        $estado   = in_array($request->query('estado'), ['nuevo', 'leido', 'respondido'])
+            ? $request->query('estado')
+            : '';
+
         $mensajes = Mensaje::query()
-            ->when($request->busqueda, fn($q, $v) =>
+            ->when($busqueda, fn($q, $v) =>
                 $q->where('nombre', 'like', "%{$v}%")
                   ->orWhere('correo', 'like', "%{$v}%")
             )
-            ->when($request->estado, fn($q, $v) => $q->where('estado', $v))
+            ->when($estado, fn($q, $v) => $q->where('estado', $v))
             ->latest()
             ->paginate(20);
 
