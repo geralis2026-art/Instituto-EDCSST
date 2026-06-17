@@ -244,6 +244,10 @@ Estas opciones existen como referencia en el sistema pero **aún no están activ
 - Se corrigió una vulnerabilidad potencial: la ruta de la plantilla de certificado (almacenada en BD) se usaba directamente en `file_exists()` y `setSourceFile()` sin validar que apuntara dentro del directorio permitido. Un valor malicioso podría haber revelado existencia de archivos del sistema o permitido leer archivos arbitrarios del servidor.
 - Solución: se usa `realpath()` para resolver la ruta canónica y se verifica con `str_starts_with()` que esté estrictamente dentro de `storage/app/public/` antes de usarla.
 
+**Validación contradictoria en certificados masivos (`CertificadoController::generarMasivos`)**
+- La validación aplicaba `required_with` y `nullable` simultáneamente sobre los campos de todas las filas (incluidas y no incluidas), generando comportamiento indefinido: si una fila no estaba marcada, sus campos eran "requeridos" pero también "nulos aceptables".
+- Solución: se filtra primero el array de solicitudes a solo las filas marcadas con `incluir`, se retorna temprano si ninguna fue seleccionada, y se valida únicamente ese subconjunto con reglas limpias (`required` sin `nullable` en campos obligatorios) usando `Validator::make()` para no alterar el request original. Los mensajes de error ahora son específicos y orientados al usuario.
+
 **Botones destructivos ocultos para capacitadores (`admin/certificados/show.blade.php`)**
 - Los botones "Editar", "Desactivar/Reactivar" y "Eliminar" eran visibles para usuarios con rol `capacitador`, quienes recibían un error 403 al pulsarlos. Las rutas correspondientes ya estaban protegidas por middleware, pero la vista no reflejaba la restricción.
 - Solución: los tres botones se agruparon bajo un único `@if(auth()->user()->isAdmin())`, dejando visible solo "Ver PDF" para todos los roles autenticados.

@@ -13,6 +13,7 @@ use App\Services\GeneracionMasivaCertificadosService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 /**
@@ -213,40 +214,59 @@ class CertificadoController extends Controller
         return view('admin.certificados.masivos', compact('solicitudes', 'cursos'));
     }
 
-    /** Genera en lote los certificados de las solicitudes seleccionadas. */
+    /**
+     * Genera en lote los certificados de las solicitudes seleccionadas.
+     * Filtra primero las filas marcadas para incluir y valida solo esas,
+     * evitando reglas contradictoras (required_with + nullable) sobre filas
+     * que el usuario no seleccionó y que nunca se procesarán.
+     */
     public function generarMasivos(Request $request, GeneracionMasivaCertificadosService $servicio, CertificadoPdfService $pdfService)
     {
-        $datos = $request->validate([
-            'solicitudes' => 'array',
-            'solicitudes.*.incluir' => 'nullable|boolean',
-            'solicitudes.*.curso_id' => 'required_with:solicitudes.*.incluir|nullable|exists:cursos,id',
-            'solicitudes.*.fecha_emision' => 'required_with:solicitudes.*.incluir|nullable|date',
-            'solicitudes.*.intensidad_horaria' => 'required_with:solicitudes.*.incluir|nullable|integer|min:1|max:500',
-            'solicitudes.*.modalidad' => 'nullable|in:virtual,presencial',
-            'solicitudes.*.anios_vigencia' => 'nullable|integer|in:1,2',
-            'solicitudes.*.activo' => 'nullable|boolean',
-        ]);
+        $incluidas = array_filter(
+            $request->input('solicitudes', []),
+            fn ($fila) => !empty($fila['incluir'])
+        );
+
+        if (empty($incluidas)) {
+            return back()->with('error', 'No seleccionaste ninguna solicitud para generar.');
+        }
+
+        $validator = Validator::make(
+            ['solicitudes' => $incluidas],
+            [
+                'solicitudes.*.curso_id'          => 'required|exists:cursos,id',
+                'solicitudes.*.fecha_emision'      => 'required|date',
+                'solicitudes.*.intensidad_horaria' => 'required|integer|min:1|max:500',
+                'solicitudes.*.modalidad'          => 'nullable|in:virtual,presencial',
+                'solicitudes.*.anios_vigencia'     => 'required|integer|in:1,2',
+                'solicitudes.*.activo'             => 'nullable|boolean',
+            ],
+            [
+                'solicitudes.*.curso_id.required'          => 'El curso es requerido para cada solicitud seleccionada.',
+                'solicitudes.*.curso_id.exists'            => 'Uno de los cursos seleccionados no es válido.',
+                'solicitudes.*.fecha_emision.required'     => 'La fecha de emisión es requerida para cada solicitud seleccionada.',
+                'solicitudes.*.intensidad_horaria.required' => 'La intensidad horaria es requerida para cada solicitud seleccionada.',
+                'solicitudes.*.anios_vigencia.required'    => 'La vigencia es requerida para cada solicitud seleccionada.',
+                'solicitudes.*.anios_vigencia.in'          => 'La vigencia debe ser 1 o 2 años.',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
 
         $filas = [];
 
-        foreach ($datos['solicitudes'] ?? [] as $solicitudId => $fila) {
-            if (empty($fila['incluir'])) {
-                continue;
-            }
-
+        foreach ($validator->validated()['solicitudes'] as $solicitudId => $fila) {
             $filas[] = [
-                'solicitud_id' => (int) $solicitudId,
-                'curso_id' => (int) $fila['curso_id'],
-                'fecha_emision' => $fila['fecha_emision'],
+                'solicitud_id'      => (int) $solicitudId,
+                'curso_id'          => (int) $fila['curso_id'],
+                'fecha_emision'     => $fila['fecha_emision'],
                 'intensidad_horaria' => (int) $fila['intensidad_horaria'],
-                'modalidad' => $fila['modalidad'] ?? null,
-                'anios_vigencia' => (int) ($fila['anios_vigencia'] ?? 1),
-                'activo' => (bool) ($fila['activo'] ?? true),
+                'modalidad'         => $fila['modalidad'] ?? null,
+                'anios_vigencia'    => (int) $fila['anios_vigencia'],
+                'activo'            => (bool) ($fila['activo'] ?? true),
             ];
-        }
-
-        if (empty($filas)) {
-            return back()->with('error', 'No seleccionaste ninguna solicitud para generar.');
         }
 
         $resultado = $servicio->generar($filas, auth()->id(), $pdfService);
