@@ -6,6 +6,7 @@ use App\Http\Controllers\Public\CatalogoController;
 use App\Http\Controllers\Public\ContactoController;
 use App\Http\Controllers\Public\ConsultaCertificadoController;
 use App\Http\Controllers\Public\VerificacionController;
+use App\Http\Controllers\Public\RegistroCapacitadoController;
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CapacitadoController;
@@ -55,6 +56,10 @@ Route::get('/consulta/descargar-todos/{capacitado}', [ConsultaCertificadoControl
 Route::get('/verificar', [VerificacionController::class, 'index'])->name('verificar')->middleware('throttle:30,1');
 Route::post('/verificar', [VerificacionController::class, 'verificar'])->name('verificar.verificar')->middleware('throttle:verificacion-publica');
 
+// Auto-registro de capacitados (link temporal generado desde el admin)
+Route::get('/registro/{token}', [RegistroCapacitadoController::class, 'form'])->name('registro.form');
+Route::post('/registro/{token}', [RegistroCapacitadoController::class, 'guardar'])->name('registro.guardar')->middleware('throttle:registro-publica');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -87,6 +92,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'throttle:
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'admin', 'throttle:admin-general'])->group(function () {
 
     // Capacitados — CRUD completo (escritura con límite más estricto)
+    Route::get('capacitados/link-registro',   [CapacitadoController::class, 'generarLinkRegistro'])->name('capacitados.link-registro');
     Route::get('capacitados/create',          [CapacitadoController::class, 'create'])->name('capacitados.create');
     Route::post('capacitados',                [CapacitadoController::class, 'store'])->name('capacitados.store')->middleware('throttle:admin-escritura');
     Route::get('capacitados/{capacitado}/edit',  [CapacitadoController::class, 'edit'])->name('capacitados.edit')->whereNumber('capacitado');

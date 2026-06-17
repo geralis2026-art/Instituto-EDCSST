@@ -9,6 +9,7 @@ use App\Models\Capacitado;
 use App\Services\ImportacionCapacitadosService;
 use App\Services\MergePdfService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -164,6 +165,21 @@ class CapacitadoController extends Controller
             ->get(['id', 'nombre_completo', 'documento']);
 
         return response()->json($resultados);
+    }
+
+    /**
+     * Genera un link temporal de 20 minutos para que los capacitados se auto-registren.
+     * El token se guarda en caché; el link se comparte por WhatsApp o correo.
+     */
+    public function generarLinkRegistro()
+    {
+        $token = Str::random(40);
+        Cache::put("reg:{$token}", true, now()->addMinutes(20));
+
+        $url    = route('registro.form', ['token' => $token]);
+        $expira = now()->addMinutes(20)->format('H:i');
+
+        return view('admin.capacitados.link-registro', compact('url', 'expira'));
     }
 
     /**

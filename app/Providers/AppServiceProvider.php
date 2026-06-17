@@ -84,5 +84,13 @@ class AppServiceProvider extends ServiceProvider
                     ->withErrors(['throttle' => 'Has realizado demasiadas operaciones seguidas. Espera un momento.'])
                 );
         });
+
+        RateLimiter::for('registro-publica', function (Request $request) {
+            return Limit::perMinute(5)->by($request->ip())
+                ->response(fn() => back()
+                    ->withInput()
+                    ->withErrors(['throttle' => 'Demasiados intentos. Espera un momento antes de intentar de nuevo.'])
+                );
+        });
     }
 }
