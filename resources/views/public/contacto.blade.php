@@ -38,7 +38,7 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-semibold text-gray-900">Teléfono</p>
-                                <p class="text-sm text-gray-600">+57 321 217 3463</p>
+                                <p class="text-sm text-gray-600">+57 321 2173463</p>
                             </div>
                         </div>
 
