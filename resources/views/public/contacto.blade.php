@@ -48,7 +48,7 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-semibold text-gray-900">Correo</p>
-                                <p class="text-sm text-gray-600 break-all">contacto@edcsst.com</p>
+                                <p class="text-sm text-gray-600 break-all">academiasstcolombiana@gmail.com</p>
                             </div>
                         </div>
 

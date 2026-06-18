@@ -15,7 +15,7 @@ class ConfiguracionSitioSeeder extends Seeder
                 'nombre_instituto' => 'Instituto EDCSST',
                 'descripcion' => 'Instituto de certificaciones y capacitaciones profesionales',
                 'telefono' => '+57 321 2173463',
-                'correo_contacto' => 'contacto@edcsst.com',
+                'correo_contacto' => 'academiasstcolombiana@gmail.com',
                 'direccion' => 'Bogotá, Colombia',
                 'whatsapp' => '573212173463',
                 'facebook' => 'https://facebook.com/edcsst',
