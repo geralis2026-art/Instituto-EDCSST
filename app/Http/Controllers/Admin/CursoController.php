@@ -7,7 +7,9 @@ use App\Http\Requests\CursoRequest;
 use App\Models\Categoria;
 use App\Models\Curso;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * CRUD de cursos. Acceso exclusivo para admin (ver routes/web.php).
@@ -54,7 +56,7 @@ class CursoController extends Controller
         $datos = $request->validated();
 
         if ($request->hasFile('imagen')) {
-            $datos['imagen'] = $request->file('imagen')->store('cursos', 'uploads');
+            $datos['imagen'] = $this->procesarImagen($request->file('imagen'));
         } else {
             unset($datos['imagen']);
         }
@@ -91,7 +93,7 @@ class CursoController extends Controller
             if ($curso->imagen) {
                 Storage::disk('uploads')->delete($curso->imagen);
             }
-            $datos['imagen'] = $request->file('imagen')->store('cursos', 'uploads');
+            $datos['imagen'] = $this->procesarImagen($request->file('imagen'));
         } else {
             unset($datos['imagen']);
         }
@@ -120,5 +122,57 @@ class CursoController extends Controller
         return redirect()
             ->route('admin.cursos.index')
             ->with('success', 'Curso eliminado correctamente.');
+    }
+
+    /**
+     * Redimensiona la imagen a máx 800 px de ancho y la guarda como WebP.
+     * Si GD no está disponible o falla, guarda el archivo original.
+     */
+    private function procesarImagen(UploadedFile $file): string
+    {
+        if (!extension_loaded('gd')) {
+            return $file->store('cursos', 'uploads');
+        }
+
+        $mime = $file->getMimeType();
+        $src  = match ($mime) {
+            'image/jpeg' => @imagecreatefromjpeg($file->getRealPath()),
+            'image/png'  => @imagecreatefrompng($file->getRealPath()),
+            'image/webp' => @imagecreatefromwebp($file->getRealPath()),
+            default      => false,
+        };
+
+        if (!$src) {
+            return $file->store('cursos', 'uploads');
+        }
+
+        $origW = imagesx($src);
+        $origH = imagesy($src);
+        $maxW  = 800;
+
+        if ($origW > $maxW) {
+            $newW = $maxW;
+            $newH = (int) round($origH * ($maxW / $origW));
+        } else {
+            $newW = $origW;
+            $newH = $origH;
+        }
+
+        $dst = imagecreatetruecolor($newW, $newH);
+        imagealphablending($dst, false);
+        imagesavealpha($dst, true);
+        $transparent = imagecolorallocatealpha($dst, 255, 255, 255, 127);
+        imagefilledrectangle($dst, 0, 0, $newW, $newH, $transparent);
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+
+        $relPath = 'cursos/' . Str::uuid() . '.webp';
+        Storage::disk('uploads')->makeDirectory('cursos');
+        $absPath = Storage::disk('uploads')->path($relPath);
+
+        imagewebp($dst, $absPath, 82);
+        imagedestroy($src);
+        imagedestroy($dst);
+
+        return $relPath;
     }
 }
