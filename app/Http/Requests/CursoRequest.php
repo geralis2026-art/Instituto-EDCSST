@@ -18,9 +18,9 @@ class CursoRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'slug' => Str::slug((string) $this->input('nombre')),
+            'slug'      => Str::slug((string) $this->input('nombre')),
             'destacado' => $this->boolean('destacado'),
-            'activo' => $this->boolean('activo'),
+            'activo'    => $this->boolean('activo'),
         ]);
     }
 
@@ -29,35 +29,35 @@ class CursoRequest extends FormRequest
         $cursoId = $this->route('curso')?->id;
 
         return [
-            'categoria_id' => 'required|exists:categorias,id',
-            'nombre' => 'required|string|max:255',
-            'slug' => [
+            'categoria_id'       => ['required', 'exists:categorias,id'],
+            'nombre'             => ['required', 'string', 'max:255'],
+            'slug'               => [
                 'required',
                 'string',
                 'max:255',
                 Rule::unique('cursos', 'slug')->ignore($cursoId),
             ],
-            'descripcion_corta' => 'required|string|max:1000',
-            'duracion' => 'required|string|max:255',
-            'intensidad_horaria' => 'required|integer|min:1|max:10000',
-            'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
-            'destacado' => 'boolean',
-            'activo' => 'boolean',
+            'descripcion_corta'  => ['required', 'string', 'max:1000'],
+            'duracion'           => ['required', 'string', 'max:255'],
+            'intensidad_horaria' => ['required', 'integer', 'min:1', 'max:10000'],
+            'imagen'             => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
+            'destacado'          => ['boolean'],
+            'activo'             => ['boolean'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'categoria_id.required' => 'La categoria es requerida.',
-            'categoria_id.exists' => 'La categoria seleccionada no es valida.',
-            'nombre.required' => 'El nombre del curso es requerido.',
-            'slug.unique' => 'Ya existe un curso con este nombre.',
-            'descripcion_corta.required' => 'La descripcion corta es requerida.',
-            'duracion.required' => 'La duracion es requerida.',
+            'categoria_id.required'      => 'La categoría es requerida.',
+            'categoria_id.exists'        => 'La categoría seleccionada no es válida.',
+            'nombre.required'            => 'El nombre del curso es requerido.',
+            'slug.unique'                => 'Ya existe un curso con este nombre.',
+            'descripcion_corta.required' => 'La descripción corta es requerida.',
+            'duracion.required'          => 'La duración es requerida.',
             'intensidad_horaria.required' => 'La intensidad horaria es requerida.',
-            'intensidad_horaria.integer' => 'La intensidad horaria debe ser un numero entero.',
-            'intensidad_horaria.min' => 'La intensidad horaria debe ser mayor a cero.',
+            'intensidad_horaria.integer'  => 'La intensidad horaria debe ser un número entero.',
+            'intensidad_horaria.min'      => 'La intensidad horaria debe ser mayor a cero.',
         ];
     }
 }

@@ -75,7 +75,7 @@ class RegistroCapacitadoController extends Controller
                 [
                     'capacitado_id' => $capacitado->id,
                     'curso_id'      => $cursoId,
-                    'estado'        => 'pendiente',
+                    'estado'        => SolicitudCertificado::ESTADO_PENDIENTE,
                 ],
                 [
                     'modalidad' => $datos['modalidades'][$cursoId] ?? 'presencial',

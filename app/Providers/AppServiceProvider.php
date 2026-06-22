@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\ConfiguracionSitio;
 use App\Models\Mensaje;
 use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -19,14 +21,18 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
 
-        View::composer('*', function ($view) {
-            $view->with('cspNonce', request()->attributes->get('csp_nonce', ''));
+        View::composer('*', fn ($view) =>
+            $view->with('cspNonce', request()->attributes->get('csp_nonce', ''))
+        );
+
+        View::composer(['layouts.public', 'public.*'], function ($view) {
+            $view->with('configSitio', ConfiguracionSitio::obtener());
         });
 
         View::composer('layouts.admin', function ($view) {
-            $user = Auth::user();
+            $user   = Auth::user();
             $nuevos = ($user instanceof User && $user->isAdmin())
-                ? Mensaje::nuevos()->count()
+                ? Cache::remember('mensajes_nuevos_count', 120, fn () => Mensaje::nuevos()->count())
                 : 0;
 
             $view->with('mensajesNuevos', $nuevos);
@@ -49,7 +55,7 @@ class AppServiceProvider extends ServiceProvider
     {
         RateLimiter::for('consulta-publica', function (Request $request) {
             return Limit::perMinute(10)->by($request->ip())
-                ->response(fn() => back()
+                ->response(fn () => back()
                     ->withInput()
                     ->withErrors(['valor' => 'Demasiadas consultas. Espera un momento antes de intentar de nuevo.'])
                 );
@@ -57,7 +63,7 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('verificacion-publica', function (Request $request) {
             return Limit::perMinute(10)->by($request->ip())
-                ->response(fn() => back()
+                ->response(fn () => back()
                     ->withInput()
                     ->withErrors(['codigo' => 'Demasiadas verificaciones. Espera un momento antes de intentar de nuevo.'])
                 );
@@ -65,7 +71,7 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('contacto-publica', function (Request $request) {
             return Limit::perMinute(3)->by($request->ip())
-                ->response(fn() => back()
+                ->response(fn () => back()
                     ->withInput()
                     ->withErrors(['mensaje' => 'Has enviado demasiados mensajes. Espera unos minutos antes de intentar de nuevo.'])
                 );
@@ -73,21 +79,21 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('admin-general', function (Request $request) {
             return Limit::perMinute(120)->by($request->user()?->id ?? $request->ip())
-                ->response(fn() => redirect()->back()
+                ->response(fn () => redirect()->back()
                     ->withErrors(['throttle' => 'Demasiadas solicitudes. Espera un momento e intenta de nuevo.'])
                 );
         });
 
         RateLimiter::for('admin-escritura', function (Request $request) {
             return Limit::perMinute(30)->by($request->user()?->id ?? $request->ip())
-                ->response(fn() => redirect()->back()
+                ->response(fn () => redirect()->back()
                     ->withErrors(['throttle' => 'Has realizado demasiadas operaciones seguidas. Espera un momento.'])
                 );
         });
 
         RateLimiter::for('registro-publica', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip())
-                ->response(fn() => back()
+                ->response(fn () => back()
                     ->withInput()
                     ->withErrors(['throttle' => 'Demasiados intentos. Espera un momento antes de intentar de nuevo.'])
                 );

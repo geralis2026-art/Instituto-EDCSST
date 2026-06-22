@@ -19,16 +19,15 @@ class CategoriaController extends Controller
         $busqueda = substr(trim((string) $request->query('busqueda', '')), 0, 100);
 
         $categorias = Categoria::withCount('cursos')
-            ->when($busqueda, function ($query, $busqueda) {
-                $busqueda = trim($busqueda);
-
-                return $query->where(function ($query) use ($busqueda) {
-                    $query->where('nombre', 'like', "%{$busqueda}%")
-                        ->orWhere('descripcion', 'like', "%{$busqueda}%");
-                });
-            })
+            ->when($busqueda, fn ($query) =>
+                $query->where(fn ($q) =>
+                    $q->where('nombre', 'like', "%{$busqueda}%")
+                      ->orWhere('descripcion', 'like', "%{$busqueda}%")
+                )
+            )
             ->orderBy('nombre')
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         return view('admin.categorias.index', compact('categorias', 'busqueda'));
     }
@@ -46,7 +45,7 @@ class CategoriaController extends Controller
 
         return redirect()
             ->route('admin.categorias.show', $categoria)
-            ->with('success', 'Categoria creada correctamente.');
+            ->with('success', 'Categoría creada correctamente.');
     }
 
     /** Detalle de la categoría con lista paginada de sus cursos. */
@@ -74,7 +73,7 @@ class CategoriaController extends Controller
 
         return redirect()
             ->route('admin.categorias.show', $categoria)
-            ->with('success', 'Categoria actualizada correctamente.');
+            ->with('success', 'Categoría actualizada correctamente.');
     }
 
     /** Elimina la categoría. Bloqueado si tiene cursos asociados. */
@@ -82,13 +81,13 @@ class CategoriaController extends Controller
     {
         if ($categoria->cursos()->exists()) {
             return back()
-                ->with('error', 'No se puede eliminar esta categoria porque tiene cursos asociados.');
+                ->with('error', 'No se puede eliminar esta categoría porque tiene cursos asociados.');
         }
 
         $categoria->delete();
 
         return redirect()
             ->route('admin.categorias.index')
-            ->with('success', 'Categoria eliminada correctamente.');
+            ->with('success', 'Categoría eliminada correctamente.');
     }
 }

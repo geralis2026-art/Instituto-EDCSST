@@ -22,8 +22,8 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    const ROL_ADMIN       = 'admin';
-    const ROL_CAPACITADOR = 'capacitador';
+    public const ROL_ADMIN       = 'admin';
+    public const ROL_CAPACITADOR = 'capacitador';
 
     protected $fillable = [
         'name',

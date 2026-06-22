@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Configuración global del sitio (datos institucionales, redes sociales,
@@ -27,18 +27,32 @@ class ConfiguracionSitio extends Model
         'plantilla_certificado',
     ];
 
-    /**
-     * Obtiene la configuración del sitio (singleton).
-     * Si no existe, la crea con valores por defecto.
-     */
     public static function obtener(): self
     {
-        return static::firstOrCreate(
-            ['id' => 1],
-            ['nombre_instituto' => 'Instituto EDCSST']
-        );
+        $attrs = Cache::rememberForever('configuracion_sitio', function () {
+            return static::firstOrCreate(
+                ['id' => 1],
+                ['nombre_instituto' => 'Instituto EDCSST']
+            )->getAttributes();
+        });
+
+        $model = (new self)->forceFill($attrs);
+        $model->exists = true;
+
+        return $model->syncOriginal();
     }
 
+    public static function invalidarCache(): void
+    {
+        Cache::forget('configuracion_sitio');
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => static::invalidarCache());
+    }
+
+    /** URL del logo; null si no hay logo configurado. */
     public function getLogoUrlAttribute(): ?string
     {
         if (!$this->logo || !str_contains($this->logo, '/')) {
@@ -48,12 +62,5 @@ class ConfiguracionSitio extends Model
         [$type, $filename] = explode('/', $this->logo, 2);
 
         return route('uploads.serve', compact('type', 'filename'));
-    }
-
-    public function getPlantillaUrlAttribute(): ?string
-    {
-        return $this->plantilla_certificado
-            ? Storage::disk('public')->url($this->plantilla_certificado)
-            : null;
     }
 }

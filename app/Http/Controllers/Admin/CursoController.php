@@ -21,23 +21,22 @@ class CursoController extends Controller
     public function index(Request $request)
     {
         $busqueda    = substr(trim((string) $request->query('busqueda', '')), 0, 100);
-        $categoriaId = (int) $request->query('categoria_id', 0) ?: '';
+        $categoriaId = (int) $request->query('categoria_id', 0) ?: null;
 
         $categorias = Categoria::orderBy('nombre')->get();
 
         $cursos = Curso::with('categoria')
             ->withCount('certificados')
-            ->when($busqueda, function ($query, $busqueda) {
-                $busqueda = trim($busqueda);
-
-                return $query->where(function ($query) use ($busqueda) {
-                    $query->where('nombre', 'like', "%{$busqueda}%")
-                        ->orWhere('descripcion_corta', 'like', "%{$busqueda}%");
-                });
-            })
+            ->when($busqueda, fn ($query) =>
+                $query->where(fn ($q) =>
+                    $q->where('nombre', 'like', "%{$busqueda}%")
+                      ->orWhere('descripcion_corta', 'like', "%{$busqueda}%")
+                )
+            )
             ->when($categoriaId, fn ($query) => $query->where('categoria_id', $categoriaId))
             ->orderBy('nombre')
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         return view('admin.cursos.index', compact('cursos', 'categorias', 'busqueda', 'categoriaId'));
     }
@@ -79,7 +78,11 @@ class CursoController extends Controller
     /** Formulario para editar un curso existente. */
     public function edit(Curso $curso)
     {
-        $categorias = Categoria::orderBy('nombre')->get();
+        // Incluye la categoría actual aunque esté inactiva para no romper la selección existente.
+        $categorias = Categoria::activas()
+            ->orWhere('id', $curso->categoria_id)
+            ->orderBy('nombre')
+            ->get();
 
         return view('admin.cursos.edit', compact('curso', 'categorias'));
     }
@@ -90,10 +93,14 @@ class CursoController extends Controller
         $datos = $request->validated();
 
         if ($request->hasFile('imagen')) {
+            // Procesar primero; solo eliminar la imagen anterior si la nueva se guardó correctamente.
+            $nuevaImagen = $this->procesarImagen($request->file('imagen'));
+
             if ($curso->imagen) {
                 Storage::disk('uploads')->delete($curso->imagen);
             }
-            $datos['imagen'] = $this->procesarImagen($request->file('imagen'));
+
+            $datos['imagen'] = $nuevaImagen;
         } else {
             unset($datos['imagen']);
         }

@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Mensaje recibido a través del formulario de contacto público.
@@ -25,19 +27,30 @@ class Mensaje extends Model
         'ip',
     ];
 
-    // Constantes para los estados
-    public const ESTADO_NUEVO = 'nuevo';
-    public const ESTADO_LEIDO = 'leido';
-    public const ESTADO_RESPONDIDO = 'respondido';
+    public const ESTADO_NUEVO       = 'nuevo';
+    public const ESTADO_LEIDO       = 'leido';
+    public const ESTADO_RESPONDIDO  = 'respondido';
 
     public static array $estados = [
-        self::ESTADO_NUEVO => 'Nuevo',
-        self::ESTADO_LEIDO => 'Leído',
+        self::ESTADO_NUEVO      => 'Nuevo',
+        self::ESTADO_LEIDO      => 'Leído',
         self::ESTADO_RESPONDIDO => 'Respondido',
     ];
 
+    /** Invalida el contador de mensajes nuevos en el layout admin al crear o eliminar. */
+    protected static function booted(): void
+    {
+        static::created(fn () => Cache::forget('mensajes_nuevos_count'));
+
+        static::deleted(function ($m) {
+            if ($m->estado === self::ESTADO_NUEVO) {
+                Cache::forget('mensajes_nuevos_count');
+            }
+        });
+    }
+
     /** Mensajes que aún no han sido leídos por el admin. */
-    public function scopeNuevos(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeNuevos(Builder $query): Builder
     {
         return $query->where('estado', self::ESTADO_NUEVO);
     }
@@ -47,6 +60,7 @@ class Mensaje extends Model
     {
         if ($this->estado === self::ESTADO_NUEVO) {
             $this->update(['estado' => self::ESTADO_LEIDO]);
+            Cache::forget('mensajes_nuevos_count');
         }
     }
 
@@ -54,6 +68,7 @@ class Mensaje extends Model
     public function marcarComoRespondido(): void
     {
         $this->update(['estado' => self::ESTADO_RESPONDIDO]);
+        Cache::forget('mensajes_nuevos_count');
     }
 
     /** Retorna la etiqueta legible del estado actual (ej: "Leído"). */

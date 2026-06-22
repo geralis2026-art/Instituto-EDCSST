@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ConsultaBuscarRequest;
 use App\Models\Capacitado;
 use App\Models\Certificado;
 use App\Services\MergePdfService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -19,9 +19,7 @@ use Illuminate\Support\Str;
  */
 class ConsultaCertificadoController extends Controller
 {
-    /**
-     * Muestra el formulario de búsqueda.
-     */
+    /** Muestra el formulario de búsqueda. */
     public function index()
     {
         return view('public.consulta');
@@ -31,22 +29,15 @@ class ConsultaCertificadoController extends Controller
      * Procesa la búsqueda de certificados.
      * El usuario puede buscar por documento o por código único.
      */
-    public function buscar(Request $request)
+    public function buscar(ConsultaBuscarRequest $request)
     {
-        $datos = $request->validate([
-            'tipo_busqueda' => 'required|in:documento,codigo',
-            'valor' => 'required|string|max:50',
-        ], [
-            'valor.required' => 'Por favor ingresa un valor de búsqueda.',
-        ]);
-
-        $valor = trim($datos['valor']);
+        $datos        = $request->validated();
+        $valor        = $datos['valor'];
         $certificados = collect();
-        $capacitado = null;
+        $capacitado   = null;
         $mensajeError = null;
 
         if ($datos['tipo_busqueda'] === 'documento') {
-            // Buscar por documento del capacitado
             $capacitado = Capacitado::porDocumento($valor);
 
             if ($capacitado) {
@@ -61,11 +52,10 @@ class ConsultaCertificadoController extends Controller
                 $mensajeError = 'No encontramos certificados con esos datos. Verifica la información o contacta al instituto.';
             }
         } else {
-            // Buscar por código único del certificado
             $certificado = Certificado::porCodigo($valor);
 
             if ($certificado) {
-                $capacitado = $certificado->capacitado;
+                $capacitado   = $certificado->capacitado;
                 $certificados = collect([$certificado->load('curso.categoria')]);
             } else {
                 $mensajeError = 'No encontramos certificados con esos datos. Verifica la información o contacta al instituto.';
@@ -73,9 +63,9 @@ class ConsultaCertificadoController extends Controller
         }
 
         $urlsDescarga = $certificados
-            ->filter(fn($c) => !$c->isVencido())
-            ->mapWithKeys(fn($c) => [
-                $c->id => URL::temporarySignedRoute('consulta.descargar', now()->addMinutes(30), $c)
+            ->filter(fn ($c) => !$c->isVencido())
+            ->mapWithKeys(fn ($c) => [
+                $c->id => URL::temporarySignedRoute('consulta.descargar', now()->addMinutes(30), $c),
             ]);
 
         $urlDescargarTodos = null;
@@ -143,14 +133,17 @@ class ConsultaCertificadoController extends Controller
             abort(404, 'No hay certificados disponibles para descargar.');
         }
 
-        $rutas = $certificados->map(fn ($c) => Storage::disk('certificados')->path($c->archivo_pdf))->values()->all();
+        $rutas = $certificados
+            ->map(fn ($c) => Storage::disk('certificados')->path($c->archivo_pdf))
+            ->values()
+            ->all();
 
         $pdf = $merge->fusionar($rutas);
 
         $nombreArchivo = sprintf('Certificados_%s.pdf', Str::slug($capacitado->nombre_completo, '_'));
 
         return response($pdf, 200, [
-            'Content-Type' => 'application/pdf',
+            'Content-Type'        => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="' . $nombreArchivo . '"',
         ]);
     }

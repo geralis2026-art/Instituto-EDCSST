@@ -22,9 +22,7 @@ class CertificadoPdfService
     /** DPI para renderizado de imágenes de texto. */
     private const IMAGEN_DPI = 300;
 
-    /**
-     * Renderiza el certificado y devuelve el binario del PDF.
-     */
+    /** Renderiza el certificado y devuelve el binario del PDF. */
     public function generarPdf(Certificado $certificado): string
     {
         $certificado->load(['capacitado', 'curso.categoria']);
@@ -40,12 +38,10 @@ class CertificadoPdfService
             ->output();
     }
 
-    /**
-     * Genera el PDF y lo guarda en el disco "certificados".
-     */
+    /** Genera el PDF y lo guarda en el disco "certificados". */
     public function generarYGuardar(Certificado $certificado): string
     {
-        $pdf = $this->generarPdf($certificado);
+        $pdf  = $this->generarPdf($certificado);
         $ruta = "certificados/{$certificado->codigo_unico}.pdf";
 
         Storage::disk('certificados')->put($ruta, $pdf);
@@ -62,8 +58,8 @@ class CertificadoPdfService
 
         $fontDir = resource_path('fonts') . DIRECTORY_SEPARATOR;
         $pdf->AddFont('OptiDianna',    '',  'OptiDianna.json', $fontDir);
-        $pdf->AddFont('CenturyGothic', '',  'GOTHIC.json',    $fontDir);
-        $pdf->AddFont('CenturyGothic', 'B', 'GOTHICB.json',   $fontDir);
+        $pdf->AddFont('CenturyGothic', '',  'GOTHIC.json',     $fontDir);
+        $pdf->AddFont('CenturyGothic', 'B', 'GOTHICB.json',    $fontDir);
 
         $pdf->setSourceFile($plantilla);
         $pagina = $pdf->importPage(1);
@@ -80,19 +76,20 @@ class CertificadoPdfService
         // cuando está embebida por FPDF. Se renderiza como imagen PNG para compatibilidad total.
         $this->escribirNombreComoImagen($pdf, $campos['nombre_completo'], $nombre, $tamano['width']);
 
-        $this->escribirCampo($pdf, $campos['documento'], $this->formatearDocumento($certificado->capacitado->documento), $tamano['width']);
-        $this->escribirCampo($pdf, $campos['curso'], mb_strtoupper($certificado->curso->nombre, 'UTF-8'), $tamano['width']);
-        $this->escribirCampo($pdf, $campos['modalidad'], ucfirst(strtolower($certificado->modalidad ?? 'No especificada')), $tamano['width']);
-        $this->escribirCampo($pdf, $campos['duracion'], $certificado->intensidad_horaria . ' Horas', $tamano['width']);
-        $this->escribirCampo($pdf, $campos['fecha_emision'], strtoupper($certificado->fecha_emision->format('Y/m/d')), $tamano['width']);
-        $this->escribirCampo($pdf, $campos['codigo_unico'], mb_strtoupper($certificado->codigo_unico, 'UTF-8'), $tamano['width']);
+        $this->escribirCampo($pdf, $campos['documento'],    $this->formatearDocumento($certificado->capacitado->documento),      $tamano['width']);
+        $this->escribirCampo($pdf, $campos['curso'],        mb_strtoupper($certificado->curso->nombre, 'UTF-8'),                 $tamano['width']);
+        $this->escribirCampo($pdf, $campos['modalidad'],    ucfirst(strtolower($certificado->modalidad ?? 'No especificada')),   $tamano['width']);
+        $this->escribirCampo($pdf, $campos['duracion'],     $certificado->intensidad_horaria . ' Horas',                        $tamano['width']);
+        $this->escribirCampo($pdf, $campos['fecha_emision'], strtoupper($certificado->fecha_emision->format('Y/m/d')),           $tamano['width']);
+        $this->escribirCampo($pdf, $campos['codigo_unico'], mb_strtoupper($certificado->codigo_unico, 'UTF-8'),                  $tamano['width']);
 
         return $pdf->Output('S');
     }
 
     /**
      * Renderiza el nombre como imagen PNG usando GD + TTF para evitar problemas
-     * de fuentes embebidas en Adobe Acrobat.
+     * de fuentes embebidas en Adobe Acrobat. El archivo temporal se elimina en
+     * un bloque finally para garantizar la limpieza incluso si FPDI lanza una excepción.
      */
     private function escribirNombreComoImagen(Fpdi $pdf, array $campo, string $nombre, float $anchoPagina): void
     {
@@ -108,23 +105,23 @@ class CertificadoPdfService
         $giFontPx = $ptSize * $dpi / 72.0;
 
         // Reduce el tamaño hasta que el texto quepa en el ancho disponible
-        $bbox = imagettfbbox($giFontPx, 0, $ttf, $nombre);
+        $bbox  = imagettfbbox($giFontPx, 0, $ttf, $nombre);
         $textW = abs($bbox[2] - $bbox[0]);
 
         while ($textW > $maxPx && $ptSize > $minPt) {
-            $ptSize  -= 0.5;
-            $giFontPx = $ptSize * $dpi / 72.0;
-            $bbox     = imagettfbbox($giFontPx, 0, $ttf, $nombre);
-            $textW    = abs($bbox[2] - $bbox[0]);
+            $ptSize   -= 0.5;
+            $giFontPx  = $ptSize * $dpi / 72.0;
+            $bbox      = imagettfbbox($giFontPx, 0, $ttf, $nombre);
+            $textW     = abs($bbox[2] - $bbox[0]);
         }
 
         // Dimensiones de la imagen
-        $ascender   = -$bbox[7];            // píxeles desde baseline hasta arriba del texto
-        $descender  = max(0, $bbox[1]);     // píxeles desde baseline hacia abajo
-        $textH      = $ascender + $descender;
-        $paddingPx  = (int) round($mmToPx * 2); // 2 mm de margen vertical
-        $imgW       = (int) round($anchoPagina * $mmToPx);
-        $imgH       = $textH + $paddingPx * 2;
+        $ascender  = -$bbox[7];         // píxeles desde baseline hasta arriba del texto
+        $descender = max(0, $bbox[1]);  // píxeles desde baseline hacia abajo
+        $textH     = $ascender + $descender;
+        $paddingPx = (int) round($mmToPx * 2); // 2 mm de margen vertical
+        $imgW      = (int) round($anchoPagina * $mmToPx);
+        $imgH      = $textH + $paddingPx * 2;
 
         // Crear imagen con fondo transparente
         $img = imagecreatetruecolor($imgW, $imgH);
@@ -144,14 +141,19 @@ class CertificadoPdfService
         imagepng($img, $tmpFile);
         imagedestroy($img);
 
-        // Convertir dimensiones a mm y posicionar en el PDF
-        $imgHMm  = $imgH / $mmToPx;
-        // campo['y'] es la baseline en mm; el top de la imagen queda arriba de eso
-        $yTopMm  = $campo['y'] - ($ascender + $paddingPx) / $mmToPx;
+        // finally garantiza la limpieza aunque $pdf->Image() lance una excepción.
+        try {
+            // Convertir dimensiones a mm y posicionar en el PDF
+            $imgHMm = $imgH / $mmToPx;
+            // campo['y'] es la baseline en mm; el top de la imagen queda arriba de eso
+            $yTopMm = $campo['y'] - ($ascender + $paddingPx) / $mmToPx;
 
-        $pdf->Image($tmpFile, 0, $yTopMm, $anchoPagina, $imgHMm, 'PNG');
-
-        @unlink($tmpFile);
+            $pdf->Image($tmpFile, 0, $yTopMm, $anchoPagina, $imgHMm, 'PNG');
+        } finally {
+            if (file_exists($tmpFile)) {
+                unlink($tmpFile);
+            }
+        }
     }
 
     /** Formatea el documento con puntos cada 3 dígitos. */
@@ -166,10 +168,10 @@ class CertificadoPdfService
         $texto = mb_convert_encoding($texto, 'ISO-8859-1', 'UTF-8');
 
         $fuente   = $campo['fuente'] ?? 'Helvetica';
-        $estilo   = $campo['estilo'];
+        $estilo   = $campo['estilo'] ?? '';
         $size     = (float) $campo['size'];
         $minSize  = (float) ($campo['min_size'] ?? 8);
-        $margen   = (float) ($campo['margen'] ?? 20);
+        $margen   = (float) ($campo['margen']   ?? 20);
         $maxAncho = $anchoPagina - ($margen * 2);
 
         $pdf->SetFont($fuente, $estilo, $size);

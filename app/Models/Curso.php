@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 /**
@@ -35,19 +37,33 @@ class Curso extends Model
     ];
 
     protected $casts = [
-        'destacado' => 'boolean',
-        'activo' => 'boolean',
+        'destacado'          => 'boolean',
+        'activo'             => 'boolean',
         'intensidad_horaria' => 'integer',
     ];
 
-    /**
-     * Genera el slug automáticamente al guardar.
-     */
+    /** Genera el slug automáticamente al guardar e invalida el caché del home. */
     protected static function booted(): void
     {
+        static::saved(fn () => Cache::forget('home_cursos_destacados'));
+        static::deleted(fn () => Cache::forget('home_cursos_destacados'));
+
         static::saving(function ($curso) {
             if (empty($curso->slug)) {
-                $curso->slug = Str::slug($curso->nombre);
+                $base = Str::slug($curso->nombre);
+                $slug = $base;
+                $i    = 1;
+
+                while (
+                    static::where('slug', $slug)
+                        ->when($curso->exists, fn ($q) => $q->where('id', '!=', $curso->id))
+                        ->exists()
+                ) {
+                    $slug = "{$base}-{$i}";
+                    $i++;
+                }
+
+                $curso->slug = $slug;
             }
         });
     }
@@ -64,9 +80,7 @@ class Curso extends Model
         return $this->hasMany(Certificado::class);
     }
 
-    /**
-     * Capacitados que han recibido certificado de este curso.
-     */
+    /** Capacitados que han recibido certificado de este curso (vía certificados). */
     public function capacitados(): BelongsToMany
     {
         return $this->belongsToMany(Capacitado::class, 'certificados')
@@ -75,20 +89,18 @@ class Curso extends Model
     }
 
     /** Cursos activos. */
-    public function scopeActivos(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeActivos(Builder $query): Builder
     {
         return $query->where('activo', true);
     }
 
     /** Cursos activos marcados como destacados (se muestran en el home). */
-    public function scopeDestacados(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeDestacados(Builder $query): Builder
     {
         return $query->where('destacado', true)->where('activo', true);
     }
 
-    /**
-     * Accessor para la URL de la imagen.
-     */
+    /** URL de la imagen del curso; fallback a imagen por defecto si no tiene. */
     public function getImagenUrlAttribute(): string
     {
         if (!$this->imagen || !str_contains($this->imagen, '/')) {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -27,14 +28,25 @@ class Categoria extends Model
         'activo' => 'boolean',
     ];
 
-    /**
-     * Genera el slug automáticamente al guardar.
-     */
+    /** Genera el slug automáticamente al guardar si no viene uno explícito. */
     protected static function booted(): void
     {
         static::saving(function ($categoria) {
             if (empty($categoria->slug)) {
-                $categoria->slug = Str::slug($categoria->nombre);
+                $base = Str::slug($categoria->nombre);
+                $slug = $base;
+                $i    = 1;
+
+                while (
+                    static::where('slug', $slug)
+                        ->when($categoria->exists, fn ($q) => $q->where('id', '!=', $categoria->id))
+                        ->exists()
+                ) {
+                    $slug = "{$base}-{$i}";
+                    $i++;
+                }
+
+                $categoria->slug = $slug;
             }
         });
     }
@@ -46,7 +58,7 @@ class Categoria extends Model
     }
 
     /** Categorías activas. */
-    public function scopeActivas(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeActivas(Builder $query): Builder
     {
         return $query->where('activo', true);
     }

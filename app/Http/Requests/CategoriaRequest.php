@@ -18,7 +18,7 @@ class CategoriaRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'slug' => Str::slug((string) $this->input('nombre')),
+            'slug'   => Str::slug((string) $this->input('nombre')),
             'activo' => $this->boolean('activo'),
         ]);
     }
@@ -28,23 +28,23 @@ class CategoriaRequest extends FormRequest
         $categoriaId = $this->route('categoria')?->id;
 
         return [
-            'nombre' => 'required|string|max:255',
-            'slug' => [
+            'nombre'      => ['required', 'string', 'max:255'],
+            'slug'        => [
                 'required',
                 'string',
                 'max:255',
                 Rule::unique('categorias', 'slug')->ignore($categoriaId),
             ],
-            'descripcion' => 'nullable|string|max:2000',
-            'activo' => 'boolean',
+            'descripcion' => ['nullable', 'string', 'max:2000'],
+            'activo'      => ['boolean'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'nombre.required' => 'El nombre de la categoria es requerido.',
-            'slug.unique' => 'Ya existe una categoria con este nombre.',
+            'nombre.required' => 'El nombre de la categoría es requerido.',
+            'slug.unique'     => 'Ya existe una categoría con este nombre.',
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CapacitadoImportConfirmarRequest;
 use App\Http\Requests\CapacitadoImportRequest;
 use App\Http\Requests\CapacitadoRequest;
 use App\Models\Capacitado;
@@ -29,14 +30,14 @@ class CapacitadoController extends Controller
         $busqueda = substr(trim((string) $request->query('busqueda', '')), 0, 100);
         
         $capacitados = Capacitado::query()
-            ->when($busqueda, function ($query, $busqueda) {
-                $busqueda = trim($busqueda);
-                return $query->where('nombre_completo', 'like', "%{$busqueda}%")
-                             ->orWhere('documento', 'like', "%{$busqueda}%")
-                             ->orWhere('correo', 'like', "%{$busqueda}%");
-            })
+            ->when($busqueda, fn ($query) =>
+                $query->where('nombre_completo', 'like', "%{$busqueda}%")
+                      ->orWhere('documento', 'like', "%{$busqueda}%")
+                      ->orWhere('correo', 'like', "%{$busqueda}%")
+            )
             ->orderBy('nombre_completo')
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         return view('admin.capacitados.index', compact('capacitados', 'busqueda'));
     }
@@ -226,13 +227,8 @@ class CapacitadoController extends Controller
      * Confirma la importación: crea/actualiza capacitados y genera
      * las solicitudes de certificación pendientes.
      */
-    public function importarConfirmar(Request $request, ImportacionCapacitadosService $servicio)
+    public function importarConfirmar(CapacitadoImportConfirmarRequest $request, ImportacionCapacitadosService $servicio)
     {
-        $request->validate([
-            'token' => 'required|string',
-            'filas' => 'array',
-        ]);
-
         try {
             $contadores = $servicio->confirmar($request->input('token'), $request->input('filas', []));
         } catch (\RuntimeException $e) {

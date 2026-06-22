@@ -4,13 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CertificadoRequest;
-use App\Models\Capacitado;
 use App\Models\Categoria;
 use App\Models\Certificado;
 use App\Models\Curso;
 use App\Services\CertificadoPdfService;
 use App\Services\GeneracionMasivaCertificadosService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -27,25 +29,24 @@ class CertificadoController extends Controller
     public function index(Request $request)
     {
         $busqueda = substr(trim((string) $request->query('busqueda', '')), 0, 100);
-        $cursoId  = (int) $request->query('curso_id', 0) ?: '';
+        $cursoId  = (int) $request->query('curso_id', 0) ?: null;
 
         $cursos = Curso::orderBy('nombre')->get();
 
         $certificados = Certificado::with(['capacitado', 'curso'])
-            ->when($busqueda, function ($query, $busqueda) {
-                $busqueda = trim($busqueda);
-
-                return $query->where(function ($query) use ($busqueda) {
-                    $query->where('codigo_unico', 'like', "%{$busqueda}%")
-                        ->orWhereHas('capacitado', function ($query) use ($busqueda) {
-                            $query->where('nombre_completo', 'like', "%{$busqueda}%")
-                                ->orWhere('documento', 'like', "%{$busqueda}%");
-                        });
-                });
-            })
+            ->when($busqueda, fn ($query) =>
+                $query->where(fn ($q) =>
+                    $q->where('codigo_unico', 'like', "%{$busqueda}%")
+                      ->orWhereHas('capacitado', fn ($q) =>
+                          $q->where('nombre_completo', 'like', "%{$busqueda}%")
+                            ->orWhere('documento', 'like', "%{$busqueda}%")
+                      )
+                )
+            )
             ->when($cursoId, fn ($query) => $query->where('curso_id', $cursoId))
             ->latest('fecha_emision')
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         return view('admin.certificados.index', compact('certificados', 'cursos', 'busqueda', 'cursoId'));
     }
@@ -74,8 +75,8 @@ class CertificadoController extends Controller
         unset($datos['anios_vigencia']);
         $codigoManual = $datos['codigo_unico'] ?: null;
         $datos['codigo_unico'] = $codigoManual ?? (string) Str::uuid();
-        $datos['emitido_por'] = auth()->id();
-        $datos['fecha_vencimiento'] = \Carbon\Carbon::parse($datos['fecha_emision'])->addYears($aniosVigencia)->toDateString();
+        $datos['emitido_por'] = Auth::id();
+        $datos['fecha_vencimiento'] = Carbon::parse($datos['fecha_emision'])->addYears($aniosVigencia)->toDateString();
 
         if ($request->hasFile('archivo_pdf')) {
             $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados', 'certificados');
@@ -135,7 +136,7 @@ class CertificadoController extends Controller
      * JSON_THROW_ON_ERROR garantiza que nunca se inyecte `false` literal en el atributo x-data.
      * JSON_UNESCAPED_UNICODE preserva tildes y ñ en los nombres sin secuencias \uXXXX.
      */
-    private function buildCategoriasJson($categorias): string
+    private function buildCategoriasJson(Collection $categorias): string
     {
         return json_encode(
             $categorias->map(fn ($cat) => [
@@ -153,25 +154,34 @@ class CertificadoController extends Controller
         $datos = $request->validated();
         $aniosVigencia = (int) $datos['anios_vigencia'];
         unset($datos['anios_vigencia']);
-        $datos['fecha_vencimiento'] = \Carbon\Carbon::parse($datos['fecha_emision'])->addYears($aniosVigencia)->toDateString();
+
+        // Si no se provee código, se preserva el existente (el formulario de edición
+        // siempre lo pre-rellena, pero si viene vacío no debe sobrescribir con null).
+        if (empty($datos['codigo_unico'])) {
+            unset($datos['codigo_unico']);
+        }
+
+        $datos['fecha_vencimiento'] = Carbon::parse($datos['fecha_emision'])->addYears($aniosVigencia)->toDateString();
 
         if ($request->hasFile('archivo_pdf')) {
             if ($certificado->archivo_pdf) {
                 Storage::disk('certificados')->delete($certificado->archivo_pdf);
             }
             $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados', 'certificados');
+            $certificado->update($datos);
         } else {
             unset($datos['archivo_pdf']);
-        }
+            $certificado->update($datos);
 
-        $certificado->update($datos);
+            // Generar primero; solo eliminar el PDF anterior si la generación fue exitosa.
+            $certificado->refresh();
+            $nuevoPdf = $pdfService->generarYGuardar($certificado);
 
-        if (!$request->hasFile('archivo_pdf')) {
             if ($certificado->archivo_pdf) {
                 Storage::disk('certificados')->delete($certificado->archivo_pdf);
             }
-            $certificado->refresh();
-            $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
+
+            $certificado->archivo_pdf = $nuevoPdf;
             $certificado->saveQuietly();
         }
 
@@ -283,7 +293,7 @@ class CertificadoController extends Controller
             ];
         }
 
-        $resultado = $servicio->generar($filas, auth()->id(), $pdfService);
+        $resultado = $servicio->generar($filas, Auth::id(), $pdfService);
 
         $mensaje = "{$resultado['generados']} certificado(s) generado(s) correctamente.";
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MensajeUpdateRequest;
 use App\Models\Mensaje;
 use Illuminate\Http\Request;
 
@@ -18,18 +19,21 @@ class MensajeController extends Controller
         $busqueda = substr(trim((string) $request->query('busqueda', '')), 0, 100);
         $estado   = in_array($request->query('estado'), ['nuevo', 'leido', 'respondido'])
             ? $request->query('estado')
-            : '';
+            : null;
 
         $mensajes = Mensaje::query()
-            ->when($busqueda, fn($q, $v) =>
-                $q->where('nombre', 'like', "%{$v}%")
-                  ->orWhere('correo', 'like', "%{$v}%")
+            ->when($busqueda, fn ($q) =>
+                $q->where(fn ($inner) =>
+                    $inner->where('nombre', 'like', "%{$busqueda}%")
+                          ->orWhere('correo', 'like', "%{$busqueda}%")
+                )
             )
-            ->when($estado, fn($q, $v) => $q->where('estado', $v))
+            ->when($estado, fn ($q) => $q->where('estado', $estado))
             ->latest()
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
-        return view('admin.mensajes.index', compact('mensajes'));
+        return view('admin.mensajes.index', compact('mensajes', 'busqueda', 'estado'));
     }
 
     /** Muestra el mensaje y lo marca como leído automáticamente si era nuevo. */
@@ -38,18 +42,14 @@ class MensajeController extends Controller
         if ($mensaje->estado === Mensaje::ESTADO_NUEVO) {
             $mensaje->marcarComoLeido();
         }
+
         return view('admin.mensajes.show', compact('mensaje'));
     }
 
     /** Actualiza el estado y/o las notas internas del mensaje. */
-    public function update(Request $request, Mensaje $mensaje)
+    public function update(MensajeUpdateRequest $request, Mensaje $mensaje)
     {
-        $request->validate([
-            'estado'         => 'required|in:nuevo,leido,respondido',
-            'notas_internas' => 'nullable|string|max:2000',
-        ]);
-
-        $mensaje->update($request->only('estado', 'notas_internas'));
+        $mensaje->update($request->validated());
 
         return back()->with('success', 'Mensaje actualizado.');
     }
@@ -58,6 +58,9 @@ class MensajeController extends Controller
     public function destroy(Mensaje $mensaje)
     {
         $mensaje->delete();
-        return redirect()->route('admin.mensajes.index')->with('success', 'Mensaje eliminado.');
+
+        return redirect()
+            ->route('admin.mensajes.index')
+            ->with('success', 'Mensaje eliminado.');
     }
 }

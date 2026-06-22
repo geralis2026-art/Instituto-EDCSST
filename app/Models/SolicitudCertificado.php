@@ -19,6 +19,13 @@ class SolicitudCertificado extends Model
 
     protected $table = 'solicitudes_certificado';
 
+    const ESTADO_PENDIENTE  = 'pendiente';
+    const ESTADO_PROCESADA  = 'procesada';
+    const ESTADO_DESCARTADA = 'descartada';
+
+    const MODALIDAD_VIRTUAL    = 'virtual';
+    const MODALIDAD_PRESENCIAL = 'presencial';
+
     protected $fillable = [
         'capacitado_id',
         'curso_id',
@@ -50,6 +57,12 @@ class SolicitudCertificado extends Model
     /** Solicitudes a la espera de generar su certificado. */
     public function scopePendientes(Builder $query): Builder
     {
-        return $query->where('estado', 'pendiente');
+        return $query->where('estado', self::ESTADO_PENDIENTE);
+    }
+
+    /** Solicitudes que ya tienen certificado generado. */
+    public function scopeProcesadas(Builder $query): Builder
+    {
+        return $query->where('estado', self::ESTADO_PROCESADA);
     }
 }

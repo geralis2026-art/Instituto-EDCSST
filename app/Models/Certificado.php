@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -66,22 +67,21 @@ class Certificado extends Model
      */
     public static function generarCodigoUnico(): string
     {
-        $anio = now()->year;
+        $anio    = now()->year;
         $prefijo = "EDCSST-{$anio}-";
 
+        $offset = strlen($prefijo) + 1; // SUBSTRING en MySQL es 1-indexado
+
         $maximo = static::where('codigo_unico', 'like', "{$prefijo}%")
-            ->get()
-            ->map(fn ($cert) => (int) substr($cert->codigo_unico, strlen($prefijo)))
-            ->max();
+            ->selectRaw("MAX(CAST(SUBSTRING(codigo_unico, {$offset}) AS UNSIGNED)) as max_num")
+            ->value('max_num');
 
         $siguiente = ($maximo ?? 0) + 1;
 
         return sprintf('%s%05d', $prefijo, $siguiente);
     }
 
-    /**
-     * Buscar certificado por su código único.
-     */
+    /** Busca un certificado activo por su código único. */
     public static function porCodigo(string $codigo): ?self
     {
         return static::where('codigo_unico', trim(strtoupper($codigo)))
@@ -89,9 +89,7 @@ class Certificado extends Model
             ->first();
     }
 
-    /**
-     * URL del PDF para descarga.
-     */
+    /** URL del PDF para descarga desde el panel admin. */
     public function getPdfUrlAttribute(): ?string
     {
         return $this->archivo_pdf
@@ -99,34 +97,37 @@ class Certificado extends Model
             : null;
     }
 
-    /** Verdadero si la fecha de vencimiento ya pasó. */
+    /**
+     * Verdadero si la fecha de vencimiento ya pasó.
+     * Se compara contra today() (sin hora) para que el certificado sea
+     * válido durante todo el día de su fecha de vencimiento.
+     */
     public function isVencido(): bool
     {
-        return $this->fecha_vencimiento && $this->fecha_vencimiento->isPast();
+        return $this->fecha_vencimiento !== null
+            && $this->fecha_vencimiento->lt(today());
     }
 
     /** Certificados marcados como activos (no invalidados). */
-    public function scopeActivos(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeActivos(Builder $query): Builder
     {
         return $query->where('activo', true);
     }
 
     /** Certificados activos y cuya fecha de vencimiento no ha llegado. */
-    public function scopeVigentes(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeVigentes(Builder $query): Builder
     {
         return $query->where('activo', true)
-                     ->where('fecha_vencimiento', '>=', now()->toDateString());
+                     ->where('fecha_vencimiento', '>=', today()->toDateString());
     }
 
     /** Certificados cuya fecha de vencimiento ya pasó (independientemente de si están activos). */
-    public function scopeVencidos(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    public function scopeVencidos(Builder $query): Builder
     {
-        return $query->where('fecha_vencimiento', '<', now()->toDateString());
+        return $query->where('fecha_vencimiento', '<', today()->toDateString());
     }
 
-    /**
-     * Cuando se elimina o desactiva un certificado, recalcular las horas del capacitado.
-     */
+    /** Recalcula las horas del capacitado cuando se guarda o elimina un certificado. */
     protected static function booted(): void
     {
         static::saved(function ($certificado) {

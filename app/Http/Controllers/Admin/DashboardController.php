@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Capacitado;
-use App\Models\Curso;
+use App\Models\Categoria;
 use App\Models\Certificado;
+use App\Models\Curso;
 use App\Models\Mensaje;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Página de inicio del panel administrativo: estadísticas generales,
@@ -22,69 +24,58 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        // Estadísticas generales
-        $totalCapacitados = Capacitado::count();
-        $totalCertificados = Certificado::where('activo', true)->count();
-        $totalCursosActivos = Curso::where('activo', true)->count();
-        $totalCategorias = \App\Models\Categoria::where('activo', true)->count();
-        $mensajesNuevos = Mensaje::nuevos()->count();
+        $now = Carbon::now();
 
-        // Horas capacitadas totales
-        $horasCapacitadasTotal = Certificado::where('activo', true)->sum('intensidad_horaria');
+        // Estadísticas escalares cacheadas 60 s — evita golpear la BD en cada recarga.
+        $stats = Cache::remember('dashboard_stats', 60, function () use ($now) {
+            return [
+                'totalCapacitados'      => Capacitado::count(),
+                'totalCertificados'     => Certificado::where('activo', true)->count(),
+                'totalCursosActivos'    => Curso::where('activo', true)->count(),
+                'totalCategorias'       => Categoria::where('activo', true)->count(),
+                'mensajesNuevos'        => Mensaje::nuevos()->count(),
+                'horasCapacitadasTotal' => Certificado::where('activo', true)->sum('intensidad_horaria'),
+                'certificadosPorMes'    => $this->certificadosPorMes(),
+                'certificadosHoy'       => Certificado::whereDate('created_at', today())->count(),
+                'certificadosMesActual' => Certificado::whereBetween('fecha_emision', [
+                    $now->copy()->startOfMonth(),
+                    $now->copy()->endOfMonth(),
+                ])->count(),
+                'capacitadosMesActual'  => Capacitado::whereBetween('created_at', [
+                    $now->copy()->startOfMonth(),
+                    $now->copy()->endOfMonth(),
+                ])->count(),
+            ];
+        });
 
-        // Certificados emitidos en los últimos 12 meses (para la gráfica)
-        $certificadosPorMes = $this->certificadosPorMes();
-
-        // Últimos 5 certificados emitidos
+        // Colecciones Eloquent: consultadas en vivo (nunca se cachean — file cache no serializa modelos).
         $ultimosCertificados = Certificado::with(['capacitado', 'curso', 'emitidoPor'])
             ->where('activo', true)
             ->latest()
             ->take(5)
             ->get();
 
-        // Top 5 capacitados por horas
         $topCapacitados = Capacitado::orderBy('horas_capacitadas', 'desc')
             ->take(5)
             ->get();
 
-        // Cursos más usados
         $cursosMasUsados = Curso::withCount('certificados')
             ->where('activo', true)
             ->orderBy('certificados_count', 'desc')
             ->take(5)
             ->get();
 
-        // Mensajes recientes
         $mensajesRecientes = Mensaje::latest()
             ->take(5)
             ->get();
 
-        // Estadísticas de este mes
-        $hoyInicio = Carbon::now()->startOfDay();
-        $hoyFin = Carbon::now()->endOfDay();
-        $certificadosHoy = Certificado::whereBetween('created_at', [$hoyInicio, $hoyFin])->count();
-
-        $mesInicio = Carbon::now()->startOfMonth();
-        $mesFin = Carbon::now()->endOfMonth();
-        $certificadosMesActual = Certificado::whereBetween('fecha_emision', [$mesInicio, $mesFin])->count();
-        $capacitadosMesActual = Capacitado::whereBetween('created_at', [$mesInicio, $mesFin])->count();
-
-        return view('admin.dashboard', compact(
-            'totalCapacitados',
-            'totalCertificados',
-            'totalCursosActivos',
-            'totalCategorias',
-            'horasCapacitadasTotal',
-            'mensajesNuevos',
-            'certificadosPorMes',
-            'ultimosCertificados',
-            'topCapacitados',
-            'cursosMasUsados',
-            'mensajesRecientes',
-            'certificadosHoy',
-            'certificadosMesActual',
-            'capacitadosMesActual'
-        ));
+        return view('admin.dashboard', [
+            ...$stats,
+            'ultimosCertificados' => $ultimosCertificados,
+            'topCapacitados'      => $topCapacitados,
+            'cursosMasUsados'     => $cursosMasUsados,
+            'mensajesRecientes'   => $mensajesRecientes,
+        ]);
     }
 
     /**
@@ -101,12 +92,12 @@ class DashboardController extends Controller
             ->groupBy('mes')
             ->pluck('total', 'mes');
 
-        $meses = [];
+        $meses      = [];
         $cantidades = [];
 
         for ($i = 11; $i >= 0; $i--) {
-            $fecha = Carbon::now()->subMonths($i);
-            $meses[] = $fecha->locale('es')->isoFormat('MMM YYYY');
+            $fecha        = Carbon::now()->subMonths($i);
+            $meses[]      = $fecha->locale('es')->isoFormat('MMM YYYY');
             $cantidades[] = $resultados[$fecha->format('Y-m')] ?? 0;
         }
 

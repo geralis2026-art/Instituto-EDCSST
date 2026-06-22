@@ -38,7 +38,7 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-semibold text-gray-900">Teléfono</p>
-                                <p class="text-sm text-gray-600">+57 321 2173463</p>
+                                <p class="text-sm text-gray-600">{{ $configSitio->telefono ?? '+57 321 2173463' }}</p>
                             </div>
                         </div>
 
@@ -48,7 +48,7 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-semibold text-gray-900">Correo</p>
-                                <p class="text-sm text-gray-600 break-all">academiasstcolombiana@gmail.com</p>
+                                <p class="text-sm text-gray-600 break-all">{{ $configSitio->correo_contacto ?? 'academiasstcolombiana@gmail.com' }}</p>
                             </div>
                         </div>
 
@@ -58,7 +58,7 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-semibold text-gray-900">WhatsApp</p>
-                                <a href="https://wa.me/573212173463" target="_blank" class="text-sm text-green-700 hover:text-green-800 font-semibold">Escríbenos</a>
+                                <a href="https://wa.me/{{ preg_replace('/\D/', '', $configSitio->whatsapp ?? '573212173463') }}" target="_blank" rel="noopener" class="text-sm text-green-700 hover:text-green-800 font-semibold">Escríbenos</a>
                             </div>
                         </div>
                     </div>

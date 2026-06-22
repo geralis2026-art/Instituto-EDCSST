@@ -114,7 +114,7 @@ class ImportacionCapacitadosService
                         [
                             'capacitado_id' => $capacitado->id,
                             'curso_id'      => $curso['id'],
-                            'estado'        => 'pendiente',
+                            'estado'        => SolicitudCertificado::ESTADO_PENDIENTE,
                         ],
                         [
                             'modalidad' => $datos['modalidad'] ?: null,

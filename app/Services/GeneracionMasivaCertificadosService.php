@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Certificado;
 use App\Models\SolicitudCertificado;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -15,7 +16,7 @@ use Illuminate\Support\Str;
 class GeneracionMasivaCertificadosService
 {
     /** Solicitudes pendientes, con su capacitado y curso precargados para la pantalla de generación masiva. */
-    public function solicitudesPendientes()
+    public function solicitudesPendientes(): Collection
     {
         return SolicitudCertificado::pendientes()
             ->with(['capacitado', 'curso'])
@@ -40,7 +41,7 @@ class GeneracionMasivaCertificadosService
     public function generar(array $filas, int $emitidoPor, CertificadoPdfService $pdfService): array
     {
         $generados = 0;
-        $errores = [];
+        $errores   = [];
 
         foreach ($filas as $fila) {
             try {
@@ -55,23 +56,23 @@ class GeneracionMasivaCertificadosService
                     $solicitud = SolicitudCertificado::pendientes()->findOrFail($fila['solicitud_id']);
 
                     $certificado = Certificado::create([
-                        'capacitado_id' => $solicitud->capacitado_id,
-                        'curso_id' => $fila['curso_id'],
-                        'emitido_por' => $emitidoPor,
-                        'codigo_unico' => (string) Str::uuid(),
-                        'fecha_emision' => $fila['fecha_emision'],
-                        'fecha_vencimiento' => Carbon::parse($fila['fecha_emision'])->addYears($fila['anios_vigencia'])->toDateString(),
+                        'capacitado_id'      => $solicitud->capacitado_id,
+                        'curso_id'           => $fila['curso_id'],
+                        'emitido_por'        => $emitidoPor,
+                        'codigo_unico'       => (string) Str::uuid(),
+                        'fecha_emision'      => $fila['fecha_emision'],
+                        'fecha_vencimiento'  => Carbon::parse($fila['fecha_emision'])->addYears($fila['anios_vigencia'])->toDateString(),
                         'intensidad_horaria' => $fila['intensidad_horaria'],
-                        'modalidad' => $fila['modalidad'],
-                        'activo' => $fila['activo'],
+                        'modalidad'          => $fila['modalidad'],
+                        'activo'             => $fila['activo'],
                     ]);
 
                     $certificado->codigo_unico = Certificado::generarCodigoUnico();
                     $certificado->saveQuietly();
 
                     $solicitud->update([
-                        'estado' => 'procesada',
-                        'certificado_id' => $certificado->id,
+                        'estado'          => SolicitudCertificado::ESTADO_PROCESADA,
+                        'certificado_id'  => $certificado->id,
                     ]);
                 });
 

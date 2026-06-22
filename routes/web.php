@@ -47,19 +47,18 @@ Route::get('/contacto', [ContactoController::class, 'index'])->name('contacto');
 Route::post('/contacto', [ContactoController::class, 'enviar'])->name('contacto.enviar')->middleware('throttle:contacto-publica');
 
 // Consulta pública de certificados (capacitado busca sus certificados)
-Route::get('/consulta', [ConsultaCertificadoController::class, 'index'])->name('consulta')->middleware('throttle:30,1');
+Route::get('/consulta', [ConsultaCertificadoController::class, 'index'])->name('consulta');
 Route::post('/consulta', [ConsultaCertificadoController::class, 'buscar'])->name('consulta.buscar')->middleware('throttle:consulta-publica');
 Route::get('/consulta/descargar/{certificado}', [ConsultaCertificadoController::class, 'descargar'])->name('consulta.descargar')->middleware('signed');
 Route::get('/consulta/descargar-todos/{capacitado}', [ConsultaCertificadoController::class, 'descargarTodos'])->name('consulta.descargarTodos')->middleware('signed');
 
 // Verificación pública (terceros verifican autenticidad)
-Route::get('/verificar', [VerificacionController::class, 'index'])->name('verificar')->middleware('throttle:30,1');
+Route::get('/verificar', [VerificacionController::class, 'index'])->name('verificar');
 Route::post('/verificar', [VerificacionController::class, 'verificar'])->name('verificar.verificar')->middleware('throttle:verificacion-publica');
 
 // Auto-registro de capacitados (link temporal generado desde el admin)
 Route::get('/registro/{token}', [RegistroCapacitadoController::class, 'form'])->name('registro.form');
 Route::post('/registro/{token}', [RegistroCapacitadoController::class, 'guardar'])->name('registro.guardar')->middleware('throttle:registro-publica');
-
 
 /*
 |--------------------------------------------------------------------------
