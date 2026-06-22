@@ -170,6 +170,7 @@ class CertificadoController extends Controller
             if ($certificado->archivo_pdf) {
                 Storage::disk('certificados')->delete($certificado->archivo_pdf);
             }
+            $certificado->refresh();
             $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
             $certificado->saveQuietly();
         }
@@ -199,6 +200,8 @@ class CertificadoController extends Controller
         return response($pdf, 200, [
             'Content-Type'        => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $certificado->codigo_unico . '.pdf"',
+            'Cache-Control'       => 'no-store, no-cache, must-revalidate',
+            'Pragma'              => 'no-cache',
         ]);
     }
 
