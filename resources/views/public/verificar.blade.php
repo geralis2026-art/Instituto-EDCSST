@@ -68,7 +68,7 @@
                             <div>
                                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Otorgado a</p>
                                 <p class="text-lg font-bold text-gray-900">{{ $certificado->capacitado->nombre_completo }}</p>
-                                <p class="text-sm text-gray-600">Documento: {{ $certificado->capacitado->documento }}</p>
+                                <p class="text-sm text-gray-600">Documento: {{ $certificado->capacitado->tipo_documento ?? 'CC' }} {{ $certificado->capacitado->documento }}</p>
                             </div>
                             <div>
                                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Código del certificado</p>
@@ -119,7 +119,7 @@
                             <div>
                                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Otorgado a</p>
                                 <p class="text-lg font-bold text-gray-900">{{ $certificado->capacitado->nombre_completo }}</p>
-                                <p class="text-sm text-gray-600">Documento: {{ $certificado->capacitado->documento }}</p>
+                                <p class="text-sm text-gray-600">Documento: {{ $certificado->capacitado->tipo_documento ?? 'CC' }} {{ $certificado->capacitado->documento }}</p>
                             </div>
                             <div>
                                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Código del certificado</p>

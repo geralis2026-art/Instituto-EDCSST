@@ -77,7 +77,7 @@
                                 <span class="font-medium text-gray-900">{{ $capacitado->nombre_completo }}</span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <code class="bg-gray-100 px-2 py-1 rounded text-sm">{{ $capacitado->documento }}</code>
+                                <code class="bg-gray-100 px-2 py-1 rounded text-sm">{{ $capacitado->tipo_documento ?? 'CC' }} {{ $capacitado->documento }}</code>
                             </td>
                             <td class="px-6 py-4">
                                 {{ $capacitado->correo ?? '—' }}

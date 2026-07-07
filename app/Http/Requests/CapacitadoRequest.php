@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Capacitado;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -13,12 +14,20 @@ class CapacitadoRequest extends FormRequest
         return auth()->user()?->isAdmin() ?? false;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'tipo_documento' => $this->input('tipo_documento', 'CC'),
+        ]);
+    }
+
     public function rules(): array
     {
         $capacitadoId = $this->route('capacitado')?->id;
 
         return [
             'nombre_completo' => ['required', 'string', 'max:255'],
+            'tipo_documento'  => ['required', Rule::in(array_keys(Capacitado::TIPOS_DOCUMENTO))],
             'documento'       => [
                 'required',
                 'string',
@@ -37,6 +46,9 @@ class CapacitadoRequest extends FormRequest
         return [
             'nombre_completo.required' => 'El nombre completo es requerido.',
             'nombre_completo.max'      => 'El nombre no puede exceder 255 caracteres.',
+
+            'tipo_documento.required' => 'El tipo de documento es requerido.',
+            'tipo_documento.in'       => 'El tipo de documento no es válido.',
 
             'documento.required' => 'El documento es requerido.',
             'documento.unique'   => 'Este documento ya está registrado en el sistema.',

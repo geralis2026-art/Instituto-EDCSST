@@ -14,7 +14,7 @@
                 Volver al listado
             </a>
             <h1 class="text-3xl font-bold text-gray-900">{{ $capacitado->nombre_completo }}</h1>
-            <p class="text-gray-600 mt-2">Documento: <strong>{{ $capacitado->documento }}</strong></p>
+            <p class="text-gray-600 mt-2">Documento: <strong>{{ $capacitado->tipo_documento ?? 'CC' }} {{ $capacitado->documento }}</strong></p>
         </div>
         <div class="flex gap-2">
             <a href="{{ route('admin.capacitados.edit', $capacitado) }}" 
@@ -52,7 +52,7 @@
             </div>
             <div>
                 <p class="text-sm text-gray-600 font-medium">Documento</p>
-                <p class="text-lg text-gray-900"><code class="bg-gray-100 px-2 py-1 rounded">{{ $capacitado->documento }}</code></p>
+                <p class="text-lg text-gray-900"><code class="bg-gray-100 px-2 py-1 rounded">{{ $capacitado->tipo_documento ?? 'CC' }} {{ $capacitado->documento }}</code></p>
             </div>
             <div>
                 <p class="text-sm text-gray-600 font-medium">Correo Electrónico</p>

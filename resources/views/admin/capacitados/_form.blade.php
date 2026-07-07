@@ -25,10 +25,30 @@
             @enderror
         </div>
 
-        {{-- Cédula --}}
+        {{-- Tipo de documento --}}
+        <div>
+            <label for="tipo_documento" class="block text-sm font-medium text-gray-700 mb-1">
+                Tipo de documento *
+            </label>
+            <select id="tipo_documento"
+                    name="tipo_documento"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('tipo_documento') border-red-500 @enderror"
+                    required>
+                @foreach(\App\Models\Capacitado::TIPOS_DOCUMENTO as $codigo => $etiqueta)
+                    <option value="{{ $codigo }}" {{ old('tipo_documento', $capacitado->tipo_documento ?? 'CC') === $codigo ? 'selected' : '' }}>
+                        {{ $codigo }} — {{ $etiqueta }}
+                    </option>
+                @endforeach
+            </select>
+            @error('tipo_documento')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- Número de documento --}}
         <div>
             <label for="documento" class="block text-sm font-medium text-gray-700 mb-1">
-                Cédula *
+                Número de documento *
             </label>
             <input type="text"
                    id="documento"

@@ -46,14 +46,29 @@
                     @error('nombre_completo') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Número de documento <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" name="documento" value="{{ old('documento') }}"
-                           placeholder="Cédula, pasaporte u otro documento"
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('documento') border-red-400 @enderror">
-                    @error('documento') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Tipo <span class="text-red-500">*</span>
+                        </label>
+                        <select name="tipo_documento"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('tipo_documento') border-red-400 @enderror">
+                            @foreach(\App\Models\Capacitado::TIPOS_DOCUMENTO as $codigo => $etiqueta)
+                                <option value="{{ $codigo }}" {{ old('tipo_documento', 'CC') === $codigo ? 'selected' : '' }}>{{ $codigo }}</option>
+                            @endforeach
+                        </select>
+                        @error('tipo_documento') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Número de documento <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="documento" value="{{ old('documento') }}"
+                               placeholder="Ej: 1234567890"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('documento') border-red-400 @enderror">
+                        @error('documento') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -62,7 +62,7 @@
                                 </td>
                                 <td class="px-4 py-3 text-gray-500">{{ $fila['fila'] }}</td>
                                 <td class="px-4 py-3 font-medium text-gray-900">{{ $fila['datos']['nombre_completo'] ?: '—' }}</td>
-                                <td class="px-4 py-3"><code class="bg-gray-100 px-2 py-1 rounded">{{ $fila['datos']['documento'] ?: '—' }}</code></td>
+                                <td class="px-4 py-3"><code class="bg-gray-100 px-2 py-1 rounded">{{ $fila['datos']['tipo_documento'] ?? 'CC' }} {{ $fila['datos']['documento'] ?: '—' }}</code></td>
                                 <td class="px-4 py-3">{{ $fila['datos']['correo'] ?: '—' }}</td>
                                 <td class="px-4 py-3">
                                     @if(!empty($fila['cursos']))

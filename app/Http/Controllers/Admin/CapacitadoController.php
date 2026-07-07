@@ -163,7 +163,7 @@ class CapacitadoController extends Controller
             ->orWhere('nombre_completo', 'like', "%{$q}%")
             ->orderBy('nombre_completo')
             ->limit(10)
-            ->get(['id', 'nombre_completo', 'documento']);
+            ->get(['id', 'nombre_completo', 'tipo_documento', 'documento']);
 
         return response()->json($resultados);
     }

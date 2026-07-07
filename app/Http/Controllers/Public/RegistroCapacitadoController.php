@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Capacitado;
 use App\Models\Curso;
+use Illuminate\Validation\Rule;
 use App\Models\SolicitudCertificado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -39,6 +40,7 @@ class RegistroCapacitadoController extends Controller
 
         $datos = $request->validate([
             'nombre_completo' => 'required|string|max:255',
+            'tipo_documento'  => ['nullable', Rule::in(array_keys(Capacitado::TIPOS_DOCUMENTO))],
             'documento'       => 'required|string|max:50',
             'correo'          => 'nullable|email|max:255',
             'telefono'        => 'nullable|string|max:30',
@@ -49,6 +51,7 @@ class RegistroCapacitadoController extends Controller
             'modalidades.*'   => 'required|in:virtual,presencial',
         ], [
             'nombre_completo.required' => 'El nombre completo es requerido.',
+            'tipo_documento.in'        => 'El tipo de documento no es válido.',
             'documento.required'       => 'El número de documento es requerido.',
             'cursos.required'          => 'Debes seleccionar al menos un curso.',
             'cursos.min'               => 'Debes seleccionar al menos un curso.',
@@ -62,6 +65,7 @@ class RegistroCapacitadoController extends Controller
             ['documento' => trim($datos['documento'])],
             [
                 'nombre_completo' => $datos['nombre_completo'],
+                'tipo_documento'  => $datos['tipo_documento'] ?? 'CC',
                 'correo'          => $datos['correo'] ?? null,
                 'telefono'        => $datos['telefono'] ?? null,
                 'rh'              => $datos['rh'] ?? null,

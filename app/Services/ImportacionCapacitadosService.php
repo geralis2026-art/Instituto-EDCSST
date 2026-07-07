@@ -22,7 +22,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 class ImportacionCapacitadosService
 {
     /** Columnas esperadas en la plantilla, en orden. */
-    public const COLUMNAS = ['nombre_completo', 'documento', 'correo', 'telefono', 'rh', 'cursos', 'modalidad'];
+    public const COLUMNAS = ['nombre_completo', 'tipo_documento', 'documento', 'correo', 'telefono', 'rh', 'cursos', 'modalidad'];
 
     private const CACHE_TTL_MINUTOS = 15;
 
@@ -101,6 +101,7 @@ class ImportacionCapacitadosService
                     ['documento' => $datos['documento']],
                     array_filter([
                         'nombre_completo' => $datos['nombre_completo'],
+                        'tipo_documento'  => $datos['tipo_documento'] ?: 'CC',
                         'correo'          => $datos['correo'] ?: null,
                         'telefono'        => $datos['telefono'] ?: null,
                         'rh'              => $datos['rh'] ?: null,
@@ -144,12 +145,12 @@ class ImportacionCapacitadosService
         $hoja->setTitle('Capacitados');
         $hoja->fromArray(self::COLUMNAS, null, 'A1');
         $hoja->fromArray([
-            'Juan Pérez Gómez', '1234567890', 'juan@correo.com', '3001234567', 'O+',
+            'Juan Pérez Gómez', 'CC', '1234567890', 'juan@correo.com', '3001234567', 'O+',
             'Trabajo en alturas, SST básico',
             'virtual',
         ], null, 'A2');
 
-        foreach (range('A', 'G') as $col) {
+        foreach (range('A', 'H') as $col) {
             $hoja->getColumnDimension($col)->setAutoSize(true);
         }
 
@@ -237,6 +238,12 @@ class ImportacionCapacitadosService
         } elseif (strlen($datos['documento']) < 4 || strlen($datos['documento']) > 50) {
             $errores[] = 'El documento debe tener entre 4 y 50 caracteres.';
         }
+
+        $tipoDocumento = strtoupper($datos['tipo_documento']);
+        if ($tipoDocumento !== '' && !array_key_exists($tipoDocumento, Capacitado::TIPOS_DOCUMENTO)) {
+            $errores[] = 'El tipo de documento debe ser CC, TI, CE, PP o PPT.';
+        }
+        $datos['tipo_documento'] = array_key_exists($tipoDocumento, Capacitado::TIPOS_DOCUMENTO) ? $tipoDocumento : 'CC';
 
         if ($datos['correo'] !== '' && !filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
             $errores[] = 'El correo no es válido.';

@@ -20,8 +20,33 @@ class Capacitado extends Model
 
     protected $table = 'capacitados';
 
+    /** Tipos de documento de identidad válidos, con su etiqueta legible. */
+    public const TIPOS_DOCUMENTO = [
+        'CC'  => 'Cédula de ciudadanía',
+        'TI'  => 'Tarjeta de identidad',
+        'CE'  => 'Cédula de extranjería',
+        'PP'  => 'Pasaporte',
+        'PPT' => 'Permiso por protección temporal',
+    ];
+
+    /** Abreviatura con puntos usada para imprimir el tipo de documento en certificados (ej. "C.C."). */
+    public const TIPOS_DOCUMENTO_ABREVIADO = [
+        'CC'  => 'C.C.',
+        'TI'  => 'T.I.',
+        'CE'  => 'C.E.',
+        'PP'  => 'P.P.',
+        'PPT' => 'P.P.T.',
+    ];
+
+    /** Abreviatura del tipo de documento para imprimir en certificados (ej. "C.C."). */
+    public function tipoDocumentoAbreviado(): string
+    {
+        return self::TIPOS_DOCUMENTO_ABREVIADO[$this->tipo_documento] ?? 'C.C.';
+    }
+
     protected $fillable = [
         'nombre_completo',
+        'tipo_documento',
         'documento',
         'correo',
         'telefono',

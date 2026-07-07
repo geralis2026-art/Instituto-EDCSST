@@ -13,6 +13,7 @@ class CapacitadoFactory extends Factory
     {
         return [
             'nombre_completo'   => fake()->name(),
+            'tipo_documento'    => fake()->randomElement(array_keys(Capacitado::TIPOS_DOCUMENTO)),
             'documento'         => fake()->unique()->numerify('##########'),
             'correo'            => fake()->unique()->safeEmail(),
             'telefono'          => fake()->numerify('3##########'),
