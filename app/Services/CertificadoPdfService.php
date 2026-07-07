@@ -76,7 +76,7 @@ class CertificadoPdfService
         // cuando está embebida por FPDF. Se renderiza como imagen PNG para compatibilidad total.
         $this->escribirNombreComoImagen($pdf, $campos['nombre_completo'], $nombre, $tamano['width']);
 
-        $this->escribirCampo($pdf, $campos['documento'],    $this->formatearDocumento($certificado->capacitado->documento),      $tamano['width']);
+        $this->escribirCampo($pdf, $campos['documento'],    $this->formatearDocumento($certificado->capacitado),                  $tamano['width']);
         $this->escribirCampo($pdf, $campos['curso'],        mb_strtoupper($certificado->curso->nombre, 'UTF-8'),                 $tamano['width']);
         $this->escribirCampo($pdf, $campos['modalidad'],    ucfirst(strtolower($certificado->modalidad ?? 'No especificada')),   $tamano['width']);
         $this->escribirCampo($pdf, $campos['duracion'],     $certificado->intensidad_horaria . ' Horas',                        $tamano['width']);
@@ -156,10 +156,12 @@ class CertificadoPdfService
         }
     }
 
-    /** Formatea el documento con puntos cada 3 dígitos. */
-    private function formatearDocumento(string $documento): string
+    /** Formatea el documento anteponiendo el tipo (ej. "C.C. 123.456.789") con puntos cada 3 dígitos. */
+    private function formatearDocumento(\App\Models\Capacitado $capacitado): string
     {
-        return preg_replace('/\B(?=(\d{3})+(?!\d))/', '.', $documento);
+        $numero = preg_replace('/\B(?=(\d{3})+(?!\d))/', '.', $capacitado->documento);
+
+        return $capacitado->tipoDocumentoAbreviado() . ' ' . $numero;
     }
 
     /** Escribe un campo individual respetando alineación, fuente y posición. */

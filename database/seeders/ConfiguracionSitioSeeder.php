@@ -16,7 +16,7 @@ class ConfiguracionSitioSeeder extends Seeder
                 'descripcion' => 'Instituto de certificaciones y capacitaciones profesionales',
                 'telefono' => '+57 321 2173463',
                 'correo_contacto' => 'academiasstcolombiana@gmail.com',
-                'direccion' => 'Bogotá, Colombia',
+                'direccion' => 'Villavicencio, Meta - Colombia',
                 'whatsapp' => '573212173463',
                 'facebook' => 'https://facebook.com/edcsst',
                 'instagram' => 'https://instagram.com/edcsst',
