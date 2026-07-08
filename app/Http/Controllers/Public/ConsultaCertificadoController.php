@@ -7,6 +7,7 @@ use App\Http\Requests\ConsultaBuscarRequest;
 use App\Models\Capacitado;
 use App\Models\Certificado;
 use App\Services\MergePdfService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -69,12 +70,14 @@ class ConsultaCertificadoController extends Controller
             ]);
 
         $urlDescargarTodos = null;
+        $urlDescargarSeleccionados = null;
 
         if ($capacitado && $urlsDescarga->count() >= 2) {
             $urlDescargarTodos = URL::temporarySignedRoute('consulta.descargarTodos', now()->addMinutes(30), $capacitado);
+            $urlDescargarSeleccionados = URL::temporarySignedRoute('consulta.descargarSeleccionados', now()->addMinutes(30), $capacitado);
         }
 
-        return view('public.consulta', compact('certificados', 'capacitado', 'mensajeError', 'urlsDescarga', 'urlDescargarTodos'))
+        return view('public.consulta', compact('certificados', 'capacitado', 'mensajeError', 'urlsDescarga', 'urlDescargarTodos', 'urlDescargarSeleccionados'))
             ->with('busquedaRealizada', true)
             ->with('tipoBusqueda', $datos['tipo_busqueda'])
             ->with('valorBuscado', $valor);
@@ -141,6 +144,52 @@ class ConsultaCertificadoController extends Controller
         $pdf = $merge->fusionar($rutas);
 
         $nombreArchivo = sprintf('Certificados_%s.pdf', Str::slug($capacitado->nombre_completo, '_'));
+
+        return response($pdf, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $nombreArchivo . '"',
+        ]);
+    }
+
+    /**
+     * Descarga, en un solo PDF, los certificados seleccionados por el usuario
+     * (acceso solo vía URL firmada temporal generada en buscar()). La firma
+     * protege la URL (y por tanto al capacitado); los IDs seleccionados llegan
+     * en el cuerpo del POST y se filtran para que solo puedan ser certificados
+     * de ese mismo capacitado, activos y vigentes.
+     */
+    public function descargarSeleccionados(Request $request, Capacitado $capacitado, MergePdfService $merge)
+    {
+        $ids = collect($request->input('certificado_ids', []))
+            ->filter(fn ($id) => is_numeric($id))
+            ->map(fn ($id) => (int) $id)
+            ->values();
+
+        if ($ids->isEmpty()) {
+            return back()->with('error', 'Selecciona al menos un certificado para descargar.');
+        }
+
+        $certificados = $capacitado->certificados()
+            ->whereIn('id', $ids)
+            ->where('activo', true)
+            ->get()
+            ->filter(fn ($c) => !$c->isVencido() && $c->archivo_pdf)
+            ->filter(fn ($c) => str_starts_with($c->archivo_pdf, 'certificados/')
+                && !str_contains($c->archivo_pdf, '..')
+                && Storage::disk('certificados')->exists($c->archivo_pdf));
+
+        if ($certificados->isEmpty()) {
+            abort(404, 'No hay certificados disponibles para descargar.');
+        }
+
+        $rutas = $certificados
+            ->map(fn ($c) => Storage::disk('certificados')->path($c->archivo_pdf))
+            ->values()
+            ->all();
+
+        $pdf = $merge->fusionar($rutas);
+
+        $nombreArchivo = sprintf('Certificados_seleccionados_%s.pdf', Str::slug($capacitado->nombre_completo, '_'));
 
         return response($pdf, 200, [
             'Content-Type'        => 'application/pdf',

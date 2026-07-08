@@ -110,65 +110,91 @@
                     </div>
                 </div>
 
-                <div class="space-y-4">
-                    @foreach($certificados as $certificado)
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
-                            <div class="p-6">
-                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                                    <div class="flex-1">
-                                        <div class="flex items-start">
-                                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                <svg class="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                @if(!empty($urlDescargarSeleccionados))
+                    <form method="POST" action="{{ $urlDescargarSeleccionados }}" x-data="{ seleccionados: [] }">
+                        @csrf
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                            <label class="inline-flex items-center text-sm text-gray-700 cursor-pointer">
+                                <input type="checkbox"
+                                       @change="seleccionados = $event.target.checked ? [{{ $certificados->filter(fn ($c) => !$c->isVencido() && $c->archivo_pdf)->pluck('id')->implode(',') }}] : []"
+                                       class="w-4 h-4 text-blue-700 rounded focus:ring-blue-500 mr-2">
+                                Seleccionar todos
+                            </label>
+                            <button type="submit"
+                                    :disabled="seleccionados.length === 0"
+                                    :class="seleccionados.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-800'"
+                                    class="inline-flex items-center justify-center px-5 py-2.5 bg-blue-700 text-white font-semibold rounded-lg transition shadow-sm">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                <span x-text="seleccionados.length > 0 ? `Descargar seleccionados (${seleccionados.length}) en un PDF` : 'Descargar seleccionados en un PDF'"></span>
+                            </button>
+                        </div>
+
+                        <div class="space-y-4">
+                            @foreach($certificados as $certificado)
+                                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+                                    <div class="p-6">
+                                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                            <div class="flex-1">
+                                                <div class="flex items-start">
+                                                    @if(!$certificado->isVencido() && $certificado->archivo_pdf)
+                                                        <input type="checkbox" name="certificado_ids[]" value="{{ $certificado->id }}"
+                                                               x-model="seleccionados"
+                                                               class="w-4 h-4 mt-1 mr-3 text-blue-700 rounded focus:ring-blue-500 flex-shrink-0">
+                                                    @endif
+                                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                        <svg class="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <h3 class="font-bold text-lg text-gray-900">{{ $certificado->curso->nombre }}</h3>
+                                                        <p class="text-sm text-gray-500 mt-1">{{ $certificado->curso->categoria?->nombre ?? '—' }}</p>
+
+                                                        <div class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+                                                            <div class="flex items-center text-gray-600">
+                                                                <svg class="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                                <span><strong>Emitido:</strong> {{ $certificado->fecha_emision->format('d/m/Y') }}</span>
+                                                            </div>
+                                                            <div class="flex items-center {{ $certificado->isVencido() ? 'text-red-600' : 'text-gray-600' }}">
+                                                                <svg class="w-4 h-4 mr-1.5 {{ $certificado->isVencido() ? 'text-red-400' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                                <span><strong>Vence:</strong> {{ $certificado->fecha_vencimiento?->format('d/m/Y') ?? '—' }}</span>
+                                                            </div>
+                                                            <div class="flex items-center text-gray-600">
+                                                                <svg class="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                                <span><strong>Horas:</strong> {{ $certificado->intensidad_horaria }}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="mt-2">
+                                                            <span class="inline-block bg-blue-50 text-blue-700 text-xs font-mono px-2 py-1 rounded">{{ $certificado->codigo_unico }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="ml-4">
-                                                <h3 class="font-bold text-lg text-gray-900">{{ $certificado->curso->nombre }}</h3>
-                                                <p class="text-sm text-gray-500 mt-1">{{ $certificado->curso->categoria?->nombre ?? '—' }}</p>
 
-                                                <div class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
-                                                    <div class="flex items-center text-gray-600">
-                                                        <svg class="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                                        <span><strong>Emitido:</strong> {{ $certificado->fecha_emision->format('d/m/Y') }}</span>
-                                                    </div>
-                                                    <div class="flex items-center {{ $certificado->isVencido() ? 'text-red-600' : 'text-gray-600' }}">
-                                                        <svg class="w-4 h-4 mr-1.5 {{ $certificado->isVencido() ? 'text-red-400' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                                        <span><strong>Vence:</strong> {{ $certificado->fecha_vencimiento?->format('d/m/Y') ?? '—' }}</span>
-                                                    </div>
-                                                    <div class="flex items-center text-gray-600">
-                                                        <svg class="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                        <span><strong>Horas:</strong> {{ $certificado->intensidad_horaria }}</span>
-                                                    </div>
-                                                </div>
-
-                                                <div class="mt-2">
-                                                    <span class="inline-block bg-blue-50 text-blue-700 text-xs font-mono px-2 py-1 rounded">{{ $certificado->codigo_unico }}</span>
-                                                </div>
+                                            <div class="flex-shrink-0">
+                                                @if($certificado->isVencido())
+                                                    <span class="inline-flex items-center px-5 py-2.5 bg-red-100 text-red-700 font-semibold rounded-lg cursor-not-allowed">
+                                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                        Certificado vencido
+                                                    </span>
+                                                @elseif($certificado->archivo_pdf)
+                                                    <a href="{{ $urlsDescarga[$certificado->id] }}" class="inline-flex items-center px-5 py-2.5 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition shadow-sm">
+                                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                                        Descargar PDF
+                                                    </a>
+                                                @else
+                                                    <span class="inline-flex items-center px-5 py-2.5 bg-gray-100 text-gray-500 font-semibold rounded-lg cursor-not-allowed">
+                                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                        En procesamiento
+                                                    </span>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="flex-shrink-0">
-                                        @if($certificado->isVencido())
-                                            <span class="inline-flex items-center px-5 py-2.5 bg-red-100 text-red-700 font-semibold rounded-lg cursor-not-allowed">
-                                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                Certificado vencido
-                                            </span>
-                                        @elseif($certificado->archivo_pdf)
-                                            <a href="{{ $urlsDescarga[$certificado->id] }}" class="inline-flex items-center px-5 py-2.5 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition shadow-sm">
-                                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                                Descargar PDF
-                                            </a>
-                                        @else
-                                            <span class="inline-flex items-center px-5 py-2.5 bg-gray-100 text-gray-500 font-semibold rounded-lg cursor-not-allowed">
-                                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                En procesamiento
-                                            </span>
-                                        @endif
-                                    </div>
                                 </div>
-                            </div>
+                            @endforeach
                         </div>
-                    @endforeach
-                </div>
+                    </form>
+                @endif
             @endif
         @endif
 

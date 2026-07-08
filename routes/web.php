@@ -51,6 +51,7 @@ Route::get('/consulta', [ConsultaCertificadoController::class, 'index'])->name('
 Route::post('/consulta', [ConsultaCertificadoController::class, 'buscar'])->name('consulta.buscar')->middleware('throttle:consulta-publica');
 Route::get('/consulta/descargar/{certificado}', [ConsultaCertificadoController::class, 'descargar'])->name('consulta.descargar')->middleware('signed');
 Route::get('/consulta/descargar-todos/{capacitado}', [ConsultaCertificadoController::class, 'descargarTodos'])->name('consulta.descargarTodos')->middleware('signed');
+Route::post('/consulta/descargar-seleccionados/{capacitado}', [ConsultaCertificadoController::class, 'descargarSeleccionados'])->name('consulta.descargarSeleccionados')->middleware('signed');
 
 // Verificación pública (terceros verifican autenticidad)
 Route::get('/verificar', [VerificacionController::class, 'index'])->name('verificar');
