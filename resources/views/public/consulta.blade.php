@@ -110,24 +110,26 @@
                     </div>
                 </div>
 
-                @if(!empty($urlDescargarSeleccionados))
-                    <form method="POST" action="{{ $urlDescargarSeleccionados }}" x-data="{ seleccionados: [] }">
-                        @csrf
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                            <label class="inline-flex items-center text-sm text-gray-700 cursor-pointer">
-                                <input type="checkbox"
-                                       @change="seleccionados = $event.target.checked ? [{{ $certificados->filter(fn ($c) => !$c->isVencido() && $c->archivo_pdf)->pluck('id')->implode(',') }}] : []"
-                                       class="w-4 h-4 text-blue-700 rounded focus:ring-blue-500 mr-2">
-                                Seleccionar todos
-                            </label>
-                            <button type="submit"
-                                    :disabled="seleccionados.length === 0"
-                                    :class="seleccionados.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-800'"
-                                    class="inline-flex items-center justify-center px-5 py-2.5 bg-blue-700 text-white font-semibold rounded-lg transition shadow-sm">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                <span x-text="seleccionados.length > 0 ? `Descargar seleccionados (${seleccionados.length}) en un PDF` : 'Descargar seleccionados en un PDF'"></span>
-                            </button>
-                        </div>
+                <div x-data="{ seleccionados: [] }">
+                    @if(!empty($urlDescargarSeleccionados))
+                        <form method="POST" action="{{ $urlDescargarSeleccionados }}">
+                            @csrf
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                                <label class="inline-flex items-center text-sm text-gray-700 cursor-pointer">
+                                    <input type="checkbox"
+                                           @change="seleccionados = $event.target.checked ? [{{ $certificados->filter(fn ($c) => !$c->isVencido() && $c->archivo_pdf)->pluck('id')->implode(',') }}] : []"
+                                           class="w-4 h-4 text-blue-700 rounded focus:ring-blue-500 mr-2">
+                                    Seleccionar todos
+                                </label>
+                                <button type="submit"
+                                        :disabled="seleccionados.length === 0"
+                                        :class="seleccionados.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-800'"
+                                        class="inline-flex items-center justify-center px-5 py-2.5 bg-blue-700 text-white font-semibold rounded-lg transition shadow-sm">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                    <span x-text="seleccionados.length > 0 ? `Descargar seleccionados (${seleccionados.length}) en un PDF` : 'Descargar seleccionados en un PDF'"></span>
+                                </button>
+                            </div>
+                    @endif
 
                         <div class="space-y-4">
                             @foreach($certificados as $certificado)
@@ -136,7 +138,7 @@
                                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                             <div class="flex-1">
                                                 <div class="flex items-start">
-                                                    @if(!$certificado->isVencido() && $certificado->archivo_pdf)
+                                                    @if(!empty($urlDescargarSeleccionados) && !$certificado->isVencido() && $certificado->archivo_pdf)
                                                         <input type="checkbox" name="certificado_ids[]" value="{{ $certificado->id }}"
                                                                x-model="seleccionados"
                                                                class="w-4 h-4 mt-1 mr-3 text-blue-700 rounded focus:ring-blue-500 flex-shrink-0">
@@ -193,8 +195,11 @@
                                 </div>
                             @endforeach
                         </div>
-                    </form>
-                @endif
+
+                    @if(!empty($urlDescargarSeleccionados))
+                        </form>
+                    @endif
+                </div>
             @endif
         @endif
 

@@ -199,7 +199,14 @@
       "Bash(php -l app/Http/Controllers/Public/ConsultaCertificadoController.php)",
       "PowerShell(php -l \"app\\\\Http\\\\Controllers\\\\Public\\\\ConsultaCertificadoController.php\")",
       "PowerShell(php artisan route:list --name=consulta)",
-      "Bash(awk 'NR==113,NR==200' \"resources/views/public/consulta.blade.php\")"
+      "Bash(awk 'NR==113,NR==200' \"resources/views/public/consulta.blade.php\")",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -o StrictHostKeyChecking=no -p 65002 u446350578@5.183.10.126 'cd domains/institutoedcsst.com/public_html && git pull origin main && git log -1 --oneline && php artisan config:cache && php artisan route:cache && php artisan view:cache')",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -o StrictHostKeyChecking=no -p 65002 u446350578@5.183.10.126 'cd domains/institutoedcsst.com/public_html && php artisan tinker --execute=\"echo App\\\\\\\\Models\\\\\\\\Certificado::where\\('\\\\''codigo_unico'\\\\'','\\\\''like'\\\\'','\\\\''%00547%'\\\\''\\)->orWhere\\('\\\\''codigo_unico'\\\\'','\\\\''like'\\\\'','\\\\''%00447%'\\\\''\\)->get\\(['\\\\''id'\\\\'','\\\\''codigo_unico'\\\\'','\\\\''activo'\\\\'','\\\\''capacitado_id'\\\\'']\\)->toJson\\(\\);\"')",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -o StrictHostKeyChecking=no -p 65002 u446350578@5.183.10.126 'cd domains/institutoedcsst.com/public_html && grep -n '\\\\''porCodigo'\\\\'' -A 8 app/Models/Certificado.php')",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -o StrictHostKeyChecking=no -p 65002 u446350578@5.183.10.126 'cd domains/institutoedcsst.com/public_html && cat app/Http/Requests/ConsultaBuscarRequest.php')",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -o StrictHostKeyChecking=no -p 65002 u446350578@5.183.10.126 'cd domains/institutoedcsst.com/public_html && php artisan tinker --execute=\"\\\\$c = App\\\\\\\\Models\\\\\\\\Certificado::porCodigo\\('\\\\''EDCSST-2026-00547'\\\\''\\); echo \\\\$c ? '\\\\''FOUND id='\\\\''.\\\\$c->id.'\\\\'' vencido='\\\\''.\\(\\\\$c->isVencido\\(\\)?'\\\\''si'\\\\'':'\\\\''no'\\\\''\\).'\\\\'' fv='\\\\''.\\\\$c->fecha_vencimiento : '\\\\''NOT FOUND'\\\\''; echo PHP_EOL; \\\\$c2 = App\\\\\\\\Models\\\\\\\\Certificado::porCodigo\\('\\\\''EDCSST-2026-00447'\\\\''\\); echo \\\\$c2 ? '\\\\''FOUND id='\\\\''.\\\\$c2->id.'\\\\'' vencido='\\\\''.\\(\\\\$c2->isVencido\\(\\)?'\\\\''si'\\\\'':'\\\\''no'\\\\''\\).'\\\\'' fv='\\\\''.\\\\$c2->fecha_vencimiento : '\\\\''NOT FOUND'\\\\'';\"')",
+      "Bash(printf 'echo App\\\\\\\\\\\\\\\\Models\\\\\\\\\\\\\\\\Certificado::where\\(\"codigo_unico\",\"EDCSST-2026-00547\"\\)->count\\(\\);\\\\n')",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -o StrictHostKeyChecking=no -p 65002 u446350578@5.183.10.126 'cd domains/institutoedcsst.com/public_html && php artisan tinker')"
     ],
     "additionalDirectories": [
       "c:\\laragon\\bin\\php\\php-8.3.30-Win32-vs16-x64"
