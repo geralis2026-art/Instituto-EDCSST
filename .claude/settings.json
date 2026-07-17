@@ -206,7 +206,27 @@
       "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -o StrictHostKeyChecking=no -p 65002 u446350578@5.183.10.126 'cd domains/institutoedcsst.com/public_html && cat app/Http/Requests/ConsultaBuscarRequest.php')",
       "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -o StrictHostKeyChecking=no -p 65002 u446350578@5.183.10.126 'cd domains/institutoedcsst.com/public_html && php artisan tinker --execute=\"\\\\$c = App\\\\\\\\Models\\\\\\\\Certificado::porCodigo\\('\\\\''EDCSST-2026-00547'\\\\''\\); echo \\\\$c ? '\\\\''FOUND id='\\\\''.\\\\$c->id.'\\\\'' vencido='\\\\''.\\(\\\\$c->isVencido\\(\\)?'\\\\''si'\\\\'':'\\\\''no'\\\\''\\).'\\\\'' fv='\\\\''.\\\\$c->fecha_vencimiento : '\\\\''NOT FOUND'\\\\''; echo PHP_EOL; \\\\$c2 = App\\\\\\\\Models\\\\\\\\Certificado::porCodigo\\('\\\\''EDCSST-2026-00447'\\\\''\\); echo \\\\$c2 ? '\\\\''FOUND id='\\\\''.\\\\$c2->id.'\\\\'' vencido='\\\\''.\\(\\\\$c2->isVencido\\(\\)?'\\\\''si'\\\\'':'\\\\''no'\\\\''\\).'\\\\'' fv='\\\\''.\\\\$c2->fecha_vencimiento : '\\\\''NOT FOUND'\\\\'';\"')",
       "Bash(printf 'echo App\\\\\\\\\\\\\\\\Models\\\\\\\\\\\\\\\\Certificado::where\\(\"codigo_unico\",\"EDCSST-2026-00547\"\\)->count\\(\\);\\\\n')",
-      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -o StrictHostKeyChecking=no -p 65002 u446350578@5.183.10.126 'cd domains/institutoedcsst.com/public_html && php artisan tinker')"
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -o StrictHostKeyChecking=no -p 65002 u446350578@5.183.10.126 'cd domains/institutoedcsst.com/public_html && php artisan tinker')",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -o StrictHostKeyChecking=no -p 65002 u446350578@5.183.10.126 'cd domains/institutoedcsst.com/public_html && git pull origin main && git log -1 --oneline && php artisan view:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache')",
+      "WebFetch(domain:pagespeed.web.dev)",
+      "Bash(curl -s \"https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https%3A%2F%2Finstitutoedcsst.com%2F&strategy=mobile&category=performance\" -o /tmp/psi.json)",
+      "WebFetch(domain:www.googleapis.com)",
+      "Bash(identify \"c:\\\\laragon\\\\www\\\\instituto-edcsst\\\\public\\\\images\\\\capacitacion-grupal-docencia.jpg\")",
+      "Bash(php -m)",
+      "Bash(curl -s -o /dev/null -w \"home local: %{http_code}\\\\n\" http://instituto-edcsst.test/)",
+      "Bash(curl -s -o /dev/null -w \"home local: %{http_code}\\\\n\" http://localhost/)",
+      "Bash(curl -s -k http://Instituto-edcsst.test/)",
+      "Bash(curl -s -o /tmp/home.html -w \"%{http_code}\\\\n\" http://Instituto-edcsst.test/)",
+      "Bash(where php *)",
+      "Bash(\"/c/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe\" -m)",
+      "Bash(/c/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe -r 'var_dump\\(function_exists\\('\\\\''imagewebp'\\\\''\\)\\); $info = getimagesize\\('\\\\''c:/laragon/www/instituto-edcsst/public/img/logo-edcsst.png'\\\\''\\); print_r\\($info\\);')",
+      "Bash(cp public/img/logo-edcsst.png public/img/logo-edcsst.original.bak.png)",
+      "Bash(curl -sI https://institutoedcsst.com/)",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -o StrictHostKeyChecking=no -p 65002 u446350578@5.183.10.126 'cd domains/institutoedcsst.com/public_html && grep -rn '\\\\''Content-Security-Policy'\\\\'' public/.htaccess .htaccess 2>/dev/null; echo '\\\\''---diff public/.htaccess vs git---'\\\\''; git diff public/.htaccess; echo '\\\\''---git status---'\\\\''; git status --short')",
+      "Bash(ssh -i ~/.ssh/id_ed25519_hostinger -o StrictHostKeyChecking=no -p 65002 u446350578@5.183.10.126 'cd domains/institutoedcsst.com/public_html && git log -1 --oneline && cat app/Http/Middleware/SecurityHeaders.php')",
+      "Bash(curl -s \"http://Instituto-edcsst.test/consulta\" -o /tmp/consulta.html -w \"%{http_code}\\\\n\")",
+      "Bash(curl -s \"http://Instituto-edcsst.test/consulta\")",
+      "Bash(git add *)"
     ],
     "additionalDirectories": [
       "c:\\laragon\\bin\\php\\php-8.3.30-Win32-vs16-x64"

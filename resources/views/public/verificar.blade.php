@@ -3,16 +3,33 @@
 @section('titulo', 'Verificar Certificado')
 @section('descripcion', 'Verifica la autenticidad de un certificado emitido por el Instituto EDCSST.')
 
+@push('preload')
+<link rel="preload" as="image" href="{{ asset('images/capacitacion-grupal-docencia.jpg') }}" fetchpriority="high">
+@endpush
+
+@push('styles')
+<style>#site-footer { margin-top: 0; }</style>
+@endpush
+
 @section('contenido')
 
-<section class="bg-blue-900 text-white py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-3xl sm:text-4xl font-bold mb-3">Verificar autenticidad</h1>
-        <p class="text-blue-100 text-lg">Confirma que un certificado fue emitido oficialmente por el Instituto EDCSST</p>
-    </div>
-</section>
+{{-- Fondo con foto para toda la página (hero + contenido) --}}
+<section class="relative text-white min-h-screen"
+    style="background-image: linear-gradient(to bottom, rgba(15,23,42,0.72) 0%, rgba(30,58,138,0.55) 20%, rgba(30,58,138,0.30) 45%, rgba(226,232,240,0.35) 100%), url('{{ asset('images/capacitacion-grupal-docencia.jpg') }}'); background-size: cover; background-position: center 35%; background-attachment: fixed;">
 
-<section class="py-12">
+    {{-- Línea dorada superior --}}
+    <div class="absolute top-0 left-0 right-0 h-1"
+         style="background: linear-gradient(90deg, transparent, #F59E0B 40%, #D4A017 60%, transparent);"></div>
+
+    {{-- HERO --}}
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-3">Verificar autenticidad</h1>
+            <p class="text-blue-100 text-lg">Confirma que un certificado fue emitido oficialmente por el Instituto EDCSST</p>
+        </div>
+    </div>
+
+    <div class="py-12 text-gray-800">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- Formulario --}}
@@ -189,6 +206,7 @@
                 Esta página permite a empresas, empleadores y terceros validar la autenticidad de cualquier certificado emitido por el Instituto EDCSST. Si eres el titular de un certificado y quieres consultarlo o descargarlo, utiliza la <a href="{{ route('consulta') }}" class="underline font-semibold">página de consulta</a>.
             </p>
         </div>
+    </div>
     </div>
 </section>
 

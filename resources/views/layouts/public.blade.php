@@ -9,7 +9,15 @@
     <meta name="description" content="@yield('descripcion', 'Instituto EDCSST - Capacitación y certificación profesional en seguridad y salud en el trabajo.')">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet">
+    <link id="fonts-figtree" rel="preload" as="style" href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap">
+    <noscript><link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet"></noscript>
+    <script nonce="{{ $cspNonce }}">
+        document.getElementById('fonts-figtree').addEventListener('load', function () {
+            this.rel = 'stylesheet';
+        }, { once: true });
+    </script>
+
+    @stack('preload')
 
     {{-- Tailwind compilado por Vite --}}
     <x-app-assets />
@@ -244,7 +252,7 @@
     </main>
 
     {{-- ============ FOOTER ============ --}}
-    <footer class="bg-blue-950 text-white mt-16 border-t-4 border-amber-500">
+    <footer id="site-footer" class="bg-blue-950 text-white mt-16 border-t-4 border-amber-500">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
