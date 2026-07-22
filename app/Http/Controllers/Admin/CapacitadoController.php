@@ -7,6 +7,7 @@ use App\Http\Requests\CapacitadoImportConfirmarRequest;
 use App\Http\Requests\CapacitadoImportRequest;
 use App\Http\Requests\CapacitadoRequest;
 use App\Models\Capacitado;
+use App\Services\CertificadoPdfService;
 use App\Services\ImportacionCapacitadosService;
 use App\Services\MergePdfService;
 use Illuminate\Http\Request;
@@ -120,15 +121,60 @@ class CapacitadoController extends Controller
     }
 
     /**
-     * Actualizar capacitado en base de datos.
+     * Actualizar capacitado en base de datos. Si cambian los datos que se
+     * imprimen en el certificado (nombre, tipo o número de documento), se
+     * regeneran automáticamente los PDFs de sus certificados activos.
      */
-    public function update(CapacitadoRequest $request, Capacitado $capacitado)
+    public function update(CapacitadoRequest $request, Capacitado $capacitado, CertificadoPdfService $pdfService)
     {
         $capacitado->update($request->validated());
 
+        $mensaje = 'Capacitado actualizado correctamente.';
+        $tipoMensaje = 'success';
+
+        if ($capacitado->wasChanged(['nombre_completo', 'tipo_documento', 'documento'])) {
+            $errores = $this->regenerarCertificadosDe($capacitado, $pdfService);
+
+            if ($errores === 0) {
+                $mensaje = 'Capacitado actualizado y certificados regenerados correctamente.';
+            } else {
+                $mensaje = "Capacitado actualizado, pero {$errores} certificado(s) no se pudieron regenerar. Usa \"Regenerar PDF\" en cada uno.";
+                $tipoMensaje = 'error';
+            }
+        }
+
         return redirect()
             ->route('admin.capacitados.show', $capacitado)
-            ->with('success', 'Capacitado actualizado correctamente.');
+            ->with($tipoMensaje, $mensaje);
+    }
+
+    /**
+     * Regenera el PDF de cada certificado activo del capacitado (genera primero
+     * y solo borra el archivo anterior si la generación fue exitosa).
+     * Devuelve la cantidad de certificados que fallaron.
+     */
+    private function regenerarCertificadosDe(Capacitado $capacitado, CertificadoPdfService $pdfService): int
+    {
+        $fallos = 0;
+
+        foreach ($capacitado->certificados()->where('activo', true)->get() as $certificado) {
+            try {
+                $nuevoPdf = $pdfService->generarYGuardar($certificado);
+            } catch (\RuntimeException $e) {
+                report($e);
+                $fallos++;
+                continue;
+            }
+
+            if ($certificado->archivo_pdf) {
+                Storage::disk('certificados')->delete($certificado->archivo_pdf);
+            }
+
+            $certificado->archivo_pdf = $nuevoPdf;
+            $certificado->saveQuietly();
+        }
+
+        return $fallos;
     }
 
     /**
