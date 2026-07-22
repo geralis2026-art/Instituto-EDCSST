@@ -38,13 +38,22 @@ class CertificadoPdfService
             ->output();
     }
 
-    /** Genera el PDF y lo guarda en el disco "certificados". */
+    /**
+     * Genera el PDF y lo guarda en el disco "certificados".
+     *
+     * @throws \RuntimeException si la escritura falla. El disco "certificados"
+     * usa `throw => false` para que las lecturas (exists/get) no exploten con
+     * archivos ausentes, pero eso también silencia fallos de escritura aquí —
+     * por eso se valida el resultado de put() explícitamente.
+     */
     public function generarYGuardar(Certificado $certificado): string
     {
         $pdf  = $this->generarPdf($certificado);
         $ruta = "certificados/{$certificado->codigo_unico}.pdf";
 
-        Storage::disk('certificados')->put($ruta, $pdf);
+        if (!Storage::disk('certificados')->put($ruta, $pdf)) {
+            throw new \RuntimeException("No se pudo guardar el PDF del certificado {$certificado->codigo_unico} en el disco.");
+        }
 
         return $ruta;
     }

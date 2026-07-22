@@ -79,30 +79,44 @@ class CertificadoController extends Controller
         $datos['fecha_vencimiento'] = Carbon::parse($datos['fecha_emision'])->addYears($aniosVigencia)->toDateString();
 
         if ($request->hasFile('archivo_pdf')) {
-            $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados', 'certificados');
+            $rutaSubida = $request->file('archivo_pdf')->store('certificados', 'certificados');
+
+            if (!$rutaSubida) {
+                return back()->withInput()->with('error', 'No se pudo guardar el PDF subido. Intenta de nuevo.');
+            }
+
+            $datos['archivo_pdf'] = $rutaSubida;
         } else {
             unset($datos['archivo_pdf']);
         }
 
         /**
-         * Transacción atómica: si generarCodigoUnico() o saveQuietly() fallan,
-         * el rollback elimina el registro con UUID temporal y la BD queda limpia.
+         * Transacción atómica: si generarCodigoUnico(), generarYGuardar() o
+         * saveQuietly() fallan, el rollback elimina el registro con UUID
+         * temporal y la BD queda limpia (generarYGuardar lanza excepción si
+         * la escritura del PDF falla, ver CertificadoPdfService).
          */
-        $certificado = DB::transaction(function () use ($datos, $codigoManual, $request, $pdfService) {
-            $certificado = Certificado::create($datos);
+        try {
+            $certificado = DB::transaction(function () use ($datos, $codigoManual, $request, $pdfService) {
+                $certificado = Certificado::create($datos);
 
-            if (!$codigoManual) {
-                $certificado->codigo_unico = Certificado::generarCodigoUnico();
-            }
+                if (!$codigoManual) {
+                    $certificado->codigo_unico = Certificado::generarCodigoUnico();
+                }
 
-            if (!$request->hasFile('archivo_pdf')) {
-                $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
-            }
+                if (!$request->hasFile('archivo_pdf')) {
+                    $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
+                }
 
-            $certificado->saveQuietly();
+                $certificado->saveQuietly();
 
-            return $certificado;
-        });
+                return $certificado;
+            });
+        } catch (\RuntimeException $e) {
+            report($e);
+
+            return back()->withInput()->with('error', 'No se pudo generar el PDF del certificado. Intenta de nuevo; si el problema persiste, contacta a soporte.');
+        }
 
         return redirect()
             ->route('admin.certificados.show', $certificado)
@@ -164,10 +178,16 @@ class CertificadoController extends Controller
         $datos['fecha_vencimiento'] = Carbon::parse($datos['fecha_emision'])->addYears($aniosVigencia)->toDateString();
 
         if ($request->hasFile('archivo_pdf')) {
+            $rutaSubida = $request->file('archivo_pdf')->store('certificados', 'certificados');
+
+            if (!$rutaSubida) {
+                return back()->withInput()->with('error', 'No se pudo guardar el PDF subido. Intenta de nuevo.');
+            }
+
             if ($certificado->archivo_pdf) {
                 Storage::disk('certificados')->delete($certificado->archivo_pdf);
             }
-            $datos['archivo_pdf'] = $request->file('archivo_pdf')->store('certificados', 'certificados');
+            $datos['archivo_pdf'] = $rutaSubida;
             $certificado->update($datos);
         } else {
             unset($datos['archivo_pdf']);
@@ -175,7 +195,14 @@ class CertificadoController extends Controller
 
             // Generar primero; solo eliminar el PDF anterior si la generación fue exitosa.
             $certificado->refresh();
-            $nuevoPdf = $pdfService->generarYGuardar($certificado);
+
+            try {
+                $nuevoPdf = $pdfService->generarYGuardar($certificado);
+            } catch (\RuntimeException $e) {
+                report($e);
+
+                return back()->withInput()->with('error', 'Los datos se actualizaron, pero no se pudo regenerar el PDF. Intenta de nuevo desde "Regenerar PDF".');
+            }
 
             if ($certificado->archivo_pdf) {
                 Storage::disk('certificados')->delete($certificado->archivo_pdf);
@@ -312,11 +339,20 @@ class CertificadoController extends Controller
      */
     public function regenerarPdf(Certificado $certificado, CertificadoPdfService $pdfService)
     {
+        // Generar primero; solo eliminar el PDF anterior si la generación fue exitosa.
+        try {
+            $nuevoPdf = $pdfService->generarYGuardar($certificado);
+        } catch (\RuntimeException $e) {
+            report($e);
+
+            return back()->with('error', 'No se pudo regenerar el PDF. Intenta de nuevo.');
+        }
+
         if ($certificado->archivo_pdf) {
             Storage::disk('certificados')->delete($certificado->archivo_pdf);
         }
 
-        $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
+        $certificado->archivo_pdf = $nuevoPdf;
         $certificado->saveQuietly();
 
         return redirect()

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ConsultaBuscarRequest;
 use App\Models\Capacitado;
 use App\Models\Certificado;
+use App\Services\CertificadoPdfService;
 use App\Services\MergePdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -89,7 +90,7 @@ class ConsultaCertificadoController extends Controller
      * certificado esté activo y vigente, y valida la ruta del
      * archivo para evitar path traversal.
      */
-    public function descargar(Certificado $certificado)
+    public function descargar(Certificado $certificado, CertificadoPdfService $pdfService)
     {
         if (!$certificado->activo || !$certificado->archivo_pdf) {
             abort(404, 'Este certificado no está disponible para descarga.');
@@ -101,8 +102,19 @@ class ConsultaCertificadoController extends Controller
 
         $path = $certificado->archivo_pdf;
 
-        if (!str_starts_with($path, 'certificados/') || str_contains($path, '..') || !Storage::disk('certificados')->exists($path)) {
+        if (!str_starts_with($path, 'certificados/') || str_contains($path, '..')) {
             abort(404, 'El archivo del certificado no se encuentra. Por favor contacta al instituto.');
+        }
+
+        // Autorregeneración: si el PDF no quedó guardado en disco (fallo previo
+        // de escritura), se genera de nuevo aquí mismo en vez de fallar con 404.
+        if (!Storage::disk('certificados')->exists($path)) {
+            try {
+                $pdfService->generarYGuardar($certificado);
+            } catch (\RuntimeException $e) {
+                report($e);
+                abort(404, 'El archivo del certificado no se encuentra. Por favor contacta al instituto.');
+            }
         }
 
         $nombreArchivo = sprintf(
@@ -122,15 +134,14 @@ class ConsultaCertificadoController extends Controller
      * Descarga, en un solo PDF, todos los certificados activos y vigentes
      * del capacitado (acceso solo vía URL firmada temporal generada en buscar()).
      */
-    public function descargarTodos(Capacitado $capacitado, MergePdfService $merge)
+    public function descargarTodos(Capacitado $capacitado, MergePdfService $merge, CertificadoPdfService $pdfService)
     {
         $certificados = $capacitado->certificados()
             ->where('activo', true)
             ->get()
             ->filter(fn ($c) => !$c->isVencido() && $c->archivo_pdf)
-            ->filter(fn ($c) => str_starts_with($c->archivo_pdf, 'certificados/')
-                && !str_contains($c->archivo_pdf, '..')
-                && Storage::disk('certificados')->exists($c->archivo_pdf));
+            ->filter(fn ($c) => str_starts_with($c->archivo_pdf, 'certificados/') && !str_contains($c->archivo_pdf, '..'))
+            ->filter(fn ($c) => $this->asegurarPdfExiste($c, $pdfService));
 
         if ($certificados->isEmpty()) {
             abort(404, 'No hay certificados disponibles para descargar.');
@@ -158,7 +169,7 @@ class ConsultaCertificadoController extends Controller
      * en el cuerpo del POST y se filtran para que solo puedan ser certificados
      * de ese mismo capacitado, activos y vigentes.
      */
-    public function descargarSeleccionados(Request $request, Capacitado $capacitado, MergePdfService $merge)
+    public function descargarSeleccionados(Request $request, Capacitado $capacitado, MergePdfService $merge, CertificadoPdfService $pdfService)
     {
         $ids = collect($request->input('certificado_ids', []))
             ->filter(fn ($id) => is_numeric($id))
@@ -174,9 +185,8 @@ class ConsultaCertificadoController extends Controller
             ->where('activo', true)
             ->get()
             ->filter(fn ($c) => !$c->isVencido() && $c->archivo_pdf)
-            ->filter(fn ($c) => str_starts_with($c->archivo_pdf, 'certificados/')
-                && !str_contains($c->archivo_pdf, '..')
-                && Storage::disk('certificados')->exists($c->archivo_pdf));
+            ->filter(fn ($c) => str_starts_with($c->archivo_pdf, 'certificados/') && !str_contains($c->archivo_pdf, '..'))
+            ->filter(fn ($c) => $this->asegurarPdfExiste($c, $pdfService));
 
         if ($certificados->isEmpty()) {
             abort(404, 'No hay certificados disponibles para descargar.');
@@ -195,5 +205,27 @@ class ConsultaCertificadoController extends Controller
             'Content-Type'        => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="' . $nombreArchivo . '"',
         ]);
+    }
+
+    /**
+     * Verifica que el PDF del certificado exista en disco; si no, intenta
+     * regenerarlo (recupera archivos que quedaron con la ruta guardada en BD
+     * pero sin escribirse realmente, ver CertificadoPdfService::generarYGuardar).
+     */
+    private function asegurarPdfExiste(Certificado $certificado, CertificadoPdfService $pdfService): bool
+    {
+        if (Storage::disk('certificados')->exists($certificado->archivo_pdf)) {
+            return true;
+        }
+
+        try {
+            $pdfService->generarYGuardar($certificado);
+
+            return true;
+        } catch (\RuntimeException $e) {
+            report($e);
+
+            return false;
+        }
     }
 }
