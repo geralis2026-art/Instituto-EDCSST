@@ -133,10 +133,13 @@ class CapacitadoController extends Controller
         $tipoMensaje = 'success';
 
         if ($capacitado->wasChanged(['nombre_completo', 'tipo_documento', 'documento'])) {
-            $errores = $this->regenerarCertificadosDe($capacitado, $pdfService);
+            [$errores, $omitidos] = $this->regenerarCertificadosDe($capacitado, $pdfService);
 
-            if ($errores === 0) {
+            if ($errores === 0 && $omitidos === 0) {
                 $mensaje = 'Capacitado actualizado y certificados regenerados correctamente.';
+            } elseif ($errores === 0) {
+                $mensaje = "Capacitado actualizado y certificados regenerados. {$omitidos} certificado(s) con PDF cargado manualmente no se tocaron — actualízalos a mano si corresponde.";
+                $tipoMensaje = 'success';
             } else {
                 $mensaje = "Capacitado actualizado, pero {$errores} certificado(s) no se pudieron regenerar. Usa \"Regenerar PDF\" en cada uno.";
                 $tipoMensaje = 'error';
@@ -150,14 +153,30 @@ class CapacitadoController extends Controller
 
     /**
      * Regenera el PDF de cada certificado activo del capacitado (genera primero
-     * y solo borra el archivo anterior si la generación fue exitosa).
-     * Devuelve la cantidad de certificados que fallaron.
+     * y solo borra el archivo anterior si la generación fue exitosa). Omite los
+     * certificados con un PDF cargado manualmente (nombre de archivo distinto
+     * al generado automáticamente) para no reemplazar un documento personalizado
+     * con la plantilla estándar.
+     * Devuelve [fallos, omitidos].
      */
-    private function regenerarCertificadosDe(Capacitado $capacitado, CertificadoPdfService $pdfService): int
+    private function regenerarCertificadosDe(Capacitado $capacitado, CertificadoPdfService $pdfService): array
     {
         $fallos = 0;
+        $omitidos = 0;
 
-        foreach ($capacitado->certificados()->where('activo', true)->get() as $certificado) {
+        $certificados = $capacitado->certificados()
+            ->where('activo', true)
+            ->with('curso.categoria')
+            ->get();
+
+        foreach ($certificados as $certificado) {
+            $certificado->setRelation('capacitado', $capacitado);
+
+            if ($certificado->archivo_pdf !== "certificados/{$certificado->codigo_unico}.pdf") {
+                $omitidos++;
+                continue;
+            }
+
             try {
                 $nuevoPdf = $pdfService->generarYGuardar($certificado);
             } catch (\RuntimeException $e) {
@@ -174,7 +193,7 @@ class CapacitadoController extends Controller
             $certificado->saveQuietly();
         }
 
-        return $fallos;
+        return [$fallos, $omitidos];
     }
 
     /**

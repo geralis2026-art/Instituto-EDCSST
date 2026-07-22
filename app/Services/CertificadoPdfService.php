@@ -25,7 +25,7 @@ class CertificadoPdfService
     /** Renderiza el certificado y devuelve el binario del PDF. */
     public function generarPdf(Certificado $certificado): string
     {
-        $certificado->load(['capacitado', 'curso.categoria']);
+        $certificado->loadMissing(['capacitado', 'curso.categoria']);
 
         $rutaRelativa = ConfiguracionSitio::obtener()->plantilla_certificado;
 

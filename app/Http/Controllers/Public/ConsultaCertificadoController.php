@@ -108,13 +108,19 @@ class ConsultaCertificadoController extends Controller
 
         // Autorregeneración: si el PDF no quedó guardado en disco (fallo previo
         // de escritura), se genera de nuevo aquí mismo en vez de fallar con 404.
+        // generarYGuardar() siempre escribe en "certificados/{codigo}.pdf", que
+        // puede diferir de $path si el PDF original era una carga manual con
+        // nombre aleatorio — por eso se debe releer y persistir la ruta nueva.
         if (!Storage::disk('certificados')->exists($path)) {
             try {
-                $pdfService->generarYGuardar($certificado);
+                $path = $pdfService->generarYGuardar($certificado);
             } catch (\RuntimeException $e) {
                 report($e);
                 abort(404, 'El archivo del certificado no se encuentra. Por favor contacta al instituto.');
             }
+
+            $certificado->archivo_pdf = $path;
+            $certificado->saveQuietly();
         }
 
         $nombreArchivo = sprintf(
@@ -218,8 +224,13 @@ class ConsultaCertificadoController extends Controller
             return true;
         }
 
+        // generarYGuardar() siempre escribe en "certificados/{codigo}.pdf", que
+        // puede diferir de archivo_pdf si el original era una carga manual con
+        // nombre aleatorio — hay que persistir la ruta nueva, si no, el merge
+        // más abajo seguiría intentando leer la ruta vieja (inexistente).
         try {
-            $pdfService->generarYGuardar($certificado);
+            $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
+            $certificado->saveQuietly();
 
             return true;
         } catch (\RuntimeException $e) {
