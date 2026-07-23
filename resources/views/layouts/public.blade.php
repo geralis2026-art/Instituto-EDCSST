@@ -173,27 +173,42 @@
                 </div>
 
                 {{-- Menú desktop --}}
-                <div class="hidden md:flex items-center space-x-1">
+                <div class="hidden md:flex items-center gap-x-2 lg:gap-x-5 xl:gap-x-8">
                     @foreach([
-                        ['route' => 'home',      'label' => 'Inicio'],
-                        ['route' => 'nosotros',  'label' => 'Nosotros'],
-                        ['route' => 'catalogo',  'label' => 'Cursos'],
-                        ['route' => 'consulta',  'label' => 'Consultar Certificado'],
-                        ['route' => 'verificar', 'label' => 'Verificar'],
-                        ['route' => 'contacto',  'label' => 'Contacto'],
+                        ['route' => 'home',      'label' => 'Inicio',               'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
+                        ['route' => 'nosotros',  'label' => 'Nosotros',             'icon' => 'M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1a4 4 0 10-4-4 4 4 0 004 4zm6 0a4 4 0 10-4-4'],
+                        ['route' => 'catalogo',  'label' => 'Cursos',               'icon' => 'M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422A12.083 12.083 0 0118 15c0 3.314-2.686 6-6 6s-6-2.686-6-6a12.083 12.083 0 01-.16-4.422L12 14z'],
+                        ['route' => 'consulta',  'label' => 'Consultar Certificado','icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+                        ['route' => 'verificar', 'label' => 'Verificar',            'icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'],
+                        ['route' => 'contacto',  'label' => 'Contacto',             'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
                     ] as $item)
                         <a href="{{ route($item['route']) }}"
-                           class="px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {{ request()->routeIs($item['route']) ? 'text-amber-400 border-b-2 border-amber-400 bg-blue-900' : 'text-blue-100 hover:text-amber-300 hover:bg-blue-900' }}">
-                            {{ $item['label'] }}
+                           title="{{ $item['label'] }}"
+                           aria-label="{{ $item['label'] }}"
+                           class="group relative p-2 rounded-md transition-all duration-200 {{ request()->routeIs($item['route']) ? 'text-amber-400 bg-blue-900' : 'text-blue-100 hover:text-amber-300 hover:bg-blue-900' }}">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}"></path>
+                            </svg>
+                            <span class="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap bg-blue-950 text-amber-300 text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150 border border-blue-800">
+                                {{ $item['label'] }}
+                            </span>
                         </a>
                     @endforeach
 
                     @auth
-                        <a href="{{ route('admin.dashboard') }}" class="ml-3 px-4 py-2 text-sm font-semibold btn-gold rounded-md">
-                            Panel
+                        <a href="{{ route('admin.dashboard') }}" title="Panel administrativo" aria-label="Panel administrativo" class="group relative ml-2 p-2 rounded-md btn-gold">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                            <span class="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap bg-blue-950 text-amber-300 text-xs font-medium px-2 py-1 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150 border border-blue-800">
+                                Panel administrativo
+                            </span>
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="ml-3 px-4 py-2 text-sm font-semibold border-2 border-amber-500 text-amber-400 rounded-md hover:bg-amber-500 hover:text-white transition-all duration-200">
+                        <a href="{{ route('login') }}" class="ml-2 flex items-center gap-2 px-4 py-2 text-sm font-semibold border-2 border-amber-500 text-amber-400 rounded-md hover:bg-amber-500 hover:text-white transition-all duration-200">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                            </svg>
                             Acceso
                         </a>
                     @endauth
@@ -208,18 +223,32 @@
             </div>
 
             {{-- Menú móvil --}}
-            <div id="mobile-menu" class="hidden md:hidden pb-4 space-y-1 border-t border-blue-800 pt-3 mt-1">
-                <a href="{{ route('home') }}"     class="block px-4 py-2 text-sm font-medium text-blue-100 hover:bg-blue-900 hover:text-amber-300 rounded-md transition">Inicio</a>
-                <a href="{{ route('nosotros') }}" class="block px-4 py-2 text-sm font-medium text-blue-100 hover:bg-blue-900 hover:text-amber-300 rounded-md transition">Nosotros</a>
-                <a href="{{ route('catalogo') }}" class="block px-4 py-2 text-sm font-medium text-blue-100 hover:bg-blue-900 hover:text-amber-300 rounded-md transition">Cursos</a>
-                <a href="{{ route('consulta') }}" class="block px-4 py-2 text-sm font-medium text-blue-100 hover:bg-blue-900 hover:text-amber-300 rounded-md transition">Consultar Certificado</a>
-                <a href="{{ route('verificar') }}" class="block px-4 py-2 text-sm font-medium text-blue-100 hover:bg-blue-900 hover:text-amber-300 rounded-md transition">Verificar</a>
-                <a href="{{ route('contacto') }}" class="block px-4 py-2 text-sm font-medium text-blue-100 hover:bg-blue-900 hover:text-amber-300 rounded-md transition">Contacto</a>
+            <div id="mobile-menu" class="hidden md:hidden pb-4 space-y-2 border-t border-blue-800 pt-3 mt-1">
+                @foreach([
+                    ['route' => 'home',      'label' => 'Inicio',               'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
+                    ['route' => 'nosotros',  'label' => 'Nosotros',             'icon' => 'M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1a4 4 0 10-4-4 4 4 0 004 4zm6 0a4 4 0 10-4-4'],
+                    ['route' => 'catalogo',  'label' => 'Cursos',               'icon' => 'M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422A12.083 12.083 0 0118 15c0 3.314-2.686 6-6 6s-6-2.686-6-6a12.083 12.083 0 01-.16-4.422L12 14z'],
+                    ['route' => 'consulta',  'label' => 'Consultar Certificado','icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+                    ['route' => 'verificar', 'label' => 'Verificar',            'icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'],
+                    ['route' => 'contacto',  'label' => 'Contacto',             'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
+                ] as $item)
+                    <a href="{{ route($item['route']) }}" class="flex items-center gap-4 px-4 py-3 text-sm font-medium text-blue-100 hover:bg-blue-900 hover:text-amber-300 rounded-md transition">
+                        <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}"></path>
+                        </svg>
+                        {{ $item['label'] }}
+                    </a>
+                @endforeach
                 <div class="pt-2 px-4">
                     @auth
                         <a href="{{ route('admin.dashboard') }}" class="block btn-gold text-center py-2 rounded-md text-sm font-semibold">Panel administrativo</a>
                     @else
-                        <a href="{{ route('login') }}" class="block text-center py-2 border-2 border-amber-500 text-amber-400 rounded-md text-sm font-semibold hover:bg-amber-500 hover:text-white transition">Acceso administrativo</a>
+                        <a href="{{ route('login') }}" class="flex items-center justify-center gap-2 py-2 border-2 border-amber-500 text-amber-400 rounded-md text-sm font-semibold hover:bg-amber-500 hover:text-white transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                            </svg>
+                            Acceso administrativo
+                        </a>
                     @endauth
                 </div>
             </div>
