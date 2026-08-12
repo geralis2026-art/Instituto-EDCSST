@@ -53,7 +53,9 @@
         {{-- Gráfica certificados por mes --}}
         <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6 card-hover reveal delay-1">
             <h2 class="text-sm font-semibold text-gray-700 mb-4">Certificados emitidos — últimos 12 meses</h2>
-            <canvas id="chartCertificados" height="100"></canvas>
+            <div class="relative h-72">
+                <canvas id="chartCertificados"></canvas>
+            </div>
         </div>
 
         {{-- Top capacitados por horas --}}
@@ -193,6 +195,7 @@
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
                 y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 }, grid: { color: 'rgba(0,0,0,0.04)' } },
