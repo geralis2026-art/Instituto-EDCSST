@@ -83,7 +83,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {{-- Últimos certificados --}}
-        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6 card-hover reveal">
+        <div class="lg:col-span-2 min-w-0 bg-white rounded-xl shadow-sm border border-gray-100 p-6 card-hover reveal">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-sm font-semibold text-gray-700">Últimos certificados</h2>
                 <a href="{{ route('admin.certificados.index') }}" class="text-xs text-amber-600 hover:underline">Ver todos</a>
@@ -92,7 +92,7 @@
                 <p class="text-sm text-gray-400">Sin certificados aún.</p>
             @else
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
+                    <table class="w-full table-fixed text-sm">
                         <thead>
                             <tr class="text-left text-xs text-gray-400 border-b border-gray-100">
                                 <th class="pb-2 font-medium">Capacitado</th>
