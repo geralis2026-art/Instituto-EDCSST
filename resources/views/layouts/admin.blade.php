@@ -162,7 +162,7 @@
         <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden lg:hidden"></div>
 
         {{-- ============ ÁREA PRINCIPAL ============ --}}
-        <div class="flex-1 flex flex-col lg:ml-0">
+        <div class="flex-1 min-w-0 flex flex-col lg:ml-0">
 
             {{-- Topbar --}}
             <header class="bg-white shadow-sm border-b-2 border-amber-400 sticky top-0 z-10">
@@ -229,7 +229,7 @@
             </div>
 
             {{-- Contenido --}}
-            <main class="flex-1 px-4 sm:px-6 lg:px-8 py-6">
+            <main class="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-6">
                 @yield('contenido')
             </main>
         </div>
