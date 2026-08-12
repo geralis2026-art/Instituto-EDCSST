@@ -36,13 +36,25 @@ class LoginRequest extends FormRequest
     /**
      * Attempt to authenticate the request's credentials.
      *
+     * Prueba primero el guard "web" (empleados). Si no coincide, prueba el
+     * guard "capacitados" (aula virtual) usando el mismo correo/contraseña
+     * pero mapeado a la columna "correo" de ese modelo. Así queda una sola
+     * página de login para ambos tipos de cuenta.
+     *
      * @throws ValidationException
      */
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt(array_merge($this->only('email', 'password'), ['activo' => true]), $this->boolean('remember'))) {
+        $email = $this->string('email')->toString();
+        $password = $this->string('password')->toString();
+        $remember = $this->boolean('remember');
+
+        $autenticado = Auth::guard('web')->attempt(['email' => $email, 'password' => $password, 'activo' => true], $remember)
+            || Auth::guard('capacitados')->attempt(['correo' => $email, 'password' => $password], $remember);
+
+        if (! $autenticado) {
             RateLimiter::hit($this->throttleKey());
             RateLimiter::hit('login-email:'.Str::lower($this->string('email')), 60);
 

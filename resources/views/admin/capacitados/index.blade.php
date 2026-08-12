@@ -11,7 +11,7 @@
             <p class="text-gray-600 mt-1">Administra la base de datos de personas capacitadas</p>
         </div>
         <div class="flex items-center gap-2">
-            @if(auth()->user()->isAdmin())
+            @if(auth()->user()->isGestor())
                 <a href="{{ route('admin.capacitados.importar.form') }}"
                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2 font-medium">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,15 +40,16 @@
     {{-- Búsqueda y Filtros --}}
     <div class="bg-white rounded-lg shadow p-4">
         <form method="GET" class="flex gap-3">
-            <input type="text" 
-                   name="busqueda" 
-                   placeholder="Buscar por nombre, documento o correo..." 
+            <input type="text"
+                   name="busqueda"
+                   placeholder="Buscar por nombre, documento o correo..."
                    value="{{ $busqueda }}"
                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            @include('admin.partials.filtro-instructor')
             <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
                 Buscar
             </button>
-            @if($busqueda)
+            @if($busqueda || $instructorId)
                 <a href="{{ route('admin.capacitados.index') }}" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
                     Limpiar
                 </a>

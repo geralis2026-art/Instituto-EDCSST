@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Scopes\PropietarioScope;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -25,12 +27,14 @@ class Curso extends Model
     protected $table = 'cursos';
 
     protected $fillable = [
+        'user_id',
         'categoria_id',
         'nombre',
         'slug',
         'descripcion_corta',
         'duracion',
         'intensidad_horaria',
+        'tiene_aula_virtual',
         'imagen',
         'destacado',
         'activo',
@@ -39,12 +43,15 @@ class Curso extends Model
     protected $casts = [
         'destacado'          => 'boolean',
         'activo'             => 'boolean',
+        'tiene_aula_virtual' => 'boolean',
         'intensidad_horaria' => 'integer',
     ];
 
     /** Genera el slug automáticamente al guardar e invalida el caché del home. */
     protected static function booted(): void
     {
+        static::addGlobalScope(new PropietarioScope);
+
         static::saved(fn () => Cache::forget('home_cursos_destacados'));
         static::deleted(fn () => Cache::forget('home_cursos_destacados'));
 
@@ -54,8 +61,14 @@ class Curso extends Model
                 $slug = $base;
                 $i    = 1;
 
+                // Sin scope de propietario: el slug es único a nivel de
+                // toda la tabla (constraint UNIQUE en BD), no por instructor.
+                // Si se dejara scoped, dos instructores podrían generar el
+                // mismo slug sin que este chequeo lo detecte, y el save()
+                // fallaría con un QueryException sin capturar.
                 while (
-                    static::where('slug', $slug)
+                    static::withoutGlobalScope(PropietarioScope::class)
+                        ->where('slug', $slug)
                         ->when($curso->exists, fn ($q) => $q->where('id', '!=', $curso->id))
                         ->exists()
                 ) {
@@ -74,6 +87,12 @@ class Curso extends Model
         return $this->belongsTo(Categoria::class);
     }
 
+    /** Empleado (admin/instructor) propietario de este curso. */
+    public function usuario(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     /** Certificados emitidos para este curso. */
     public function certificados(): HasMany
     {
@@ -86,6 +105,24 @@ class Curso extends Model
         return $this->belongsToMany(Capacitado::class, 'certificados')
                     ->withPivot('codigo_unico', 'fecha_emision', 'intensidad_horaria', 'activo')
                     ->withTimestamps();
+    }
+
+    /** Módulos del aula virtual de este curso. */
+    public function modulos(): HasMany
+    {
+        return $this->hasMany(Modulo::class)->orderBy('orden');
+    }
+
+    /** Matrículas (capacitados asignados) de este curso. */
+    public function matriculas(): HasMany
+    {
+        return $this->hasMany(Matricula::class);
+    }
+
+    /** Quiz de validación de este curso (aula virtual). */
+    public function quiz(): HasOne
+    {
+        return $this->hasOne(Quiz::class);
     }
 
     /** Cursos activos. */

@@ -7,6 +7,8 @@ use App\Http\Requests\CertificadoRequest;
 use App\Models\Categoria;
 use App\Models\Certificado;
 use App\Models\Curso;
+use App\Models\User;
+use App\Services\CertificadoCorreoService;
 use App\Services\CertificadoPdfService;
 use App\Services\GeneracionMasivaCertificadosService;
 use Carbon\Carbon;
@@ -30,8 +32,10 @@ class CertificadoController extends Controller
     {
         $busqueda = substr(trim((string) $request->query('busqueda', '')), 0, 100);
         $cursoId  = (int) $request->query('curso_id', 0) ?: null;
+        $instructorId = (int) $request->query('instructor', 0) ?: null;
 
-        $cursos = Curso::orderBy('nombre')->get();
+        $cursos   = Curso::orderBy('nombre')->get();
+        $gestores = $request->user()->isAdmin() ? User::gestores()->orderBy('name')->get() : collect();
 
         $certificados = Certificado::with(['capacitado', 'curso'])
             ->when($busqueda, fn ($query) =>
@@ -44,11 +48,12 @@ class CertificadoController extends Controller
                 )
             )
             ->when($cursoId, fn ($query) => $query->where('curso_id', $cursoId))
+            ->when($instructorId && $request->user()->isAdmin(), fn ($query) => $query->where('user_id', $instructorId))
             ->latest('fecha_emision')
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.certificados.index', compact('certificados', 'cursos', 'busqueda', 'cursoId'));
+        return view('admin.certificados.index', compact('certificados', 'cursos', 'busqueda', 'cursoId', 'gestores', 'instructorId'));
     }
 
     /** Formulario para registrar un nuevo certificado. */
@@ -68,7 +73,7 @@ class CertificadoController extends Controller
      * Guarda el certificado: genera código único, calcula fecha de vencimiento (+1 año)
      * y almacena el PDF en storage/app/certificados/.
      */
-    public function store(CertificadoRequest $request, CertificadoPdfService $pdfService)
+    public function store(CertificadoRequest $request, CertificadoPdfService $pdfService, CertificadoCorreoService $correoService)
     {
         $datos = $request->validated();
         $aniosVigencia = (int) $datos['anios_vigencia'];
@@ -76,6 +81,7 @@ class CertificadoController extends Controller
         $codigoManual = $datos['codigo_unico'] ?: null;
         $datos['codigo_unico'] = $codigoManual ?? (string) Str::uuid();
         $datos['emitido_por'] = Auth::id();
+        $datos['user_id'] = Auth::id();
         $datos['fecha_vencimiento'] = Carbon::parse($datos['fecha_emision'])->addYears($aniosVigencia)->toDateString();
 
         if ($request->hasFile('archivo_pdf')) {
@@ -91,36 +97,52 @@ class CertificadoController extends Controller
         }
 
         /**
-         * Transacción atómica: si generarCodigoUnico(), generarYGuardar() o
-         * saveQuietly() fallan, el rollback elimina el registro con UUID
-         * temporal y la BD queda limpia (generarYGuardar lanza excepción si
-         * la escritura del PDF falla, ver CertificadoPdfService).
+         * Transacción atómica: solo cubre la creación del certificado y la
+         * confirmación del código único (con reintento ante colisión, ver
+         * Certificado::guardarConCodigoUnico()). Si algo falla aquí, el
+         * rollback elimina el registro con UUID temporal y la BD queda limpia.
          */
         try {
-            $certificado = DB::transaction(function () use ($datos, $codigoManual, $request, $pdfService) {
+            $certificado = DB::transaction(function () use ($datos, $codigoManual) {
                 $certificado = Certificado::create($datos);
 
                 if (!$codigoManual) {
-                    $certificado->codigo_unico = Certificado::generarCodigoUnico();
+                    $certificado->guardarConCodigoUnico();
                 }
-
-                if (!$request->hasFile('archivo_pdf')) {
-                    $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
-                }
-
-                $certificado->saveQuietly();
 
                 return $certificado;
             });
-        } catch (\RuntimeException $e) {
+        } catch (\Throwable $e) {
             report($e);
 
-            return back()->withInput()->with('error', 'No se pudo generar el PDF del certificado. Intenta de nuevo; si el problema persiste, contacta a soporte.');
+            return back()->withInput()->with('error', 'No se pudo registrar el certificado. Intenta de nuevo; si el problema persiste, contacta a soporte.');
         }
+
+        /**
+         * Generación del PDF FUERA de la transacción: el certificado ya quedó
+         * confirmado en BD con su código único, así que si esto falla no se
+         * pierde el registro ni queda un PDF huérfano de un certificado que
+         * nunca existió — el certificado queda sin PDF, recuperable con el
+         * botón "Regenerar PDF" de su ficha.
+         */
+        if (!$request->hasFile('archivo_pdf')) {
+            try {
+                $certificado->archivo_pdf = $pdfService->generarYGuardar($certificado);
+                $certificado->saveQuietly();
+            } catch (\RuntimeException $e) {
+                report($e);
+
+                return redirect()
+                    ->route('admin.certificados.show', $certificado)
+                    ->with('error', 'El certificado se registró, pero no se pudo generar el PDF. Usa "Regenerar PDF" desde esta ficha.');
+            }
+        }
+
+        $enviado = $correoService->enviar($certificado);
 
         return redirect()
             ->route('admin.certificados.show', $certificado)
-            ->with('success', 'Certificado registrado correctamente.');
+            ->with('success', 'Certificado registrado correctamente.' . ($enviado ? ' Se envió por correo al capacitado.' : ''));
     }
 
     /** Detalle completo del certificado con capacitado, curso y quién lo emitió. */
@@ -242,6 +264,19 @@ class CertificadoController extends Controller
         ]);
     }
 
+    /** Reenvía el certificado por correo al capacitado (botón manual en la ficha del certificado). */
+    public function reenviarCorreo(Certificado $certificado, CertificadoCorreoService $correoService)
+    {
+        $enviado = $correoService->enviar($certificado);
+
+        return back()->with(
+            $enviado ? 'success' : 'error',
+            $enviado
+                ? 'Certificado reenviado por correo correctamente.'
+                : 'No se pudo enviar: el capacitado no tiene correo registrado o el PDF no está disponible.'
+        );
+    }
+
     /** Elimina el certificado y su PDF del storage. */
     public function destroy(Certificado $certificado)
     {
@@ -285,7 +320,14 @@ class CertificadoController extends Controller
         $validator = Validator::make(
             ['solicitudes' => $incluidas],
             [
-                'solicitudes.*.curso_id'          => 'required|exists:cursos,id',
+                // Sin exists:cursos,id: esa regla consulta la tabla por SQL e ignora
+                // PropietarioScope. Curso::find() sí pasa por Eloquent y respeta el
+                // scope, evitando que un instructor asigne el lote a un curso ajeno.
+                'solicitudes.*.curso_id'          => ['required', function ($attribute, $value, $fail) {
+                    if (! Curso::find($value)) {
+                        $fail('Uno de los cursos seleccionados no es válido.');
+                    }
+                }],
                 'solicitudes.*.fecha_emision'      => 'required|date',
                 'solicitudes.*.intensidad_horaria' => 'required|integer|min:1|max:500',
                 'solicitudes.*.modalidad'          => 'nullable|in:virtual,presencial',
@@ -294,7 +336,6 @@ class CertificadoController extends Controller
             ],
             [
                 'solicitudes.*.curso_id.required'          => 'El curso es requerido para cada solicitud seleccionada.',
-                'solicitudes.*.curso_id.exists'            => 'Uno de los cursos seleccionados no es válido.',
                 'solicitudes.*.fecha_emision.required'     => 'La fecha de emisión es requerida para cada solicitud seleccionada.',
                 'solicitudes.*.intensidad_horaria.required' => 'La intensidad horaria es requerida para cada solicitud seleccionada.',
                 'solicitudes.*.anios_vigencia.required'    => 'La vigencia es requerida para cada solicitud seleccionada.',

@@ -4,7 +4,7 @@
 @section('descripcion', 'Verifica la autenticidad de un certificado emitido por el Instituto EDCSST.')
 
 @push('preload')
-<link rel="preload" as="image" href="{{ asset('images/capacitacion-grupal-docencia.jpg') }}" fetchpriority="high">
+<link rel="preload" as="image" href="{{ asset('img/capacitacion-grupal-docencia.jpg') }}" fetchpriority="high">
 @endpush
 
 @push('styles')
@@ -15,7 +15,7 @@
 
 {{-- Fondo con foto para toda la página (hero + contenido) --}}
 <section class="relative text-white min-h-screen"
-    style="background-image: linear-gradient(to bottom, rgba(15,23,42,0.72) 0%, rgba(30,58,138,0.55) 20%, rgba(30,58,138,0.30) 45%, rgba(226,232,240,0.35) 100%), url('{{ asset('images/capacitacion-grupal-docencia.jpg') }}'); background-size: cover; background-position: center 35%; background-attachment: fixed;">
+    style="background-image: linear-gradient(to bottom, rgba(15,23,42,0.72) 0%, rgba(30,58,138,0.55) 20%, rgba(30,58,138,0.30) 45%, rgba(226,232,240,0.35) 100%), url('{{ asset('img/capacitacion-grupal-docencia.jpg') }}'); background-size: cover; background-position: center 35%; background-attachment: fixed;">
 
     {{-- Línea dorada superior --}}
     <div class="absolute top-0 left-0 right-0 h-1"

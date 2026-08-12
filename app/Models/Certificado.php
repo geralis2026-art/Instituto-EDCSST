@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\PropietarioScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\QueryException;
 
 /**
  * Certificado emitido a un capacitado por haber completado un curso.
@@ -20,6 +22,7 @@ class Certificado extends Model
     protected $table = 'certificados';
 
     protected $fillable = [
+        'user_id',
         'capacitado_id',
         'curso_id',
         'emitido_por',
@@ -30,6 +33,8 @@ class Certificado extends Model
         'modalidad',
         'archivo_pdf',
         'activo',
+        'origen',
+        'quiz_intento_id',
     ];
 
     protected $casts = [
@@ -57,6 +62,18 @@ class Certificado extends Model
         return $this->belongsTo(User::class, 'emitido_por');
     }
 
+    /** Empleado (admin/instructor) propietario de este certificado. */
+    public function usuario(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /** Intento de quiz que generó este certificado automáticamente (origen = 'virtual'). */
+    public function quizIntento(): BelongsTo
+    {
+        return $this->belongsTo(QuizIntento::class);
+    }
+
     /**
      * Genera un código único para el certificado.
      * Formato: EDCSST-{AÑO}-{NUMERO_5_DIGITOS}
@@ -72,13 +89,45 @@ class Certificado extends Model
 
         $offset = strlen($prefijo) + 1; // SUBSTRING en MySQL es 1-indexado
 
-        $maximo = static::where('codigo_unico', 'like', "{$prefijo}%")
+        // Sin scope de propietario: el contador es GLOBAL entre todos los
+        // instructores para evitar colisiones de código_unico.
+        $maximo = static::withoutGlobalScope(PropietarioScope::class)
+            ->where('codigo_unico', 'like', "{$prefijo}%")
             ->selectRaw("MAX(CAST(SUBSTRING(codigo_unico, {$offset}) AS UNSIGNED)) as max_num")
             ->value('max_num');
 
         $siguiente = ($maximo ?? 0) + 1;
 
         return sprintf('%s%05d', $prefijo, $siguiente);
+    }
+
+    /**
+     * Genera un código único y lo persiste, reintentando si otra inserción
+     * concurrente generó el mismo número antes de que esta terminara de
+     * guardar (condición de carrera en generarCodigoUnico(): dos procesos
+     * pueden calcular el mismo "siguiente número" antes de que el primero
+     * confirme el suyo — más probable ahora con varios instructores emitiendo
+     * certificados a la vez). El índice UNIQUE de la BD es quien detecta la
+     * colisión; aquí solo se resuelve reintentando con un código nuevo.
+     */
+    public function guardarConCodigoUnico(int $intentosMaximos = 3): void
+    {
+        for ($intento = 1; $intento <= $intentosMaximos; $intento++) {
+            $this->codigo_unico = static::generarCodigoUnico();
+
+            try {
+                $this->saveQuietly();
+
+                return;
+            } catch (QueryException $e) {
+                $esColisionDeCodigo = ($e->errorInfo[1] ?? null) === 1062
+                    && str_contains($e->getMessage(), 'codigo_unico');
+
+                if (! $esColisionDeCodigo || $intento === $intentosMaximos) {
+                    throw $e;
+                }
+            }
+        }
     }
 
     /** Busca un certificado activo por su código único. */
@@ -130,6 +179,8 @@ class Certificado extends Model
     /** Recalcula las horas del capacitado cuando se guarda o elimina un certificado. */
     protected static function booted(): void
     {
+        static::addGlobalScope(new PropietarioScope);
+
         static::saved(function ($certificado) {
             $certificado->capacitado?->recalcularHorasCapacitadas();
         });

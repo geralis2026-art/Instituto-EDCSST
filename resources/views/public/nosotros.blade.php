@@ -34,7 +34,7 @@
 
     {{-- Foto de fondo con Ken Burns --}}
     <div class="absolute inset-0">
-        <img src="{{ asset('images/examen-medico-ocupacional.jpg') }}"
+        <img src="{{ asset('img/examen-medico-ocupacional.jpg') }}"
              alt="Instituto EDCSST"
              class="bg-foto w-full h-full object-cover"
              style="object-position: center 30%;">

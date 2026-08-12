@@ -71,6 +71,11 @@
             <input type="checkbox" name="destacado" value="1" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" @checked(old('destacado', $curso->destacado ?? false))>
             Destacado
         </label>
+        <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+            <input type="hidden" name="tiene_aula_virtual" value="0">
+            <input type="checkbox" name="tiene_aula_virtual" value="1" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" @checked(old('tiene_aula_virtual', $curso->tiene_aula_virtual ?? false))>
+            Tiene aula virtual
+        </label>
     </div>
 
     <div class="flex gap-3 pt-4 border-t">

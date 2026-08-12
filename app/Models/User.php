@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Roles:
  * - admin: acceso total (CRUD de cursos, categorías, usuarios, mensajes, etc.)
  * - capacitador: solo lectura de capacitados y creación/consulta de certificados
+ * - instructor: CRUD completo, pero limitado a sus propios cursos, capacitados y certificados
  *
  * Los usuarios nuevos se crean con `activo = false`; un admin debe
  * activarlos para que puedan iniciar sesión (ver EnsureUserIsActivo).
@@ -24,6 +25,7 @@ class User extends Authenticatable
 
     public const ROL_ADMIN       = 'admin';
     public const ROL_CAPACITADOR = 'capacitador';
+    public const ROL_INSTRUCTOR  = 'instructor';
 
     protected $fillable = [
         'name',
@@ -63,6 +65,16 @@ class User extends Authenticatable
         return $query->where('activo', true);
     }
 
+    /**
+     * Empleados con rol admin o instructor (dueños posibles de cursos,
+     * capacitados y certificados). Usado para el selector "Ver: Todos / X / Y"
+     * que solo ve el admin.
+     */
+    public function scopeGestores(Builder $query): Builder
+    {
+        return $query->whereIn('rol', [self::ROL_ADMIN, self::ROL_INSTRUCTOR]);
+    }
+
     public function isAdmin(): bool
     {
         return $this->rol === self::ROL_ADMIN;
@@ -71,5 +83,16 @@ class User extends Authenticatable
     public function isCapacitador(): bool
     {
         return $this->rol === self::ROL_CAPACITADOR;
+    }
+
+    public function isInstructor(): bool
+    {
+        return $this->rol === self::ROL_INSTRUCTOR;
+    }
+
+    /** Admin o instructor: roles con CRUD sobre cursos/capacitados/certificados (propios o todos). */
+    public function isGestor(): bool
+    {
+        return $this->isAdmin() || $this->isInstructor();
     }
 }

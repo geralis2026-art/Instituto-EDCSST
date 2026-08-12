@@ -153,6 +153,35 @@ class CertificadoTest extends TestCase
         ]))->assertSessionHasErrors('codigo_unico');
     }
 
+    public function test_si_falla_la_generacion_del_pdf_el_certificado_igual_queda_creado(): void
+    {
+        $cap = Capacitado::factory()->create();
+        $cur = Curso::factory()->create();
+
+        $this->mock(\App\Services\CertificadoPdfService::class, function ($mock) {
+            $mock->shouldReceive('generarYGuardar')->once()->andThrow(new \RuntimeException('fallo simulado'));
+        });
+
+        $datos = $this->datosMinimos($cap, $cur);
+        unset($datos['archivo_pdf']); // sin PDF manual: dispara la generación automática que falla
+
+        $response = $this->actingAs($this->admin)->post('/admin/certificados', $datos);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+
+        // El certificado queda creado (con código único real, no huérfano ni
+        // perdido) aunque el PDF haya fallado — se recupera con "Regenerar PDF".
+        $this->assertDatabaseHas('certificados', [
+            'capacitado_id' => $cap->id,
+            'curso_id'      => $cur->id,
+            'archivo_pdf'   => null,
+        ]);
+
+        $certificado = Certificado::where('capacitado_id', $cap->id)->firstOrFail();
+        $this->assertStringStartsWith('EDCSST-', $certificado->codigo_unico);
+    }
+
     public function test_store_calcula_fecha_vencimiento_segun_anios(): void
     {
         $cap = Capacitado::factory()->create();

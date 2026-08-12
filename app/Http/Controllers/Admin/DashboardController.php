@@ -25,15 +25,21 @@ class DashboardController extends Controller
     public function index()
     {
         $now = Carbon::now();
+        $user = auth()->user();
 
         // Estadísticas escalares cacheadas 60 s — evita golpear la BD en cada recarga.
-        $stats = Cache::remember('dashboard_stats', 60, function () use ($now) {
+        // La clave incluye el user_id porque totalCapacitados/totalCertificados/etc.
+        // pasan por Eloquent y quedan scoped por PropietarioScope: una clave fija
+        // compartida haría que el primero en cargar el dashboard dentro de esos 60 s
+        // le "prestara" sus números (todos o solo los propios) a cualquier otro
+        // usuario que entrara después, mezclando datos entre instructores/admin.
+        $stats = Cache::remember("dashboard_stats:{$user->id}", 60, function () use ($now, $user) {
             return [
                 'totalCapacitados'      => Capacitado::count(),
                 'totalCertificados'     => Certificado::where('activo', true)->count(),
                 'totalCursosActivos'    => Curso::where('activo', true)->count(),
                 'totalCategorias'       => Categoria::where('activo', true)->count(),
-                'mensajesNuevos'        => Mensaje::nuevos()->count(),
+                'mensajesNuevos'        => $user->isAdmin() ? Mensaje::nuevos()->count() : null,
                 'horasCapacitadasTotal' => Certificado::where('activo', true)->sum('intensidad_horaria'),
                 'certificadosPorMes'    => $this->certificadosPorMes(),
                 'certificadosHoy'       => Certificado::whereDate('created_at', today())->count(),
@@ -65,9 +71,11 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        $mensajesRecientes = Mensaje::latest()
-            ->take(5)
-            ->get();
+        // Los mensajes de contacto son una sección exclusiva de admin
+        // (ver routes/web.php); no se cargan para capacitador/instructor.
+        $mensajesRecientes = $user->isAdmin()
+            ? Mensaje::latest()->take(5)->get()
+            : collect();
 
         return view('admin.dashboard', [
             ...$stats,

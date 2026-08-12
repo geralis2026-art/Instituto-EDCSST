@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CursoRequest;
 use App\Models\Categoria;
 use App\Models\Curso;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -22,8 +23,10 @@ class CursoController extends Controller
     {
         $busqueda    = substr(trim((string) $request->query('busqueda', '')), 0, 100);
         $categoriaId = (int) $request->query('categoria_id', 0) ?: null;
+        $instructorId = (int) $request->query('instructor', 0) ?: null;
 
         $categorias = Categoria::orderBy('nombre')->get();
+        $gestores   = $request->user()->isAdmin() ? User::gestores()->orderBy('name')->get() : collect();
 
         $cursos = Curso::with('categoria')
             ->withCount('certificados')
@@ -34,11 +37,13 @@ class CursoController extends Controller
                 )
             )
             ->when($categoriaId, fn ($query) => $query->where('categoria_id', $categoriaId))
+            // Filtro manual solo para admin: el scope de propietario no filtra su sesión por defecto.
+            ->when($instructorId && $request->user()->isAdmin(), fn ($query) => $query->where('user_id', $instructorId))
             ->orderBy('nombre')
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.cursos.index', compact('cursos', 'categorias', 'busqueda', 'categoriaId'));
+        return view('admin.cursos.index', compact('cursos', 'categorias', 'busqueda', 'categoriaId', 'gestores', 'instructorId'));
     }
 
     /** Formulario para crear un nuevo curso. */
@@ -53,6 +58,7 @@ class CursoController extends Controller
     public function store(CursoRequest $request)
     {
         $datos = $request->validated();
+        $datos['user_id'] = $request->user()->id;
 
         if ($request->hasFile('imagen')) {
             $datos['imagen'] = $this->procesarImagen($request->file('imagen'));
@@ -67,10 +73,13 @@ class CursoController extends Controller
             ->with('success', 'Curso creado correctamente.');
     }
 
-    /** Detalle del curso con su categoría y conteo de certificados emitidos. */
+    /** Detalle del curso con su categoría, conteo de certificados y sus módulos (si tiene aula virtual). */
     public function show(Curso $curso)
     {
-        $curso->load('categoria')->loadCount('certificados');
+        $curso->load([
+            'categoria',
+            'modulos' => fn ($q) => $q->orderBy('orden')->withCount('materiales'),
+        ])->loadCount('certificados');
 
         return view('admin.cursos.show', compact('curso'));
     }
@@ -112,12 +121,25 @@ class CursoController extends Controller
             ->with('success', 'Curso actualizado correctamente.');
     }
 
-    /** Elimina el curso. Bloqueado si tiene certificados asociados. */
+    /**
+     * Elimina el curso. Bloqueado si tiene certificados asociados. Los
+     * módulos/materiales/matrículas se eliminan en cascada en la base de
+     * datos, pero los archivos físicos de los materiales hay que borrarlos
+     * a mano antes (si no, quedan huérfanos en el disco "materiales").
+     */
     public function destroy(Curso $curso)
     {
         if ($curso->certificados()->exists()) {
             return back()
                 ->with('error', 'No se puede eliminar este curso porque tiene certificados asociados.');
+        }
+
+        foreach ($curso->modulos as $modulo) {
+            foreach ($modulo->materiales as $material) {
+                if ($material->archivo) {
+                    Storage::disk('materiales')->delete($material->archivo);
+                }
+            }
         }
 
         if ($curso->imagen) {

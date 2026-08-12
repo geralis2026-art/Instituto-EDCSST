@@ -7,6 +7,7 @@ use App\Http\Requests\CapacitadoImportConfirmarRequest;
 use App\Http\Requests\CapacitadoImportRequest;
 use App\Http\Requests\CapacitadoRequest;
 use App\Models\Capacitado;
+use App\Models\User;
 use App\Services\CertificadoPdfService;
 use App\Services\ImportacionCapacitadosService;
 use App\Services\MergePdfService;
@@ -29,18 +30,22 @@ class CapacitadoController extends Controller
     public function index(Request $request)
     {
         $busqueda = substr(trim((string) $request->query('busqueda', '')), 0, 100);
-        
+        $instructorId = (int) $request->query('instructor', 0) ?: null;
+
+        $gestores = $request->user()->isAdmin() ? User::gestores()->orderBy('name')->get() : collect();
+
         $capacitados = Capacitado::query()
             ->when($busqueda, fn ($query) =>
                 $query->where('nombre_completo', 'like', "%{$busqueda}%")
                       ->orWhere('documento', 'like', "%{$busqueda}%")
                       ->orWhere('correo', 'like', "%{$busqueda}%")
             )
+            ->when($instructorId && $request->user()->isAdmin(), fn ($query) => $query->where('user_id', $instructorId))
             ->orderBy('nombre_completo')
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.capacitados.index', compact('capacitados', 'busqueda'));
+        return view('admin.capacitados.index', compact('capacitados', 'busqueda', 'gestores', 'instructorId'));
     }
 
     /**
@@ -56,7 +61,10 @@ class CapacitadoController extends Controller
      */
     public function store(CapacitadoRequest $request)
     {
-        $capacitado = Capacitado::create($request->validated());
+        $capacitado = Capacitado::create([
+            ...$request->validated(),
+            'user_id' => $request->user()->id,
+        ]);
 
         return redirect()
             ->route('admin.capacitados.show', $capacitado)

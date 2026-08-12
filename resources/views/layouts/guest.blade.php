@@ -79,7 +79,7 @@
 
             {{-- Panel imagen --}}
             <div class="login-image">
-                <img src="{{ asset('images/capacitacion-grupal-docencia.jpg') }}" alt="Instituto EDCSST">
+                <img src="{{ asset('img/capacitacion-grupal-docencia.jpg') }}" alt="Instituto EDCSST">
                 <div class="login-image-overlay"></div>
                 <div class="login-image-content">
                     {{-- Logo --}}

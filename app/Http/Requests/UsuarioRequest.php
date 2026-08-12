@@ -15,11 +15,13 @@ class UsuarioRequest extends FormRequest
 
     public function rules(): array
     {
+        $usuario = $this->route('usuario');
+
         return [
             'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'rol'      => ['required', 'in:admin,capacitador'],
+            'email'    => ['required', 'email', 'max:255', 'unique:users,email' . ($usuario ? ",{$usuario->id}" : '')],
+            'password' => [$usuario ? 'nullable' : 'required', 'confirmed', Rules\Password::defaults()],
+            'rol'      => ['required', 'in:admin,capacitador,instructor'],
         ];
     }
 
@@ -32,7 +34,7 @@ class UsuarioRequest extends FormRequest
             'password.required'  => 'La contraseña es requerida.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
             'rol.required'       => 'El rol es requerido.',
-            'rol.in'             => 'El rol debe ser admin o capacitador.',
+            'rol.in'             => 'El rol debe ser admin, capacitador o instructor.',
         ];
     }
 }

@@ -50,6 +50,10 @@ class AppServiceProvider extends ServiceProvider
      * Admin — limitan por ID de usuario autenticado:
      *   - admin-general:        120/min  (navegación y lectura — 2 req/s)
      *   - admin-escritura:       30/min  (create/store/update/destroy)
+     *
+     * Aula virtual (guard "capacitados") — limitan por ID del capacitado:
+     *   - aula-general:         120/min  (navegación y descargas)
+     *   - aula-quiz:             10/min  (envío de intentos de quiz)
      */
     protected function configureRateLimiting(): void
     {
@@ -88,6 +92,20 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(30)->by($request->user()?->id ?? $request->ip())
                 ->response(fn () => redirect()->back()
                     ->withErrors(['throttle' => 'Has realizado demasiadas operaciones seguidas. Espera un momento.'])
+                );
+        });
+
+        RateLimiter::for('aula-general', function (Request $request) {
+            return Limit::perMinute(120)->by($request->user('capacitados')?->id ?? $request->ip())
+                ->response(fn () => redirect()->back()
+                    ->withErrors(['throttle' => 'Demasiadas solicitudes. Espera un momento e intenta de nuevo.'])
+                );
+        });
+
+        RateLimiter::for('aula-quiz', function (Request $request) {
+            return Limit::perMinute(10)->by($request->user('capacitados')?->id ?? $request->ip())
+                ->response(fn () => back()
+                    ->withErrors(['error' => 'Demasiados intentos seguidos. Espera un momento antes de volver a intentar.'])
                 );
         });
 

@@ -43,9 +43,11 @@ class CursoTest extends TestCase
         $this->actingAs($this->admin)->get('/admin/cursos')->assertStatus(200);
     }
 
-    public function test_capacitador_no_puede_listar_cursos(): void
+    public function test_capacitador_puede_listar_cursos_en_solo_lectura(): void
     {
-        $this->actingAs($this->capacitador)->get('/admin/cursos')->assertStatus(403);
+        // El capacitador necesita ver los cursos para validar matrículas/avance
+        // (ver admin.cursos.matriculas.index), pero no puede crear/editar/eliminar.
+        $this->actingAs($this->capacitador)->get('/admin/cursos')->assertStatus(200);
     }
 
     public function test_capacitador_no_puede_crear_cursos(): void

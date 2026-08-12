@@ -44,6 +44,39 @@ class UsuarioController extends Controller
             ->with('success', 'Usuario creado. Actívalo para que pueda ingresar.');
     }
 
+    /** Formulario para editar un usuario existente. */
+    public function edit(User $usuario)
+    {
+        return view('admin.usuarios.edit', compact('usuario'));
+    }
+
+    /**
+     * Actualiza nombre, email, rol y opcionalmente la contraseña. No puede
+     * cambiarse el propio rol para evitar que un admin se bloquee a sí
+     * mismo el acceso al panel (o deje el sistema sin ningún admin).
+     */
+    public function update(UsuarioRequest $request, User $usuario)
+    {
+        $datos = $request->validated();
+
+        if ($usuario->id === Auth::id() && $datos['rol'] !== $usuario->rol) {
+            return back()->withInput()->with('error', 'No puedes cambiar tu propio rol. Pídele a otro administrador que lo haga.');
+        }
+
+        $usuario->name  = $datos['name'];
+        $usuario->email = $datos['email'];
+        $usuario->rol   = $datos['rol'];
+
+        if (!empty($datos['password'])) {
+            $usuario->password = Hash::make($datos['password']);
+        }
+
+        $usuario->save();
+
+        return redirect()->route('admin.usuarios.index')
+            ->with('success', 'Usuario actualizado correctamente.');
+    }
+
     /** Activa o desactiva un usuario. No puede aplicarse al usuario autenticado en sesión. */
     public function toggleActivo(User $usuario)
     {

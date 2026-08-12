@@ -10,13 +10,15 @@
             <h1 class="text-3xl font-bold text-gray-900">Gestion de Cursos</h1>
             <p class="text-gray-600 mt-1">Administra la oferta academica del instituto</p>
         </div>
-        <a href="{{ route('admin.cursos.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-            Nuevo Curso
-        </a>
+        @if(auth()->user()->isGestor())
+            <a href="{{ route('admin.cursos.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                Nuevo Curso
+            </a>
+        @endif
     </div>
 
     <div class="bg-white rounded-lg shadow p-4">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-[1fr_240px_auto_auto] gap-3">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-[1fr_240px_240px_auto_auto] gap-3">
             <input type="text" name="busqueda" placeholder="Buscar por nombre o descripcion..." value="{{ $busqueda }}" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
             <select name="categoria_id" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Todas las categorias</option>
@@ -24,8 +26,9 @@
                     <option value="{{ $categoria->id }}" @selected($categoriaId == $categoria->id)>{{ $categoria->nombre }}</option>
                 @endforeach
             </select>
+            @include('admin.partials.filtro-instructor')
             <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Buscar</button>
-            @if($busqueda || $categoriaId)
+            @if($busqueda || $categoriaId || $instructorId)
                 <a href="{{ route('admin.cursos.index') }}" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition text-center">Limpiar</a>
             @endif
         </form>
@@ -70,24 +73,26 @@
                                         </svg>
                                         Ver
                                     </a>
-                                    <a href="{{ route('admin.cursos.edit', $curso) }}"
-                                       class="inline-flex items-center gap-1 px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition font-medium">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                        </svg>
-                                        Editar
-                                    </a>
-                                    <form action="{{ route('admin.cursos.destroy', $curso) }}" method="POST" class="inline" onsubmit="return confirm('Eliminar este curso? Solo se eliminara si no tiene certificados asociados.');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition font-medium">
+                                    @if(auth()->user()->isGestor())
+                                        <a href="{{ route('admin.cursos.edit', $curso) }}"
+                                           class="inline-flex items-center gap-1 px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition font-medium">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
-                                            Eliminar
-                                        </button>
-                                    </form>
+                                            Editar
+                                        </a>
+                                        <form action="{{ route('admin.cursos.destroy', $curso) }}" method="POST" class="inline" onsubmit="return confirm('Eliminar este curso? Solo se eliminara si no tiene certificados asociados.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition font-medium">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -95,7 +100,9 @@
                         <tr>
                             <td colspan="5" class="px-6 py-8 text-center text-gray-500">
                                 <p class="text-lg">No hay cursos registrados.</p>
-                                <a href="{{ route('admin.cursos.create') }}" class="text-blue-600 hover:text-blue-900 mt-2 inline-block">Crear el primer curso &rarr;</a>
+                                @if(auth()->user()->isGestor())
+                                    <a href="{{ route('admin.cursos.create') }}" class="text-blue-600 hover:text-blue-900 mt-2 inline-block">Crear el primer curso &rarr;</a>
+                                @endif
                             </td>
                         </tr>
                     @endforelse

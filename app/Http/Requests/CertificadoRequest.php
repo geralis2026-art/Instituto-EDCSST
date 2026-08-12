@@ -2,17 +2,19 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Capacitado;
+use App\Models\Curso;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-/** Validación para crear/editar certificados. Admin y capacitador (ver authorize()). */
+/** Validación para crear/editar certificados. Admin, capacitador e instructor (ver authorize()). */
 class CertificadoRequest extends FormRequest
 {
     public function authorize(): bool
     {
         $user = auth()->user();
 
-        return $user && ($user->isAdmin() || $user->isCapacitador());
+        return $user && ($user->isAdmin() || $user->isCapacitador() || $user->isInstructor());
     }
 
     /** Normaliza el código único a mayúsculas y convierte 'activo' a booleano antes de validar. */
@@ -35,8 +37,21 @@ class CertificadoRequest extends FormRequest
         $certificadoId = $this->route('certificado')?->id;
 
         return [
-            'capacitado_id'      => ['required', 'exists:capacitados,id'],
-            'curso_id'           => ['required', 'exists:cursos,id'],
+            // Sin exists:capacitados,id / exists:cursos,id: esas reglas consultan
+            // la tabla directamente por SQL e ignoran PropietarioScope, así que un
+            // instructor podría emitir un certificado sobre datos de otro instructor
+            // con solo enviar el ID por fuera del formulario. find() sí pasa por
+            // Eloquent y respeta el scope (admin ve todos, instructor solo lo suyo).
+            'capacitado_id'      => ['required', function ($attribute, $value, $fail) {
+                if (! Capacitado::find($value)) {
+                    $fail('El capacitado seleccionado no es válido.');
+                }
+            }],
+            'curso_id'           => ['required', function ($attribute, $value, $fail) {
+                if (! Curso::find($value)) {
+                    $fail('El curso seleccionado no es válido.');
+                }
+            }],
             'codigo_unico'       => [
                 'nullable',
                 'string',
@@ -56,9 +71,7 @@ class CertificadoRequest extends FormRequest
     {
         return [
             'capacitado_id.required' => 'El capacitado es requerido.',
-            'capacitado_id.exists'   => 'El capacitado seleccionado no es válido.',
             'curso_id.required'      => 'El curso es requerido.',
-            'curso_id.exists'        => 'El curso seleccionado no es válido.',
             'codigo_unico.unique'    => 'Este código de certificado ya existe.',
             'fecha_emision.required' => 'La fecha de emisión es requerida.',
             'intensidad_horaria.required' => 'La intensidad horaria es requerida.',

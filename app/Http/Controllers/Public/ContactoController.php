@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ContactoRequest;
+use App\Mail\NuevoMensajeContacto;
+use App\Models\ConfiguracionSitio;
 use App\Models\Mensaje;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * Formulario de contacto público. Valida los datos, verifica el
@@ -52,7 +55,7 @@ class ContactoController extends Controller
                 ->withErrors(['g-recaptcha-response' => 'La verificación del captcha falló. Inténtalo de nuevo.']);
         }
 
-        Mensaje::create([
+        $mensaje = Mensaje::create([
             'nombre'  => $datos['nombre'],
             'correo'  => $datos['correo'],
             'mensaje' => $datos['mensaje'],
@@ -60,8 +63,30 @@ class ContactoController extends Controller
             'ip'      => $request->ip(),
         ]);
 
+        $this->notificarAlInstituto($mensaje);
+
         return redirect()
             ->route('contacto')
             ->with('success', '¡Gracias! Tu mensaje fue enviado correctamente. Te responderemos pronto.');
+    }
+
+    /** Avisa al instituto por correo. Un fallo aquí no debe romper el envío del mensaje de contacto. */
+    private function notificarAlInstituto(Mensaje $mensaje): void
+    {
+        $correoInstituto = ConfiguracionSitio::obtener()->correo_contacto;
+
+        if (!$correoInstituto) {
+            return;
+        }
+
+        try {
+            Mail::to($correoInstituto)->send(new NuevoMensajeContacto($mensaje));
+        } catch (\Throwable $e) {
+            report($e);
+            Log::warning('No se pudo notificar al instituto sobre un mensaje de contacto nuevo', [
+                'mensaje_id' => $mensaje->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }

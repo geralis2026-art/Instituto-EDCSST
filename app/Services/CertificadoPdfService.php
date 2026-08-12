@@ -30,7 +30,11 @@ class CertificadoPdfService
         $rutaRelativa = ConfiguracionSitio::obtener()->plantilla_certificado;
 
         if ($rutaRelativa && Storage::disk('public')->exists($rutaRelativa)) {
-            return $this->generarConPlantilla($certificado, Storage::disk('public')->path($rutaRelativa));
+            $rutaReal = $this->rutaPlantillaValidada($rutaRelativa);
+
+            if ($rutaReal) {
+                return $this->generarConPlantilla($certificado, $rutaReal);
+            }
         }
 
         return Pdf::loadView('pdf.certificado', compact('certificado'))
@@ -56,6 +60,29 @@ class CertificadoPdfService
         }
 
         return $ruta;
+    }
+
+    /**
+     * Resuelve la ruta real de la plantilla y confirma que sigue dentro del
+     * directorio permitido (storage/app/public). `plantilla_certificado` se
+     * guarda hoy siempre con un valor fijo desde ConfiguracionController, así
+     * que esto es una defensa adicional por si esa columna llegara a
+     * escribirse alguna vez desde otro lugar. Devuelve null (y registra el
+     * intento) si la ruta no es válida, para que el llamador use el
+     * respaldo dompdf en vez de pasarle una ruta no confiable a FPDI.
+     */
+    private function rutaPlantillaValidada(string $rutaRelativa): ?string
+    {
+        $rutaReal      = realpath(Storage::disk('public')->path($rutaRelativa));
+        $directorioBase = realpath(storage_path('app/public'));
+
+        if ($rutaReal === false || $directorioBase === false || !str_starts_with($rutaReal, $directorioBase)) {
+            report(new \RuntimeException("Ruta de plantilla de certificado inválida o fuera del directorio permitido: {$rutaRelativa}"));
+
+            return null;
+        }
+
+        return $rutaReal;
     }
 
     /** Usa la plantilla PDF institucional como fondo y escribe los datos encima. */

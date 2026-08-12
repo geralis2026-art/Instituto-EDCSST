@@ -4,7 +4,7 @@
 @section('descripcion', 'Instituto EDCSST - Capacitación y certificación profesional en seguridad y salud en el trabajo.')
 
 @push('preload')
-<link rel="preload" as="image" href="{{ asset('images/capacitacion-grupal-docencia.jpg') }}" fetchpriority="high">
+<link rel="preload" as="image" href="{{ asset('img/capacitacion-grupal-docencia.jpg') }}" fetchpriority="high">
 @endpush
 
 @push('styles')
@@ -25,7 +25,7 @@
 
     {{-- Imagen de fondo completa --}}
     <div class="absolute inset-0">
-        <img src="{{ asset('images/capacitacion-grupal-docencia.jpg') }}"
+        <img src="{{ asset('img/capacitacion-grupal-docencia.jpg') }}"
             alt="Capacitación grupal EDCSST"
             class="w-full h-full object-cover"
             style="object-position: 35% 35%;"

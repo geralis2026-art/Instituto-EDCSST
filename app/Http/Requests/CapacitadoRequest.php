@@ -6,12 +6,12 @@ use App\Models\Capacitado;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-/** Validación para crear/editar capacitados. Solo admin (ver authorize()). */
+/** Validación para crear/editar capacitados. Admin o instructor (ver authorize()). */
 class CapacitadoRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        return auth()->user()?->isGestor() ?? false;
     }
 
     protected function prepareForValidation(): void

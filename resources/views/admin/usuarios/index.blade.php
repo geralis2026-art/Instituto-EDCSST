@@ -21,6 +21,7 @@
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rol</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
                 </tr>
@@ -36,6 +37,13 @@
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-600">{{ $usuario->email }}</td>
                     <td class="px-6 py-4">
+                        @if($usuario->isAdmin())
+                            <span class="px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">Administrador</span>
+                        @else
+                            <span class="px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-800 rounded-full">Capacitador</span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4">
                         @if($usuario->activo)
                             <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">Activo</span>
                         @else
@@ -43,6 +51,9 @@
                         @endif
                     </td>
                     <td class="px-6 py-4 text-sm space-x-2">
+                        <a href="{{ route('admin.usuarios.edit', $usuario) }}" class="px-3 py-1 text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 rounded transition">
+                            Editar
+                        </a>
                         @if($usuario->id !== auth()->id())
                             <form method="POST" action="{{ route('admin.usuarios.toggle-activo', $usuario) }}" class="inline">
                                 @csrf @method('PATCH')

@@ -4,9 +4,11 @@ namespace App\Services;
 
 use App\Models\Capacitado;
 use App\Models\Curso;
+use App\Models\Scopes\PropietarioScope;
 use App\Models\SolicitudCertificado;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -97,16 +99,33 @@ class ImportacionCapacitadosService
 
                 $datos = $fila['datos'];
 
-                $capacitado = Capacitado::updateOrCreate(
-                    ['documento' => $datos['documento']],
-                    array_filter([
-                        'nombre_completo' => $datos['nombre_completo'],
-                        'tipo_documento'  => $datos['tipo_documento'] ?: 'CC',
-                        'correo'          => $datos['correo'] ?: null,
-                        'telefono'        => $datos['telefono'] ?: null,
-                        'rh'              => $datos['rh'] ?: null,
-                    ], fn ($v) => $v !== null)
-                );
+                $atributos = array_filter([
+                    'nombre_completo' => $datos['nombre_completo'],
+                    'tipo_documento'  => $datos['tipo_documento'] ?: 'CC',
+                    'correo'          => $datos['correo'] ?: null,
+                    'telefono'        => $datos['telefono'] ?: null,
+                    'rh'              => $datos['rh'] ?: null,
+                ], fn ($v) => $v !== null);
+
+                // Búsqueda sin scope de propietario: el documento es único
+                // globalmente, así que hay que encontrar al capacitado sin
+                // importar a qué instructor pertenece (si no, updateOrCreate
+                // intentaría crear un duplicado y violaría la unicidad).
+                // Si ya existe, se actualiza sin tocar su dueño original;
+                // si es nuevo, se asigna al usuario que confirma la importación.
+                $capacitado = Capacitado::withoutGlobalScope(PropietarioScope::class)
+                    ->where('documento', $datos['documento'])
+                    ->first();
+
+                if ($capacitado) {
+                    $capacitado->fill($atributos)->save();
+                } else {
+                    $capacitado = Capacitado::create([
+                        'documento' => $datos['documento'],
+                        'user_id'   => Auth::id(),
+                        ...$atributos,
+                    ]);
+                }
 
                 $contadores[$fila['accion'] === 'crear' ? 'creados' : 'actualizados']++;
 
@@ -274,7 +293,14 @@ class ImportacionCapacitadosService
         $accion = 'crear';
 
         if ($datos['documento'] !== '' && empty($errores)) {
-            $accion = Capacitado::porDocumento($datos['documento']) ? 'actualizar' : 'crear';
+            // Sin scope de propietario: el documento es único globalmente, y
+            // confirmar() también busca sin scope (para no violar esa unicidad).
+            // Si aquí se dejara scoped, un documento de OTRO instructor parecería
+            // "crear" en la previsualización, pero al confirmar terminaría
+            // actualizando ese registro ajeno sin que el usuario lo supiera.
+            $accion = Capacitado::withoutGlobalScope(PropietarioScope::class)
+                ->where('documento', $datos['documento'])
+                ->exists() ? 'actualizar' : 'crear';
         }
 
         return [

@@ -22,7 +22,7 @@
     </div>
 
     {{-- Tarjetas de estadísticas --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 {{ auth()->user()->isAdmin() ? 'lg:grid-cols-4' : 'lg:grid-cols-3' }} gap-4">
         <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 border-t-4 border-t-amber-500 card-hover reveal delay-1">
             <p class="text-xs text-gray-500 uppercase tracking-wider">Capacitados</p>
             <p class="text-3xl font-bold text-gray-900 mt-1 counter" data-target="{{ $totalCapacitados }}" data-format="number">{{ number_format($totalCapacitados) }}</p>
@@ -38,11 +38,13 @@
             <p class="text-3xl font-bold text-gray-900 mt-1 counter" data-target="{{ $horasCapacitadasTotal }}" data-format="number">{{ number_format($horasCapacitadasTotal) }}</p>
             <p class="text-xs text-gray-400 mt-1">acumuladas</p>
         </div>
+        @if(auth()->user()->isAdmin())
         <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100 border-t-4 border-t-blue-600 card-hover reveal delay-4">
             <p class="text-xs text-gray-500 uppercase tracking-wider">Mensajes nuevos</p>
             <p class="text-3xl font-bold mt-1 {{ $mensajesNuevos > 0 ? 'text-red-600' : 'text-gray-900' }} counter" data-target="{{ $mensajesNuevos }}">{{ $mensajesNuevos }}</p>
             <a href="{{ route('admin.mensajes.index') }}" class="text-xs text-amber-600 hover:underline mt-1 inline-block">Ver bandeja</a>
         </div>
+        @endif
     </div>
 
     {{-- Gráfica + Top capacitados --}}

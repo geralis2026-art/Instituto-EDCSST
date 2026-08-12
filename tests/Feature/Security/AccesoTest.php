@@ -63,6 +63,14 @@ class AccesoTest extends TestCase
         $this->actingAs($cap)->get('/admin/certificados/create')->assertStatus(200);
     }
 
+    public function test_capacitador_puede_ver_cursos_en_solo_lectura(): void
+    {
+        // Necesita ver los cursos para llegar a "Matrículas" y validar quién
+        // completó el curso, pero no puede crear/editar/eliminar (ver abajo).
+        $cap = User::factory()->capacitador()->create();
+        $this->actingAs($cap)->get('/admin/cursos')->assertStatus(200);
+    }
+
     // ── Capacitador: rutas prohibidas ─────────────────────────────────────────
 
     public function test_capacitador_no_puede_crear_capacitado(): void
@@ -71,10 +79,10 @@ class AccesoTest extends TestCase
         $this->actingAs($cap)->get('/admin/capacitados/create')->assertStatus(403);
     }
 
-    public function test_capacitador_no_puede_acceder_a_cursos(): void
+    public function test_capacitador_no_puede_crear_cursos(): void
     {
         $cap = User::factory()->capacitador()->create();
-        $this->actingAs($cap)->get('/admin/cursos')->assertStatus(403);
+        $this->actingAs($cap)->get('/admin/cursos/create')->assertStatus(403);
     }
 
     public function test_capacitador_no_puede_acceder_a_categorias(): void

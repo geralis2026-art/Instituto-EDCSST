@@ -69,6 +69,16 @@ return [
             'report' => false,
         ],
 
+        // Disco para material del aula virtual (documentos, talleres, presentaciones,
+        // videos subidos). Privado, servido vía controlador con verificación de matrícula.
+        // En producción: MATERIALES_DISK_ROOT=/home/u123456789/edcsst_materiales
+        'materiales' => [
+            'driver' => 'local',
+            'root' => env('MATERIALES_DISK_ROOT', storage_path('app/private/materiales')),
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

@@ -36,6 +36,11 @@ class UserFactory extends Factory
         return $this->state(['rol' => User::ROL_CAPACITADOR, 'activo' => true]);
     }
 
+    public function instructor(): static
+    {
+        return $this->state(['rol' => User::ROL_INSTRUCTOR, 'activo' => true]);
+    }
+
     public function inactivo(): static
     {
         return $this->state(['activo' => false]);

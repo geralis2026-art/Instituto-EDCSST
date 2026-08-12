@@ -4,12 +4,12 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-/** Validación para subir el archivo Excel de importación masiva de capacitados. Solo admin. */
+/** Validación para subir el archivo Excel de importación masiva de capacitados. Admin o instructor. */
 class CapacitadoImportRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        return auth()->user()?->isGestor() ?? false;
     }
 
     public function rules(): array

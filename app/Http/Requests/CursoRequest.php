@@ -6,21 +6,22 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
-/** Validación para crear/editar cursos. Solo admin (ver authorize()). */
+/** Validación para crear/editar cursos. Admin o instructor (ver authorize()). */
 class CursoRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->user()?->isAdmin() ?? false;
+        return auth()->user()?->isGestor() ?? false;
     }
 
     /** Genera el slug desde el nombre y normaliza los booleanos antes de validar. */
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'slug'      => Str::slug((string) $this->input('nombre')),
-            'destacado' => $this->boolean('destacado'),
-            'activo'    => $this->boolean('activo'),
+            'slug'               => Str::slug((string) $this->input('nombre')),
+            'destacado'          => $this->boolean('destacado'),
+            'activo'             => $this->boolean('activo'),
+            'tiene_aula_virtual' => $this->boolean('tiene_aula_virtual'),
         ]);
     }
 
@@ -43,6 +44,7 @@ class CursoRequest extends FormRequest
             'imagen'             => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:3072'],
             'destacado'          => ['boolean'],
             'activo'             => ['boolean'],
+            'tiene_aula_virtual' => ['boolean'],
         ];
     }
 

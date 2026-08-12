@@ -12,7 +12,9 @@ class UploadsController extends Controller
      */
     public function serve(string $type, string $filename): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        if (!preg_match('/^[\w\-]+\.(jpg|jpeg|png|gif|webp|svg)$/i', $filename)) {
+        // Sin .svg: puede contener <script>/JS embebido y este controlador lo
+        // serviría inline, habilitando XSS si algún día se sube uno.
+        if (!preg_match('/^[\w\-]+\.(jpg|jpeg|png|gif|webp)$/i', $filename)) {
             abort(404);
         }
 

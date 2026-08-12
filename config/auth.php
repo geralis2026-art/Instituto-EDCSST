@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Capacitado;
 use App\Models\User;
 
 return [
@@ -42,6 +43,14 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        // Guard del aula virtual (capacitados). Login separado del panel
+        // admin (guard "web"), pero se autentica desde una única página
+        // de login que prueba ambos guards.
+        'capacitados' => [
+            'driver' => 'session',
+            'provider' => 'capacitados',
+        ],
     ],
 
     /*
@@ -71,6 +80,11 @@ return [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+
+        'capacitados' => [
+            'driver' => 'eloquent',
+            'model' => Capacitado::class,
+        ],
     ],
 
     /*
@@ -96,6 +110,13 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        'capacitados' => [
+            'provider' => 'capacitados',
+            'table' => 'password_reset_tokens_capacitados',
             'expire' => 60,
             'throttle' => 60,
         ],

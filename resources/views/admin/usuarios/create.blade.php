@@ -46,6 +46,7 @@
                 <select name="rol" required
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('rol') border-red-400 @enderror">
                     <option value="capacitador" @selected(old('rol') === 'capacitador')>Capacitador — solo subir certificados</option>
+                    <option value="instructor"  @selected(old('rol') === 'instructor')>Instructor — gestiona solo sus propios cursos, capacitados y certificados</option>
                     <option value="admin"       @selected(old('rol') === 'admin')>Administrador — acceso completo</option>
                 </select>
                 @error('rol') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror

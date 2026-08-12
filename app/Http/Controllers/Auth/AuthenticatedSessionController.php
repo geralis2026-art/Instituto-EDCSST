@@ -21,6 +21,10 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Handle an incoming authentication request.
+     *
+     * LoginRequest::authenticate() intenta el guard "web" (empleados) y
+     * luego "capacitados" (aula virtual); aquí solo hace falta ver cuál
+     * quedó autenticado para redirigir al panel correspondiente.
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -28,15 +32,26 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if (Auth::guard('capacitados')->check()) {
+            $capacitado = Auth::guard('capacitados')->user();
+
+            if ($capacitado->debe_cambiar_password) {
+                return redirect()->route('aula.password.cambiar');
+            }
+
+            return redirect()->intended(route('aula.dashboard', absolute: false));
+        }
+
         return redirect()->intended(route('admin.dashboard', absolute: false));
     }
 
     /**
-     * Destroy an authenticated session.
+     * Destroy an authenticated session (cierra el guard que esté activo).
      */
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
+        Auth::guard('capacitados')->logout();
 
         $request->session()->invalidate();
 

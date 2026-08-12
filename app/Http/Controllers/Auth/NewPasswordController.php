@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Capacitado;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
@@ -27,6 +28,12 @@ class NewPasswordController extends Controller
     /**
      * Handle an incoming new password request.
      *
+     * Prueba primero el broker "users" (empleados); si el token/correo no
+     * corresponde a un empleado, prueba el broker "capacitados" (aula
+     * virtual). Al restablecer así (voluntariamente, vía "olvidé mi
+     * contraseña"), se limpia `debe_cambiar_password` porque ya eligieron
+     * su propia contraseña.
+     *
      * @throws ValidationException
      */
     public function store(Request $request): RedirectResponse
@@ -37,10 +44,20 @@ class NewPasswordController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
-        // will update the password on an actual user model and persist it to the
-        // database. Otherwise we will parse the error and return the response.
-        $status = Password::reset(
+        // Si el correo pertenece a un capacitado, su nueva contraseña no puede
+        // ser su número de documento (misma regla que el cambio obligatorio
+        // del primer ingreso, ver PasswordCambioController). Se valida antes
+        // de intentar el broker "users" porque un mismo correo nunca debería
+        // coincidir con ambos, pero así queda garantizado en cualquier caso.
+        $capacitadoPorCorreo = Capacitado::where('correo', $request->input('email'))->first();
+
+        if ($capacitadoPorCorreo && $request->input('password') === $capacitadoPorCorreo->documento) {
+            throw ValidationException::withMessages([
+                'password' => 'La contraseña no puede ser tu número de documento.',
+            ]);
+        }
+
+        $status = Password::broker('users')->reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user) use ($request) {
                 $user->forceFill([
@@ -51,6 +68,26 @@ class NewPasswordController extends Controller
                 event(new PasswordReset($user));
             }
         );
+
+        if ($status !== Password::PASSWORD_RESET) {
+            $status = Password::broker('capacitados')->reset(
+                [
+                    'correo' => $request->input('email'),
+                    'password' => $request->input('password'),
+                    'password_confirmation' => $request->input('password_confirmation'),
+                    'token' => $request->input('token'),
+                ],
+                function (Capacitado $capacitado) use ($request) {
+                    $capacitado->forceFill([
+                        'password' => Hash::make($request->password),
+                        'remember_token' => Str::random(60),
+                        'debe_cambiar_password' => false,
+                    ])->save();
+
+                    event(new PasswordReset($capacitado));
+                }
+            );
+        }
 
         // If the password was successfully reset, we will redirect the user back to
         // the application's home authenticated view. If there is an error we can
