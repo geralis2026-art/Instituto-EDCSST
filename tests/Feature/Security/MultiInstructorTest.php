@@ -35,19 +35,18 @@ class MultiInstructorTest extends TestCase
         $response->assertDontSee($deEdna->nombre_completo);
     }
 
-    public function test_instructor_solo_ve_sus_propios_cursos_en_el_listado(): void
+    public function test_instructor_no_tiene_acceso_a_la_seccion_de_cursos(): void
     {
         $edna     = User::factory()->admin()->create();
         $mauricio = User::factory()->instructor()->create();
 
-        $deEdna     = Curso::factory()->create(['user_id' => $edna->id]);
+        Curso::factory()->create(['user_id' => $edna->id]);
         $deMauricio = Curso::factory()->create(['user_id' => $mauricio->id]);
 
-        $response = $this->actingAs($mauricio)->get('/admin/cursos');
-
-        $response->assertStatus(200);
-        $response->assertSee($deMauricio->nombre);
-        $response->assertDontSee($deEdna->nombre);
+        // Solo Edna (admin) administra cursos: el instructor no puede ni listar los suyos.
+        $this->actingAs($mauricio)->get('/admin/cursos')->assertStatus(403);
+        $this->actingAs($mauricio)->get("/admin/cursos/{$deMauricio->id}")->assertStatus(403);
+        $this->actingAs($mauricio)->get('/admin/cursos/create')->assertStatus(403);
     }
 
     public function test_instructor_solo_ve_sus_propios_certificados_en_el_listado(): void

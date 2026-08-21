@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'activo' => \App\Http\Middleware\EnsureUserIsActivo::class,
             'admin'  => \App\Http\Middleware\EnsureUserIsAdmin::class,
             'gestor' => \App\Http\Middleware\EnsureUserIsGestor::class,
+            'cursos.ver' => \App\Http\Middleware\EnsureUserCanViewCursos::class,
             'capacitado.cambiar_password' => \App\Http\Middleware\EnsureCapacitadoNoDebeCambiarPassword::class,
         ]);
     })

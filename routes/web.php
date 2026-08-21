@@ -96,8 +96,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'throttle:
     Route::get('certificados/create',    [CertificadoController::class, 'create'])->name('certificados.create');
     Route::get('certificados/{certificado}', [CertificadoController::class, 'show'])->name('certificados.show')->whereNumber('certificado');
     Route::post('certificados',          [CertificadoController::class, 'store'])->name('certificados.store')->middleware('throttle:admin-escritura');
+});
 
-    // Cursos — solo lectura (el capacitador necesita ver el curso para validar avance/matrículas)
+// ── Cursos — solo lectura para admin y capacitador (el instructor no tiene acceso a cursos) ──
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'cursos.ver', 'throttle:admin-general'])->group(function () {
+
     // whereNumber es obligatorio: sin él, "cursos/create" (ruta solo-admin, registrada más abajo)
     // sería interceptada por este {curso} wildcard y devolvería 404 en vez de 403.
     Route::get('cursos',           [CursoController::class, 'index'])->name('cursos.index');
@@ -132,7 +135,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'gestor', 
     Route::get('certificados-masivos',  [CertificadoController::class, 'masivosForm'])->name('certificados.masivos');
     Route::post('certificados-masivos', [CertificadoController::class, 'generarMasivos'])->name('certificados.generar-masivos')->middleware('throttle:admin-escritura');
 
-    // Cursos — escritura (index/show son de lectura, ver grupo compartido arriba)
+});
+
+// ── Rutas exclusivas para administradores (Edna) ─────────────────────────────
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'admin', 'throttle:admin-general'])->group(function () {
+
+    // Cursos — escritura (index/show son de lectura, ver grupo admin+capacitador arriba)
     Route::resource('cursos', CursoController::class)->except(['index', 'show']);
 
     // Aula virtual: módulos, materiales, quiz y matrículas de un curso
@@ -155,14 +163,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'gestor', 
         Route::put('quiz/preguntas/{pregunta}',      [QuizPreguntaController::class, 'update'])->name('quiz.preguntas.update')->middleware('throttle:admin-escritura');
         Route::delete('quiz/preguntas/{pregunta}',   [QuizPreguntaController::class, 'destroy'])->name('quiz.preguntas.destroy')->middleware('throttle:admin-escritura');
 
-        // 'matriculas.index' (lectura) está en el grupo compartido arriba, no aquí.
+        // 'matriculas.index' (lectura) está en el grupo admin+capacitador arriba, no aquí.
         Route::post('matriculas',             [MatriculaController::class, 'store'])->name('matriculas.store')->middleware('throttle:admin-escritura');
         Route::delete('matriculas/{matricula}', [MatriculaController::class, 'destroy'])->name('matriculas.destroy')->middleware('throttle:admin-escritura');
     });
-});
-
-// ── Rutas exclusivas para administradores (Edna) ─────────────────────────────
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'admin', 'throttle:admin-general'])->group(function () {
 
     // Categorías de cursos
     Route::resource('categorias', CategoriaController::class);
