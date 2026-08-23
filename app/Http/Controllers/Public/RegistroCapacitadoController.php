@@ -18,6 +18,14 @@ class RegistroCapacitadoController extends Controller
         return Cache::has("reg:{$token}");
     }
 
+    /** Id del empleado que generó el link, para asignarlo como dueño de capacitados nuevos. */
+    private function empleadoDelToken(string $token): ?int
+    {
+        $valor = Cache::get("reg:{$token}");
+
+        return is_int($valor) ? $valor : null;
+    }
+
     public function form(string $token)
     {
         if (!$this->tokenValido($token)) {
@@ -81,10 +89,13 @@ class RegistroCapacitadoController extends Controller
         ];
 
         if ($capacitado) {
+            // No se toca el dueño original: puede ser distinto del empleado
+            // que generó este link.
             $capacitado->fill($atributos)->save();
         } else {
             $capacitado = Capacitado::create([
                 'documento' => trim($datos['documento']),
+                'user_id'   => $this->empleadoDelToken($token),
                 ...$atributos,
             ]);
         }

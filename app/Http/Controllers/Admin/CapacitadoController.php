@@ -243,12 +243,14 @@ class CapacitadoController extends Controller
 
     /**
      * Genera un link temporal de 20 minutos para que los capacitados se auto-registren.
-     * El token se guarda en caché; el link se comparte por WhatsApp o correo.
+     * El token se guarda en caché junto al id del empleado que lo generó, para que
+     * los capacitados nuevos que se registren por ese link queden asignados a él
+     * (si no, quedarían con user_id nulo e invisibles para un instructor).
      */
-    public function generarLinkRegistro()
+    public function generarLinkRegistro(Request $request)
     {
         $token = Str::random(40);
-        Cache::put("reg:{$token}", true, now()->addMinutes(20));
+        Cache::put("reg:{$token}", $request->user()->id, now()->addMinutes(20));
 
         $url    = route('registro.form', ['token' => $token]);
         $expira = now()->addMinutes(20)->format('H:i');
