@@ -15,7 +15,7 @@ class CapacitadoImportConfirmarRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'token' => ['required', 'string', 'size:40'],
+            'token' => ['required', 'uuid'],
             'filas' => ['nullable', 'array'],
         ];
     }
@@ -24,7 +24,7 @@ class CapacitadoImportConfirmarRequest extends FormRequest
     {
         return [
             'token.required' => 'El token de sesión es requerido.',
-            'token.size'     => 'El token de sesión no es válido.',
+            'token.uuid'     => 'El token de sesión no es válido.',
         ];
     }
 }
