@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Empleado del instituto con acceso al panel administrativo.
@@ -94,5 +95,19 @@ class User extends Authenticatable
     public function isGestor(): bool
     {
         return $this->isAdmin() || $this->isInstructor();
+    }
+
+    /**
+     * Invalida el caché de estadísticas del dashboard (DashboardController)
+     * de todos los empleados con acceso al panel. Se llama al crear, editar
+     * o eliminar capacitados/certificados, cuyos totales dependen de estos
+     * datos; sin esto, el dashboard podía mostrar contadores desactualizados
+     * hasta por 60 s tras un cambio.
+     */
+    public static function limpiarCacheDashboard(): void
+    {
+        static::query()->pluck('id')->each(
+            fn ($id) => Cache::forget("dashboard_stats:{$id}")
+        );
     }
 }

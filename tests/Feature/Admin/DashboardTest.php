@@ -62,4 +62,24 @@ class DashboardTest extends TestCase
         $response->assertStatus(200);
         $this->assertSame(2, $response->viewData('totalCapacitados'));
     }
+
+    /**
+     * Reproduce el bug reportado: el contador de "Capacitados" en el
+     * dashboard quedaba desactualizado hasta 60 s después de borrar uno,
+     * porque destroy() no invalidaba el caché de dashboard_stats.
+     */
+    public function test_el_contador_de_capacitados_se_actualiza_al_eliminar_uno(): void
+    {
+        $mauricio  = User::factory()->instructor()->create();
+        $capacitado = \App\Models\Capacitado::factory()->create(['user_id' => $mauricio->id]);
+
+        // Carga el dashboard primero para que quede cacheado con el conteo viejo.
+        $antes = $this->actingAs($mauricio)->get('/admin');
+        $this->assertSame(1, $antes->viewData('totalCapacitados'));
+
+        $this->actingAs($mauricio)->delete("/admin/capacitados/{$capacitado->id}");
+
+        $despues = $this->actingAs($mauricio)->get('/admin');
+        $this->assertSame(0, $despues->viewData('totalCapacitados'));
+    }
 }

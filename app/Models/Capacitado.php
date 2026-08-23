@@ -81,6 +81,9 @@ class Capacitado extends Authenticatable implements CanResetPasswordContract
     protected static function booted(): void
     {
         static::addGlobalScope(new PropietarioScope);
+
+        static::saved(fn () => User::limpiarCacheDashboard());
+        static::deleted(fn () => User::limpiarCacheDashboard());
     }
 
     /** Laravel usa "email" por defecto para el reset de contraseña; aquí el campo es "correo". */

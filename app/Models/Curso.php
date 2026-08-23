@@ -52,8 +52,14 @@ class Curso extends Model
         // Sin PropietarioScope: los cursos son un catálogo centralizado que
         // solo admin administra (ver EnsureUserCanViewCursos), así que todos
         // los empleados deben poder verlos y usarlos al emitir certificados.
-        static::saved(fn () => Cache::forget('home_cursos_destacados'));
-        static::deleted(fn () => Cache::forget('home_cursos_destacados'));
+        static::saved(function () {
+            Cache::forget('home_cursos_destacados');
+            User::limpiarCacheDashboard();
+        });
+        static::deleted(function () {
+            Cache::forget('home_cursos_destacados');
+            User::limpiarCacheDashboard();
+        });
 
         static::saving(function ($curso) {
             if (empty($curso->slug)) {

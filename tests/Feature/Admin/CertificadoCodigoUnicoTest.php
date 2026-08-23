@@ -96,4 +96,23 @@ class CertificadoCodigoUnicoTest extends TestCase
 
         $certificado->guardarConCodigoUnico(3);
     }
+
+    /**
+     * La numeración es lineal a propósito: al eliminar un certificado su
+     * número NO se reutiliza, para no mezclar el orden de emisión con
+     * códigos "fuera de secuencia".
+     */
+    public function test_eliminar_un_certificado_no_reutiliza_su_codigo(): void
+    {
+        $anio = now()->year;
+
+        $c1 = Certificado::factory()->create(['codigo_unico' => "EDCSST-{$anio}-00001"]);
+        Certificado::factory()->create(['codigo_unico' => "EDCSST-{$anio}-00002"]);
+        Certificado::factory()->create(['codigo_unico' => "EDCSST-{$anio}-00003"]);
+
+        $c1->delete();
+
+        // Aunque el 00001 quedó libre, el siguiente sigue siendo 00004.
+        $this->assertSame("EDCSST-{$anio}-00004", Certificado::generarCodigoUnico());
+    }
 }

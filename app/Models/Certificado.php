@@ -81,6 +81,9 @@ class Certificado extends Model
      *
      * El número se calcula a partir del más alto ya usado en el año (incluyendo
      * códigos cargados manualmente), para evitar choques con códigos atrasados.
+     * A propósito no reutiliza números de certificados eliminados: la
+     * numeración debe quedar lineal, sin huecos que luego se rellenen con
+     * códigos "fuera de orden" y generen confusión.
      */
     public static function generarCodigoUnico(): string
     {
@@ -190,10 +193,12 @@ class Certificado extends Model
 
         static::saved(function ($certificado) {
             $certificado->capacitado?->recalcularHorasCapacitadas();
+            User::limpiarCacheDashboard();
         });
 
         static::deleted(function ($certificado) {
             $certificado->capacitado?->recalcularHorasCapacitadas();
+            User::limpiarCacheDashboard();
         });
     }
 }
