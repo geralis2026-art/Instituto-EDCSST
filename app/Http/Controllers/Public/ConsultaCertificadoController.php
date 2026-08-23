@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ConsultaBuscarRequest;
 use App\Models\Capacitado;
 use App\Models\Certificado;
+use App\Models\Scopes\PropietarioScope;
 use App\Services\CertificadoPdfService;
 use App\Services\MergePdfService;
 use Illuminate\Http\Request;
@@ -44,6 +45,7 @@ class ConsultaCertificadoController extends Controller
 
             if ($capacitado) {
                 $certificados = $capacitado->certificados()
+                    ->withoutGlobalScope(PropietarioScope::class)
                     ->with('curso.categoria')
                     ->where('activo', true)
                     ->orderBy('fecha_emision', 'desc')
@@ -57,7 +59,7 @@ class ConsultaCertificadoController extends Controller
             $certificado = Certificado::porCodigo($valor);
 
             if ($certificado) {
-                $capacitado   = $certificado->capacitado;
+                $capacitado   = Capacitado::withoutGlobalScope(PropietarioScope::class)->find($certificado->capacitado_id);
                 $certificados = collect([$certificado->load('curso.categoria')]);
             } else {
                 $mensajeError = 'No encontramos certificados con esos datos. Verifica la información o contacta al instituto.';
@@ -90,8 +92,17 @@ class ConsultaCertificadoController extends Controller
      * certificado esté activo y vigente, y valida la ruta del
      * archivo para evitar path traversal.
      */
-    public function descargar(Certificado $certificado, CertificadoPdfService $pdfService)
+    public function descargar(int $certificado, CertificadoPdfService $pdfService)
     {
+        // Sin scope de propietario: acceso vía URL firmada pública, debe
+        // funcionar igual sin importar qué empleado tenga sesión activa
+        // en el mismo navegador (ver bypass en porDocumento/porCodigo).
+        $certificado = Certificado::withoutGlobalScope(PropietarioScope::class)->find($certificado);
+
+        if (!$certificado) {
+            abort(404, 'Este certificado no está disponible para descarga.');
+        }
+
         if (!$certificado->activo || !$certificado->archivo_pdf) {
             abort(404, 'Este certificado no está disponible para descarga.');
         }
@@ -123,9 +134,13 @@ class ConsultaCertificadoController extends Controller
             $certificado->saveQuietly();
         }
 
+        $nombreCapacitado = Capacitado::withoutGlobalScope(PropietarioScope::class)
+            ->find($certificado->capacitado_id)
+            ?->nombre_completo;
+
         $nombreArchivo = sprintf(
             'Certificado_%s_%s.pdf',
-            Str::slug($certificado->capacitado->nombre_completo, '_'),
+            Str::slug($nombreCapacitado ?? '', '_'),
             $certificado->codigo_unico
         );
 
@@ -140,9 +155,16 @@ class ConsultaCertificadoController extends Controller
      * Descarga, en un solo PDF, todos los certificados activos y vigentes
      * del capacitado (acceso solo vía URL firmada temporal generada en buscar()).
      */
-    public function descargarTodos(Capacitado $capacitado, MergePdfService $merge, CertificadoPdfService $pdfService)
+    public function descargarTodos(int $capacitado, MergePdfService $merge, CertificadoPdfService $pdfService)
     {
+        $capacitado = Capacitado::withoutGlobalScope(PropietarioScope::class)->find($capacitado);
+
+        if (!$capacitado) {
+            abort(404, 'No hay certificados disponibles para descargar.');
+        }
+
         $certificados = $capacitado->certificados()
+            ->withoutGlobalScope(PropietarioScope::class)
             ->where('activo', true)
             ->get()
             ->filter(fn ($c) => !$c->isVencido() && $c->archivo_pdf)
@@ -175,8 +197,14 @@ class ConsultaCertificadoController extends Controller
      * en el cuerpo del POST y se filtran para que solo puedan ser certificados
      * de ese mismo capacitado, activos y vigentes.
      */
-    public function descargarSeleccionados(Request $request, Capacitado $capacitado, MergePdfService $merge, CertificadoPdfService $pdfService)
+    public function descargarSeleccionados(Request $request, int $capacitado, MergePdfService $merge, CertificadoPdfService $pdfService)
     {
+        $capacitado = Capacitado::withoutGlobalScope(PropietarioScope::class)->find($capacitado);
+
+        if (!$capacitado) {
+            abort(404, 'No hay certificados disponibles para descargar.');
+        }
+
         $ids = collect($request->input('certificado_ids', []))
             ->filter(fn ($id) => is_numeric($id))
             ->map(fn ($id) => (int) $id)
@@ -187,6 +215,7 @@ class ConsultaCertificadoController extends Controller
         }
 
         $certificados = $capacitado->certificados()
+            ->withoutGlobalScope(PropietarioScope::class)
             ->whereIn('id', $ids)
             ->where('activo', true)
             ->get()

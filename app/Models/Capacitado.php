@@ -149,8 +149,17 @@ class Capacitado extends Authenticatable implements CanResetPasswordContract
     /**
      * Buscar capacitado por número de documento.
      */
+    /**
+     * Sin scope de propietario: usado por la consulta pública de
+     * certificados, que debe encontrar al capacitado sin importar qué
+     * empleado tenga sesión activa (guest o instructor/admin logueados en
+     * el mismo navegador no deben afectar el resultado de una búsqueda
+     * pública). El documento es único globalmente.
+     */
     public static function porDocumento(string $documento): ?self
     {
-        return static::where('documento', trim($documento))->first();
+        return static::withoutGlobalScope(PropietarioScope::class)
+            ->where('documento', trim($documento))
+            ->first();
     }
 }

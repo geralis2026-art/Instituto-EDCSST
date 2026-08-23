@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\VerificacionRequest;
 use App\Models\Certificado;
+use App\Models\Scopes\PropietarioScope;
 
 /**
  * Verificación pública de autenticidad de certificados por código
@@ -23,7 +24,13 @@ class VerificacionController extends Controller
     {
         $codigo = strtoupper($request->validated()['codigo']);
 
-        $certificado = Certificado::with(['capacitado', 'curso.categoria'])
+        // Sin scope de propietario: verificación pública, debe funcionar
+        // igual sin importar qué empleado tenga sesión activa en el navegador.
+        $certificado = Certificado::withoutGlobalScope(PropietarioScope::class)
+            ->with([
+                'capacitado' => fn ($q) => $q->withoutGlobalScope(PropietarioScope::class),
+                'curso.categoria',
+            ])
             ->where('codigo_unico', $codigo)
             ->where('activo', true)
             ->first();

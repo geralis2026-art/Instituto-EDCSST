@@ -131,9 +131,16 @@ class Certificado extends Model
     }
 
     /** Busca un certificado activo por su código único. */
+    /**
+     * Sin scope de propietario: usado por la verificación/consulta pública de
+     * certificados, que debe encontrar el certificado sin importar qué
+     * empleado tenga sesión activa en el mismo navegador. El código único
+     * es global.
+     */
     public static function porCodigo(string $codigo): ?self
     {
-        return static::where('codigo_unico', trim(strtoupper($codigo)))
+        return static::withoutGlobalScope(PropietarioScope::class)
+            ->where('codigo_unico', trim(strtoupper($codigo)))
             ->where('activo', true)
             ->first();
     }

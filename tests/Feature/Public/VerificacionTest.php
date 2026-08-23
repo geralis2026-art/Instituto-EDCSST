@@ -3,6 +3,7 @@
 namespace Tests\Feature\Public;
 
 use App\Models\Certificado;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -68,5 +69,28 @@ class VerificacionTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewHas('vencido', true);
+    }
+
+    /**
+     * Certificado y Capacitado tienen PropietarioScope. Si un instructor tiene
+     * sesión activa en el mismo navegador donde un tercero verifica un
+     * certificado ajeno, la verificación pública no debe verse afectada por
+     * esa sesión (bug real: devolvía "no encontrado" para certificados
+     * válidos de otro dueño).
+     */
+    public function test_verificar_encuentra_certificado_de_otro_dueno_con_instructor_logueado(): void
+    {
+        $edna     = User::factory()->admin()->create();
+        $mauricio = User::factory()->instructor()->create();
+
+        Certificado::factory()->create([
+            'codigo_unico' => 'EDCSST-2025-00050',
+            'user_id'      => $edna->id,
+        ]);
+
+        $response = $this->actingAs($mauricio)->post('/verificar', ['codigo' => 'EDCSST-2025-00050']);
+
+        $response->assertStatus(200);
+        $response->assertViewHas('certificado', fn ($c) => $c !== null && $c->capacitado !== null);
     }
 }
