@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Capacitado;
 use App\Models\Curso;
+use App\Models\Scopes\PropietarioScope;
 use Illuminate\Validation\Rule;
 use App\Models\SolicitudCertificado;
 use Illuminate\Http\Request;
@@ -61,16 +62,32 @@ class RegistroCapacitadoController extends Controller
             'modalidades.*.in'         => 'La modalidad debe ser presencial o virtual.',
         ]);
 
-        $capacitado = Capacitado::updateOrCreate(
-            ['documento' => trim($datos['documento'])],
-            [
-                'nombre_completo' => $datos['nombre_completo'],
-                'tipo_documento'  => $datos['tipo_documento'] ?? 'CC',
-                'correo'          => $datos['correo'] ?? null,
-                'telefono'        => $datos['telefono'] ?? null,
-                'rh'              => $datos['rh'] ?? null,
-            ]
-        );
+        // Búsqueda sin scope de propietario: el documento es único globalmente
+        // (constraint UNIQUE en BD). Si un empleado con rol instructor tiene
+        // sesión activa en el mismo navegador donde se abre este link público,
+        // updateOrCreate() con scope no encontraría un capacitado ajeno ya
+        // existente e intentaría insertarlo de nuevo, violando la unicidad
+        // (mismo patrón que ImportacionCapacitadosService).
+        $capacitado = Capacitado::withoutGlobalScope(PropietarioScope::class)
+            ->where('documento', trim($datos['documento']))
+            ->first();
+
+        $atributos = [
+            'nombre_completo' => $datos['nombre_completo'],
+            'tipo_documento'  => $datos['tipo_documento'] ?? 'CC',
+            'correo'          => $datos['correo'] ?? null,
+            'telefono'        => $datos['telefono'] ?? null,
+            'rh'              => $datos['rh'] ?? null,
+        ];
+
+        if ($capacitado) {
+            $capacitado->fill($atributos)->save();
+        } else {
+            $capacitado = Capacitado::create([
+                'documento' => trim($datos['documento']),
+                ...$atributos,
+            ]);
+        }
 
         $cursosActivos = Curso::activos()->whereIn('id', $datos['cursos'])->pluck('id');
 
