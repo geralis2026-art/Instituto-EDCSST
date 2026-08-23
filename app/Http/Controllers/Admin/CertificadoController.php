@@ -320,9 +320,6 @@ class CertificadoController extends Controller
         $validator = Validator::make(
             ['solicitudes' => $incluidas],
             [
-                // Sin exists:cursos,id: esa regla consulta la tabla por SQL e ignora
-                // PropietarioScope. Curso::find() sí pasa por Eloquent y respeta el
-                // scope, evitando que un instructor asigne el lote a un curso ajeno.
                 'solicitudes.*.curso_id'          => ['required', function ($attribute, $value, $fail) {
                     if (! Curso::find($value)) {
                         $fail('Uno de los cursos seleccionados no es válido.');

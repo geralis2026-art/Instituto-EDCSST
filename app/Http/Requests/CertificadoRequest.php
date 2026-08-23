@@ -37,11 +37,13 @@ class CertificadoRequest extends FormRequest
         $certificadoId = $this->route('certificado')?->id;
 
         return [
-            // Sin exists:capacitados,id / exists:cursos,id: esas reglas consultan
-            // la tabla directamente por SQL e ignoran PropietarioScope, así que un
-            // instructor podría emitir un certificado sobre datos de otro instructor
-            // con solo enviar el ID por fuera del formulario. find() sí pasa por
-            // Eloquent y respeta el scope (admin ve todos, instructor solo lo suyo).
+            // Sin exists:capacitados,id: esa regla consulta la tabla directamente por
+            // SQL e ignora PropietarioScope, así que un instructor podría emitir un
+            // certificado sobre un capacitado de otro instructor con solo enviar el
+            // ID por fuera del formulario. find() sí pasa por Eloquent y respeta el
+            // scope (admin ve todos, instructor solo lo suyo). Los cursos no tienen
+            // scope de propietario: son un catálogo centralizado que solo admin
+            // administra, visible para todos al emitir certificados.
             'capacitado_id'      => ['required', function ($attribute, $value, $fail) {
                 if (! Capacitado::find($value)) {
                     $fail('El capacitado seleccionado no es válido.');

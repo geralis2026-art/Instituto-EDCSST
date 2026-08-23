@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Models\Scopes\PropietarioScope;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -50,8 +49,9 @@ class Curso extends Model
     /** Genera el slug automáticamente al guardar e invalida el caché del home. */
     protected static function booted(): void
     {
-        static::addGlobalScope(new PropietarioScope);
-
+        // Sin PropietarioScope: los cursos son un catálogo centralizado que
+        // solo admin administra (ver EnsureUserCanViewCursos), así que todos
+        // los empleados deben poder verlos y usarlos al emitir certificados.
         static::saved(fn () => Cache::forget('home_cursos_destacados'));
         static::deleted(fn () => Cache::forget('home_cursos_destacados'));
 
@@ -61,14 +61,8 @@ class Curso extends Model
                 $slug = $base;
                 $i    = 1;
 
-                // Sin scope de propietario: el slug es único a nivel de
-                // toda la tabla (constraint UNIQUE en BD), no por instructor.
-                // Si se dejara scoped, dos instructores podrían generar el
-                // mismo slug sin que este chequeo lo detecte, y el save()
-                // fallaría con un QueryException sin capturar.
                 while (
-                    static::withoutGlobalScope(PropietarioScope::class)
-                        ->where('slug', $slug)
+                    static::where('slug', $slug)
                         ->when($curso->exists, fn ($q) => $q->where('id', '!=', $curso->id))
                         ->exists()
                 ) {

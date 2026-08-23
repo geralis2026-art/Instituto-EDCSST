@@ -99,14 +99,18 @@ class MultiInstructorTest extends TestCase
         $this->assertDatabaseHas('capacitados', ['id' => $deEdna->id]);
     }
 
-    public function test_instructor_no_puede_ver_curso_ajeno_por_url_directa(): void
+    public function test_instructor_no_puede_ver_ningun_curso_por_url_directa(): void
     {
+        // Los cursos ya no son de un instructor: son un catálogo centralizado que
+        // solo admin administra (ver EnsureUserCanViewCursos). El instructor no
+        // puede acceder a la sección de cursos ni siquiera para uno propio/creado
+        // por Edna, así sea solo lectura.
         $edna     = User::factory()->admin()->create();
         $mauricio = User::factory()->instructor()->create();
         $deEdna   = Curso::factory()->create(['user_id' => $edna->id]);
 
-        $this->actingAs($mauricio)->get("/admin/cursos/{$deEdna->id}")->assertStatus(404);
-        $this->actingAs($mauricio)->get("/admin/cursos/{$deEdna->id}/edit")->assertStatus(404);
+        $this->actingAs($mauricio)->get("/admin/cursos/{$deEdna->id}")->assertStatus(403);
+        $this->actingAs($mauricio)->get("/admin/cursos/{$deEdna->id}/edit")->assertStatus(403);
     }
 
     public function test_instructor_no_puede_ver_certificado_ajeno_por_url_directa(): void
@@ -230,8 +234,11 @@ class MultiInstructorTest extends TestCase
         $this->assertDatabaseMissing('certificados', ['capacitado_id' => $capacitadoDeEdna->id]);
     }
 
-    public function test_instructor_no_puede_crear_certificado_sobre_curso_ajeno(): void
+    public function test_instructor_puede_crear_certificado_sobre_curso_de_otro_gestor(): void
     {
+        // Los cursos son un catálogo centralizado que solo admin administra: el
+        // instructor no es dueño de ninguno, así que debe poder emitir certificados
+        // usando cualquier curso activo (ver eliminación de PropietarioScope en Curso).
         $edna     = User::factory()->admin()->create();
         $mauricio = User::factory()->instructor()->create();
 
@@ -246,8 +253,11 @@ class MultiInstructorTest extends TestCase
             'anios_vigencia'     => 1,
         ]);
 
-        $response->assertSessionHasErrors('curso_id');
-        $this->assertDatabaseMissing('certificados', ['curso_id' => $cursoDeEdna->id]);
+        $response->assertSessionDoesntHaveErrors('curso_id');
+        $this->assertDatabaseHas('certificados', [
+            'capacitado_id' => $capacitadoDeMauricio->id,
+            'curso_id'      => $cursoDeEdna->id,
+        ]);
     }
 
     // ── Código único de certificado: sigue siendo global ──────────────────────
