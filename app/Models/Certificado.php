@@ -44,10 +44,15 @@ class Certificado extends Model
         'activo'             => 'boolean',
     ];
 
-    /** Persona que recibió el certificado. */
+    /**
+     * Persona que recibió el certificado. Sin scope de propietario: el
+     * capacitado puede pertenecer a otro empleado (ver CertificadoRequest),
+     * así que el dueño del certificado siempre debe poder ver quién lo
+     * recibió, aunque no tenga acceso a administrar su perfil completo.
+     */
     public function capacitado(): BelongsTo
     {
-        return $this->belongsTo(Capacitado::class);
+        return $this->belongsTo(Capacitado::class)->withoutGlobalScope(PropietarioScope::class);
     }
 
     /** Curso por el cual se emitió el certificado. */

@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Capacitado;
 use App\Models\Curso;
+use App\Models\Scopes\PropietarioScope;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -37,15 +38,15 @@ class CertificadoRequest extends FormRequest
         $certificadoId = $this->route('certificado')?->id;
 
         return [
-            // Sin exists:capacitados,id: esa regla consulta la tabla directamente por
-            // SQL e ignora PropietarioScope, así que un instructor podría emitir un
-            // certificado sobre un capacitado de otro instructor con solo enviar el
-            // ID por fuera del formulario. find() sí pasa por Eloquent y respeta el
-            // scope (admin ve todos, instructor solo lo suyo). Los cursos no tienen
-            // scope de propietario: son un catálogo centralizado que solo admin
-            // administra, visible para todos al emitir certificados.
+            // Sin scope de propietario a propósito: un capacitado puede tomar
+            // cursos con distintos instructores a lo largo del tiempo, y
+            // cualquiera debe poder emitirle un certificado nuevo aunque su
+            // perfil pertenezca a otro empleado (a quien sigue sin poder
+            // ver/editar/eliminar desde el listado general de capacitados).
+            // Los cursos tampoco tienen scope: son un catálogo centralizado
+            // que solo admin administra, visible para todos al certificar.
             'capacitado_id'      => ['required', function ($attribute, $value, $fail) {
-                if (! Capacitado::find($value)) {
+                if (! Capacitado::withoutGlobalScope(PropietarioScope::class)->find($value)) {
                     $fail('El capacitado seleccionado no es válido.');
                 }
             }],

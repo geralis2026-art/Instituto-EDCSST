@@ -7,6 +7,7 @@ use App\Http\Requests\CapacitadoImportConfirmarRequest;
 use App\Http\Requests\CapacitadoImportRequest;
 use App\Http\Requests\CapacitadoRequest;
 use App\Models\Capacitado;
+use App\Models\Scopes\PropietarioScope;
 use App\Models\User;
 use App\Services\CertificadoPdfService;
 use App\Services\ImportacionCapacitadosService;
@@ -224,6 +225,15 @@ class CapacitadoController extends Controller
     /**
      * Búsqueda AJAX de capacitados por cédula o nombre (para el formulario de certificados).
      */
+    /**
+     * Búsqueda para el autocompletado de "capacitado" al crear un certificado
+     * o matricular a alguien en el aula virtual. Sin scope de propietario a
+     * propósito: un capacitado puede tomar cursos con distintos instructores
+     * a lo largo del tiempo, y cualquiera debe poder encontrarlo para
+     * emitirle un certificado nuevo, aunque su perfil pertenezca a otro
+     * empleado (a quien sigue sin poder ver/editar/eliminar desde el listado
+     * general — ver index()).
+     */
     public function buscar(Request $request)
     {
         $q = substr(trim((string) $request->query('q', '')), 0, 100);
@@ -232,7 +242,8 @@ class CapacitadoController extends Controller
             return response()->json([]);
         }
 
-        $resultados = Capacitado::where('documento', 'like', "%{$q}%")
+        $resultados = Capacitado::withoutGlobalScope(PropietarioScope::class)
+            ->where('documento', 'like', "%{$q}%")
             ->orWhere('nombre_completo', 'like', "%{$q}%")
             ->orderBy('nombre_completo')
             ->limit(10)

@@ -214,7 +214,14 @@ class MultiInstructorTest extends TestCase
 
     // ── Instructor: no puede emitir certificados sobre datos ajenos ──────────
 
-    public function test_instructor_no_puede_crear_certificado_sobre_capacitado_ajeno(): void
+    /**
+     * Un capacitado puede tomar cursos con distintos instructores a lo
+     * largo del tiempo: Mauricio debe poder emitirle un certificado nuevo
+     * aunque el perfil pertenezca a Edna. El certificado queda a nombre de
+     * Mauricio (quien lo emitió); el perfil del capacitado sigue sin ser
+     * administrable por él (ver test siguiente).
+     */
+    public function test_instructor_puede_crear_certificado_sobre_capacitado_de_otro_gestor(): void
     {
         $edna     = User::factory()->admin()->create();
         $mauricio = User::factory()->instructor()->create();
@@ -230,8 +237,78 @@ class MultiInstructorTest extends TestCase
             'anios_vigencia'     => 1,
         ]);
 
-        $response->assertSessionHasErrors('capacitado_id');
-        $this->assertDatabaseMissing('certificados', ['capacitado_id' => $capacitadoDeEdna->id]);
+        $response->assertSessionDoesntHaveErrors('capacitado_id');
+        $this->assertDatabaseHas('certificados', [
+            'capacitado_id' => $capacitadoDeEdna->id,
+            'curso_id'      => $cursoDeMauricio->id,
+            'user_id'       => $mauricio->id,
+        ]);
+    }
+
+    /**
+     * El buscador de capacitados usado al crear un certificado encuentra a
+     * cualquier persona registrada, sin importar el dueño del perfil.
+     */
+    public function test_buscador_de_capacitados_encuentra_los_de_otro_gestor(): void
+    {
+        $edna     = User::factory()->admin()->create();
+        $mauricio = User::factory()->instructor()->create();
+
+        $capacitadoDeEdna = Capacitado::factory()->create([
+            'user_id'         => $edna->id,
+            'nombre_completo' => 'Persona Buscada Unica',
+        ]);
+
+        $this->actingAs($mauricio)
+            ->getJson('/admin/capacitados/buscar?q=Persona+Buscada')
+            ->assertOk()
+            ->assertJsonFragment(['id' => $capacitadoDeEdna->id]);
+    }
+
+    /**
+     * Aunque Mauricio ya pueda certificarlo, el perfil completo del
+     * capacitado de Edna sigue sin ser visible/editable para él.
+     */
+    public function test_instructor_sigue_sin_poder_administrar_el_perfil_de_capacitado_ajeno(): void
+    {
+        $edna     = User::factory()->admin()->create();
+        $mauricio = User::factory()->instructor()->create();
+        $deEdna   = Capacitado::factory()->create(['user_id' => $edna->id]);
+
+        $this->actingAs($mauricio)->get('/admin/capacitados')->assertDontSee($deEdna->nombre_completo);
+        $this->actingAs($mauricio)->get("/admin/capacitados/{$deEdna->id}")->assertStatus(404);
+        $this->actingAs($mauricio)->get("/admin/capacitados/{$deEdna->id}/edit")->assertStatus(404);
+    }
+
+    /**
+     * El certificado sí muestra el nombre del capacitado en el listado y
+     * detalle de SU dueño (Mauricio), aunque el perfil del capacitado
+     * pertenezca a Edna — Certificado::capacitado() bypassea el scope para
+     * que quien emitió el certificado siempre sepa a quién se lo dio.
+     */
+    public function test_certificado_muestra_nombre_del_capacitado_de_otro_gestor(): void
+    {
+        $edna     = User::factory()->admin()->create();
+        $mauricio = User::factory()->instructor()->create();
+
+        $capacitadoDeEdna = Capacitado::factory()->create([
+            'user_id'         => $edna->id,
+            'nombre_completo' => 'Persona Certificada Unica',
+        ]);
+        $cursoDeMauricio = Curso::factory()->create(['user_id' => $mauricio->id]);
+        $certificado = Certificado::factory()->create([
+            'user_id'       => $mauricio->id,
+            'capacitado_id' => $capacitadoDeEdna->id,
+            'curso_id'      => $cursoDeMauricio->id,
+        ]);
+
+        $this->actingAs($mauricio)->get('/admin/certificados')
+            ->assertOk()
+            ->assertSee('Persona Certificada Unica');
+
+        $this->actingAs($mauricio)->get("/admin/certificados/{$certificado->id}")
+            ->assertOk()
+            ->assertSee('Persona Certificada Unica');
     }
 
     public function test_instructor_puede_crear_certificado_sobre_curso_de_otro_gestor(): void
