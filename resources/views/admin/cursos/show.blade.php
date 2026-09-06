@@ -70,7 +70,7 @@
         </div>
     </div>
 
-    @if($curso->tiene_aula_virtual)
+    @if($curso->tiene_aula_virtual && config('features.aula_virtual'))
         <div class="bg-white rounded-lg shadow p-6">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-xl font-bold text-gray-900">Aula Virtual</h2>

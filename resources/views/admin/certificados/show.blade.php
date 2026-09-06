@@ -16,12 +16,14 @@
         </div>
         <div class="flex gap-3">
             <a href="{{ route('admin.certificados.pdf', $certificado) }}" target="_blank" class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition">Ver PDF</a>
-            {{-- Reenviar correo: admin o instructor (dueño del certificado, ver PropietarioScope) --}}
+            {{-- Reenviar correo: admin o instructor (dueño del certificado, ver PropietarioScope). Oculto si comunicaciones está desactivado (Fase 3 aún no pagada). --}}
             @if(auth()->user()->isGestor())
-                <form action="{{ route('admin.certificados.reenviar-correo', $certificado) }}" method="POST" onsubmit="return confirm('¿Reenviar el certificado por correo al capacitado?');">
-                    @csrf
-                    <button type="submit" class="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition">Reenviar por correo</button>
-                </form>
+                @if(config('features.comunicaciones'))
+                    <form action="{{ route('admin.certificados.reenviar-correo', $certificado) }}" method="POST" onsubmit="return confirm('¿Reenviar el certificado por correo al capacitado?');">
+                        @csrf
+                        <button type="submit" class="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition">Reenviar por correo</button>
+                    </form>
+                @endif
                 <a href="{{ route('admin.certificados.edit', $certificado) }}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">Editar</a>
 <form action="{{ route('admin.certificados.toggle-activo', $certificado) }}" method="POST" onsubmit="return confirm('{{ $certificado->activo ? 'Desactivar este certificado?' : 'Reactivar este certificado?' }}');">
                     @csrf

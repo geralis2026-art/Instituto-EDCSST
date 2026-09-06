@@ -13,9 +13,17 @@ use Illuminate\Support\Facades\Log;
  */
 class CertificadoCorreoService
 {
-    /** @return bool true si se envió (o se intentó sin excepción), false si no había con qué enviarlo. */
+    /**
+     * @return bool true si se envió (o se intentó sin excepción), false si no
+     * había con qué enviarlo o si el módulo de comunicaciones está
+     * desactivado (Fase 3 aún no pagada, ver config/features.php).
+     */
     public function enviar(Certificado $certificado): bool
     {
+        if (! config('features.comunicaciones')) {
+            return false;
+        }
+
         $certificado->loadMissing('capacitado');
 
         if (!$certificado->capacitado?->correo || !$certificado->archivo_pdf) {

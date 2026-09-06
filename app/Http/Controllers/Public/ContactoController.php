@@ -70,9 +70,18 @@ class ContactoController extends Controller
             ->with('success', '¡Gracias! Tu mensaje fue enviado correctamente. Te responderemos pronto.');
     }
 
-    /** Avisa al instituto por correo. Un fallo aquí no debe romper el envío del mensaje de contacto. */
+    /**
+     * Avisa al instituto por correo. Un fallo aquí no debe romper el envío
+     * del mensaje de contacto. No hace nada si el módulo de comunicaciones
+     * está desactivado (Fase 3 aún no pagada, ver config/features.php); el
+     * mensaje igual queda guardado y visible en la bandeja del admin.
+     */
     private function notificarAlInstituto(Mensaje $mensaje): void
     {
+        if (! config('features.comunicaciones')) {
+            return;
+        }
+
         $correoInstituto = ConfiguracionSitio::obtener()->correo_contacto;
 
         if (!$correoInstituto) {

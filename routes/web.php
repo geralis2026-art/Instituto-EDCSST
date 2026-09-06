@@ -107,7 +107,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'cursos.ve
     Route::get('cursos/{curso}',   [CursoController::class, 'show'])->name('cursos.show')->whereNumber('curso');
 
     // Matrículas — solo lectura, para validar quién completó el curso
-    Route::get('cursos/{curso}/matriculas', [MatriculaController::class, 'index'])->name('cursos.matriculas.index')->whereNumber('curso');
+    // (aula virtual, ver config/features.php: módulo aún no pagado)
+    Route::get('cursos/{curso}/matriculas', [MatriculaController::class, 'index'])->name('cursos.matriculas.index')->whereNumber('curso')->middleware('feature:aula_virtual');
 });
 
 // ── Rutas de gestión: admin + instructor (CRUD de lo propio, ver PropietarioScope) ──
@@ -144,7 +145,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'activo', 'admin', '
     Route::resource('cursos', CursoController::class)->except(['index', 'show']);
 
     // Aula virtual: módulos, materiales, quiz y matrículas de un curso
-    Route::prefix('cursos/{curso}')->name('cursos.')->group(function () {
+    // (módulo Fase 3 aún no pagado — ver config/features.php)
+    Route::prefix('cursos/{curso}')->name('cursos.')->middleware('feature:aula_virtual')->group(function () {
         Route::get('modulos/create',        [ModuloController::class, 'create'])->name('modulos.create');
         Route::post('modulos',              [ModuloController::class, 'store'])->name('modulos.store')->middleware('throttle:admin-escritura');
         Route::get('modulos/{modulo}/edit', [ModuloController::class, 'edit'])->name('modulos.edit');
@@ -210,16 +212,18 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 | Guard "capacitados", separado del guard "web" (empleados). El login es
 | el mismo formulario de /login (ver LoginRequest::authenticate()).
+| Módulo de Fase 3 aún no pagado: bloqueado con 'feature:aula_virtual'
+| (ver config/features.php).
 */
 
 // Cambio obligatorio de contraseña en el primer ingreso: fuera del middleware
 // de bloqueo para no generar un redirect loop.
-Route::middleware(['auth:capacitados', 'throttle:aula-general'])->prefix('aula')->name('aula.')->group(function () {
+Route::middleware(['auth:capacitados', 'throttle:aula-general', 'feature:aula_virtual'])->prefix('aula')->name('aula.')->group(function () {
     Route::get('password/cambiar', [PasswordCambioController::class, 'edit'])->name('password.cambiar');
     Route::post('password/cambiar', [PasswordCambioController::class, 'update'])->name('password.cambiar.store');
 });
 
-Route::middleware(['auth:capacitados', 'capacitado.cambiar_password', 'throttle:aula-general'])->prefix('aula')->name('aula.')->group(function () {
+Route::middleware(['auth:capacitados', 'capacitado.cambiar_password', 'throttle:aula-general', 'feature:aula_virtual'])->prefix('aula')->name('aula.')->group(function () {
     Route::get('/', [AulaDashboardController::class, 'index'])->name('dashboard');
 
     Route::get('cursos/{matricula}', [AulaCursoController::class, 'show'])->name('cursos.show');

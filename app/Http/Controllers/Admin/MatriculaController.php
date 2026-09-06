@@ -64,7 +64,12 @@ class MatriculaController extends Controller
             'fecha_asignacion' => now(),
         ]);
 
-        $capacitado->notify(new CapacitadoBienvenida($curso, $esPrimerAcceso));
+        // Comunicaciones: módulo de Fase 3 aún no pagado (ver config/features.php).
+        // Esta ruta ya está bloqueada por 'feature:aula_virtual', pero se
+        // mantiene el chequeo aquí también por si el método se reutiliza.
+        if (config('features.comunicaciones')) {
+            $capacitado->notify(new CapacitadoBienvenida($curso, $esPrimerAcceso));
+        }
 
         return redirect()
             ->route('admin.cursos.matriculas.index', $curso)

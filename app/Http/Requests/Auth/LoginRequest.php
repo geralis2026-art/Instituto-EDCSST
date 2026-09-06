@@ -41,6 +41,11 @@ class LoginRequest extends FormRequest
      * pero mapeado a la columna "correo" de ese modelo. Así queda una sola
      * página de login para ambos tipos de cuenta.
      *
+     * El guard "capacitados" solo se intenta si el aula virtual está
+     * habilitada (módulo de Fase 3 aún no pagado, ver config/features.php);
+     * si no, ni siquiera se prueba, para no dejar entrar a un portal que de
+     * todas formas tiene sus rutas bloqueadas.
+     *
      * @throws ValidationException
      */
     public function authenticate(): void
@@ -52,7 +57,7 @@ class LoginRequest extends FormRequest
         $remember = $this->boolean('remember');
 
         $autenticado = Auth::guard('web')->attempt(['email' => $email, 'password' => $password, 'activo' => true], $remember)
-            || Auth::guard('capacitados')->attempt(['correo' => $email, 'password' => $password], $remember);
+            || (config('features.aula_virtual') && Auth::guard('capacitados')->attempt(['correo' => $email, 'password' => $password], $remember));
 
         if (! $autenticado) {
             RateLimiter::hit($this->throttleKey());
