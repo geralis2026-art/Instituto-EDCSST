@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UsuarioRequest;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,11 +15,22 @@ use Illuminate\Support\Facades\Hash;
  */
 class UsuarioController extends Controller
 {
-    /** Lista todos los usuarios (empleados) del sistema. */
-    public function index()
+    /** Lista los usuarios (empleados) del sistema, con filtro por rol o por estado (activo/inactivo). */
+    public function index(Request $request)
     {
-        $usuarios = User::orderBy('name')->paginate(15);
-        return view('admin.usuarios.index', compact('usuarios'));
+        $estado = in_array($request->query('estado'), ['admin', 'instructor', 'capacitador', 'activos', 'inactivos'], true)
+            ? $request->query('estado')
+            : null;
+
+        $usuarios = User::query()
+            ->when(in_array($estado, ['admin', 'instructor', 'capacitador'], true), fn ($q) => $q->where('rol', $estado))
+            ->when($estado === 'activos', fn ($q) => $q->where('activo', true))
+            ->when($estado === 'inactivos', fn ($q) => $q->where('activo', false))
+            ->orderBy('name')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('admin.usuarios.index', compact('usuarios', 'estado'));
     }
 
     /** Formulario para crear un nuevo usuario. */

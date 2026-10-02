@@ -67,16 +67,16 @@
 }">
     <div class="flex justify-between items-center">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Generación Masiva de Certificados</h1>
-            <p class="text-gray-600 mt-1">Genera certificados a partir de las solicitudes pendientes (importación de capacitados)</p>
+            <h1 class="text-2xl sm:text-[28px] font-bold text-slate-900">Generación Masiva de Certificados</h1>
+            <p class="text-slate-600 mt-1">Genera certificados a partir de las solicitudes pendientes (importación de capacitados)</p>
         </div>
-        <a href="{{ route('admin.certificados.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+        <a href="{{ route('admin.certificados.index') }}" class="btn-secundario">
             Volver a certificados
         </a>
     </div>
 
     @if($solicitudes->isEmpty())
-        <div class="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+        <div class="tarjeta-admin p-8 text-center text-slate-500">
             <p class="text-lg">No hay solicitudes de certificación pendientes.</p>
             <a href="{{ route('admin.capacitados.importar.form') }}" class="text-blue-600 hover:text-blue-900 mt-2 inline-block">
                 Importar capacitados desde Excel →
@@ -86,28 +86,28 @@
         <form action="{{ route('admin.certificados.generar-masivos') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
 
-            <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="tarjeta-admin overflow-hidden">
 
                 {{-- Panel azul: aplicar a filas visibles --}}
                 <div class="bg-blue-50 border-b border-blue-200 p-4 flex flex-wrap items-end gap-4">
                     <span class="text-xs font-semibold text-blue-700 uppercase tracking-wider self-center mr-1">Aplicar a visibles</span>
                     <div>
                         <label class="block text-xs font-medium text-blue-700 mb-1">Fecha de emisión</label>
-                        <input type="date" x-model="fechaGlobal" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="date" x-model="fechaGlobal" class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-blue-700 mb-1">Vigencia</label>
-                        <select x-model="vigenciaGlobal" class="w-28 px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <select x-model="vigenciaGlobal" class="w-28 px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="1">1 año</option>
                             <option value="2">2 años</option>
                         </select>
                     </div>
                     <div class="flex items-center gap-2">
                         <label class="text-xs font-medium text-blue-700">Activo</label>
-                        <input type="checkbox" x-model="activoGlobal" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4">
+                        <input type="checkbox" x-model="activoGlobal" class="rounded border-slate-300 text-blue-800 focus:ring-blue-700 w-4 h-4">
                     </div>
                     <button type="button" @click="aplicarATodas()"
-                            class="px-4 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
+                            class="btn-primario">
                         Aplicar
                     </button>
                 </div>
@@ -118,12 +118,12 @@
                     <div>
                         <label class="block text-xs font-medium text-amber-700 mb-1">Capacitado</label>
                         <input type="text" x-model="columnaCapacitado" placeholder="Nombre o documento..."
-                               class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 w-48">
+                               class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 w-48">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-amber-700 mb-1">Curso</label>
                         <select x-model="columnaCurso"
-                                class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 min-w-48">
+                                class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 min-w-48">
                             <option value="">Todos</option>
                             @foreach($cursos as $curso)
                                 <option value="{{ $curso->id }}">{{ $curso->nombre }}</option>
@@ -133,12 +133,12 @@
                     <div>
                         <label class="block text-xs font-medium text-amber-700 mb-1">Fecha</label>
                         <input type="date" x-model="columnaFecha"
-                               class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                               class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-amber-700 mb-1">Modalidad</label>
                         <select x-model="columnaModalidad"
-                                class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
                             <option value="">Todas</option>
                             <option value="virtual">Virtual</option>
                             <option value="presencial">Presencial</option>
@@ -148,7 +148,7 @@
                     <div>
                         <label class="block text-xs font-medium text-amber-700 mb-1">Activo</label>
                         <select x-model="columnaActivo"
-                                class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
                             <option value="">Todos</option>
                             <option value="si">Activo</option>
                             <option value="no">Inactivo</option>
@@ -162,26 +162,26 @@
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="bg-gray-50 border-b">
+                        <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
                                 <th class="px-4 py-3 text-left">
                                     <input type="checkbox" checked
                                            @change="seleccionarTodos($event.target.checked)"
                                            title="Marcar / desmarcar filas visibles"
-                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
+                                           class="rounded border-slate-300 text-blue-800 focus:ring-blue-700 w-4 h-4 cursor-pointer">
                                 </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Capacitado</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Curso</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Fecha emisión</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Intensidad (h)</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Modalidad</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Vigencia</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Activo</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Capacitado</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Curso</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Fecha emisión</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Intensidad (h)</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Modalidad</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Vigencia</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Activo</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200">
+                        <tbody class="divide-y divide-slate-100">
                             @foreach($solicitudes as $solicitud)
-                                <tr class="hover:bg-gray-50 transition"
+                                <tr class="hover:bg-slate-50 transition-colors"
                                     x-show="filaVisible($el)"
                                     data-solicitud-id="{{ $solicitud->id }}"
                                     data-curso-id="{{ $solicitud->curso_id ?? '' }}"
@@ -190,11 +190,11 @@
                                     <td class="px-4 py-3 align-top">
                                         <input type="checkbox" name="solicitudes[{{ $solicitud->id }}][incluir]" value="1"
                                                checked
-                                               class="incluir-cert rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                               class="incluir-cert rounded border-slate-300 text-blue-800 focus:ring-blue-700">
                                     </td>
                                     <td class="px-4 py-3 align-top">
-                                        <span class="font-medium text-gray-900">{{ $solicitud->capacitado->nombre_completo }}</span>
-                                        <p class="text-xs text-gray-500"><code class="bg-gray-100 px-1 rounded">{{ $solicitud->capacitado->documento }}</code></p>
+                                        <span class="font-medium text-slate-900">{{ $solicitud->capacitado->nombre_completo }}</span>
+                                        <p class="text-xs text-slate-500"><code class="bg-slate-100 px-1 rounded">{{ $solicitud->capacitado->documento }}</code></p>
                                     </td>
                                     <td class="px-4 py-3 align-top">
                                         @if($solicitud->curso_id)
@@ -215,17 +215,17 @@
                                         <input type="date" name="solicitudes[{{ $solicitud->id }}][fecha_emision]"
                                                value="{{ now()->toDateString() }}"
                                                @change="fechaRows[{{ $solicitud->id }}] = $event.target.value"
-                                               class="fecha-emision px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                               class="fecha-emision px-2 py-1 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     </td>
                                     <td class="px-4 py-3 align-top">
                                         <input type="number" name="solicitudes[{{ $solicitud->id }}][intensidad_horaria]"
                                                value="{{ $solicitud->curso?->intensidad_horaria }}" min="1" max="500"
-                                               class="w-20 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                               class="w-20 px-2 py-1 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     </td>
                                     <td class="px-4 py-3 align-top">
                                         <select name="solicitudes[{{ $solicitud->id }}][modalidad]"
                                                 @change="modalidadRows[{{ $solicitud->id }}] = $event.target.value"
-                                                class="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                class="px-2 py-1 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             <option value="" @selected(!$solicitud->modalidad)>Sin especificar</option>
                                             <option value="virtual" @selected($solicitud->modalidad === 'virtual')>Virtual</option>
                                             <option value="presencial" @selected($solicitud->modalidad === 'presencial')>Presencial</option>
@@ -233,7 +233,7 @@
                                     </td>
                                     <td class="px-4 py-3 align-top">
                                         <select name="solicitudes[{{ $solicitud->id }}][anios_vigencia]"
-                                                class="anios-vigencia w-28 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                class="anios-vigencia w-28 px-2 py-1 border border-slate-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             <option value="1">1 año</option>
                                             <option value="2">2 años</option>
                                         </select>
@@ -243,7 +243,7 @@
                                         <input type="checkbox" name="solicitudes[{{ $solicitud->id }}][activo]" value="1"
                                                checked
                                                @change="activoRows[{{ $solicitud->id }}] = $event.target.checked"
-                                               class="activo-cert rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-5 h-5">
+                                               class="activo-cert rounded border-slate-300 text-blue-800 focus:ring-blue-700 w-5 h-5">
                                     </td>
                                 </tr>
                             @endforeach
@@ -253,10 +253,10 @@
             </div>
 
             <div class="flex gap-3">
-                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                <button type="submit" class="btn-primario">
                     Generar certificados seleccionados
                 </button>
-                <a href="{{ route('admin.certificados.index') }}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                <a href="{{ route('admin.certificados.index') }}" class="btn-secundario">
                     Cancelar
                 </a>
             </div>

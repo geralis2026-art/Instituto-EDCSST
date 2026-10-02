@@ -17,6 +17,9 @@ class CategoriaController extends Controller
     public function index(Request $request)
     {
         $busqueda = substr(trim((string) $request->query('busqueda', '')), 0, 100);
+        $estado = in_array($request->query('estado'), ['activas', 'inactivas', 'con_cursos', 'sin_cursos'], true)
+            ? $request->query('estado')
+            : null;
 
         $categorias = Categoria::withCount('cursos')
             ->when($busqueda, fn ($query) =>
@@ -25,11 +28,15 @@ class CategoriaController extends Controller
                       ->orWhere('descripcion', 'like', "%{$busqueda}%")
                 )
             )
+            ->when($estado === 'activas', fn ($query) => $query->where('activo', true))
+            ->when($estado === 'inactivas', fn ($query) => $query->where('activo', false))
+            ->when($estado === 'con_cursos', fn ($query) => $query->has('cursos'))
+            ->when($estado === 'sin_cursos', fn ($query) => $query->doesntHave('cursos'))
             ->orderBy('nombre')
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.categorias.index', compact('categorias', 'busqueda'));
+        return view('admin.categorias.index', compact('categorias', 'busqueda', 'estado'));
     }
 
     /** Formulario para crear una nueva categoría. */

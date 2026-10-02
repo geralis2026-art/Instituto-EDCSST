@@ -6,43 +6,40 @@
 @section('contenido')
 <div class="max-w-3xl mx-auto space-y-6">
 
-    <div>
-        <a href="{{ route('admin.mensajes.index') }}" class="text-blue-600 hover:text-blue-900 flex items-center gap-2 mb-4">
-            <span>&larr;</span> Volver a mensajes
-        </a>
-        <h1 class="text-2xl font-bold text-gray-900">Mensaje de {{ $mensaje->nombre }}</h1>
-        <p class="text-sm text-gray-500 mt-1">{{ $mensaje->created_at->format('d/m/Y H:i') }} &middot; {{ $mensaje->ip }}</p>
-    </div>
+    <x-admin.encabezado :titulo="'Mensaje de ' . $mensaje->nombre"
+                        :subtitulo="$mensaje->created_at->format('d/m/Y H:i') . ($mensaje->ip ? ' · IP ' . $mensaje->ip : '')"
+                        :volver="route('admin.mensajes.index')" />
 
     {{-- Contenido del mensaje --}}
-    <div class="bg-white rounded-lg shadow p-6 space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <section class="tarjeta-admin p-6 sm:p-8" aria-labelledby="titulo-mensaje">
+        <h2 id="titulo-mensaje" class="sr-only">Contenido del mensaje</h2>
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Nombre</p>
-                <p class="text-gray-900 font-medium">{{ $mensaje->nombre }}</p>
+                <dt class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Nombre</dt>
+                <dd class="mt-1 font-semibold text-slate-900">{{ $mensaje->nombre }}</dd>
             </div>
             <div>
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Correo</p>
-                <a href="mailto:{{ $mensaje->correo }}" class="text-blue-700 hover:underline font-medium">{{ $mensaje->correo }}</a>
+                <dt class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Correo</dt>
+                <dd class="mt-1"><a href="mailto:{{ $mensaje->correo }}" class="font-semibold text-blue-800 hover:underline [overflow-wrap:anywhere]">{{ $mensaje->correo }}</a></dd>
             </div>
-        </div>
+        </dl>
 
-        <div>
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Mensaje</p>
-            <div class="bg-gray-50 rounded-lg p-4 text-gray-800 whitespace-pre-wrap text-sm leading-relaxed border border-gray-200">{{ $mensaje->mensaje }}</div>
+        <div class="mt-6">
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Mensaje</p>
+            <div class="bg-slate-50 rounded-lg p-5 text-slate-800 whitespace-pre-wrap leading-relaxed border border-slate-200 border-l-4 border-l-slate-400">{{ $mensaje->mensaje }}</div>
         </div>
-    </div>
+    </section>
 
     {{-- Gestión --}}
-    <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Gestión</h2>
+    <section class="tarjeta-admin p-6 sm:p-8" aria-labelledby="titulo-gestion">
+        <h2 id="titulo-gestion" class="text-base font-semibold text-slate-900 mb-5">Gestión interna</h2>
 
-        <form action="{{ route('admin.mensajes.update', $mensaje) }}" method="POST" class="space-y-4">
+        <form action="{{ route('admin.mensajes.update', $mensaje) }}" method="POST" class="space-y-5">
             @csrf @method('PATCH')
 
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Estado</label>
-                <select name="estado" class="w-full sm:w-48 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="estado" class="etiqueta-admin">Estado</label>
+                <select id="estado" name="estado" class="campo-admin sm:w-56">
                     @foreach(\App\Models\Mensaje::$estados as $valor => $etiqueta)
                         <option value="{{ $valor }}" @selected($mensaje->estado === $valor)>{{ $etiqueta }}</option>
                     @endforeach
@@ -50,32 +47,29 @@
             </div>
 
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Notas internas</label>
-                <textarea name="notas_internas" rows="4" maxlength="2000"
-                    placeholder="Anotaciones privadas sobre este mensaje..."
-                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none text-sm">{{ old('notas_internas', $mensaje->notas_internas) }}</textarea>
+                <label for="notas_internas" class="etiqueta-admin">Notas internas</label>
+                <textarea id="notas_internas" name="notas_internas" rows="4" maxlength="2000"
+                          aria-describedby="ayuda-notas"
+                          placeholder="Anotaciones privadas sobre este mensaje…"
+                          class="campo-admin resize-y">{{ old('notas_internas', $mensaje->notas_internas) }}</textarea>
+                <p id="ayuda-notas" class="text-sm text-slate-500 mt-1.5">Solo las ve el personal administrativo.</p>
             </div>
 
-            <div class="flex gap-3">
-                <button type="submit" class="px-5 py-2 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition">
-                    Guardar cambios
-                </button>
-                <a href="mailto:{{ $mensaje->correo }}" class="px-5 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition">
+            <div class="flex flex-wrap gap-3">
+                <button type="submit" class="btn-primario">Guardar cambios</button>
+                <a href="mailto:{{ $mensaje->correo }}?subject={{ rawurlencode('Re: tu mensaje al Instituto EDCSST') }}" class="btn-secundario">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     Responder por correo
                 </a>
             </div>
         </form>
-    </div>
+    </section>
 
-    {{-- Eliminar --}}
     <div class="flex justify-end">
-        <form action="{{ route('admin.mensajes.destroy', $mensaje) }}" method="POST" onsubmit="return confirm('¿Eliminar este mensaje definitivamente?');">
+        <form action="{{ route('admin.mensajes.destroy', $mensaje) }}" method="POST" data-confirmar="¿Eliminar el mensaje de {{ $mensaje->nombre }}? No se puede deshacer.">
             @csrf @method('DELETE')
-            <button type="submit" class="px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg text-sm font-medium transition">
-                Eliminar mensaje
-            </button>
+            <button type="submit" class="btn-peligro"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>Eliminar mensaje</button>
         </form>
     </div>
-
 </div>
 @endsection

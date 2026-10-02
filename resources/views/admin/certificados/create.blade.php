@@ -1,20 +1,13 @@
 @extends('layouts.admin')
 
-@section('titulo', 'Registrar Certificado')
+@section('titulo', 'Registrar certificado')
 @section('titulo_topbar', 'Certificados')
 
 @section('contenido')
 <div class="max-w-3xl mx-auto space-y-6">
-    <div>
-        <a href="{{ route('admin.certificados.index') }}" class="text-blue-600 hover:text-blue-900 flex items-center gap-2 mb-4">
-            <span>&larr;</span>
-            Volver al listado
-        </a>
-        <h1 class="text-3xl font-bold text-gray-900">Registrar Certificado</h1>
-        <p class="text-gray-600 mt-2">Carga el PDF ya generado y asocialo a un capacitado y curso.</p>
-    </div>
+    <x-admin.encabezado titulo="Registrar certificado" subtitulo="Carga el PDF ya generado y asócialo a un capacitado y a un curso." :volver="route('admin.certificados.index')" />
 
-    <div class="bg-white rounded-lg shadow p-8">
+    <div class="tarjeta-admin p-6 sm:p-8">
         @include('admin.certificados._form')
     </div>
 </div>

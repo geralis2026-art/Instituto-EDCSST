@@ -5,108 +5,97 @@
 
 @section('contenido')
 
-{{-- Encabezado --}}
-<section class="bg-blue-950 text-white py-12 border-b-4 border-amber-500 relative overflow-hidden">
-    <div class="absolute inset-0 pointer-events-none"
-         style="background: linear-gradient(135deg, transparent 50%, rgba(245,158,11,0.07))"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <span class="badge-gold mb-3 inline-block">Oferta académica</span>
-        <h1 class="text-3xl sm:text-4xl font-bold mb-3">Catálogo de Cursos</h1>
-        <p class="text-blue-200 text-lg">Encuentra el curso ideal para tu desarrollo profesional</p>
-    </div>
-</section>
+<x-public.encabezado
+    titulo="Catálogo de cursos"
+    subtitulo="Programas en seguridad y salud en el trabajo con certificación verificable en línea." />
 
-{{-- Contenido principal --}}
-<section class="py-12">
+<section class="py-12 sm:py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         @if($categorias->isEmpty())
-            <div class="text-center py-16">
-                <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <h2 class="text-xl font-semibold text-gray-700 mb-2">Pronto publicaremos nuestros cursos</h2>
-                <p class="text-gray-500">Estamos preparando el catálogo. Visítanos pronto.</p>
+            <div class="text-center bg-white border border-dashed border-slate-300 rounded-xl py-16 px-6">
+                <svg class="w-12 h-12 mx-auto text-slate-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <h2 class="text-xl font-semibold text-slate-800 mb-2">Pronto publicaremos nuestros cursos</h2>
+                <p class="text-slate-600">Estamos preparando el catálogo. <a href="{{ route('contacto') }}" class="text-blue-800 font-semibold underline underline-offset-2">Escríbenos</a> para conocer la oferta disponible.</p>
             </div>
         @else
-            {{-- Recorrer cada categoría --}}
+            {{-- Navegación por categorías --}}
+            @if($categorias->count() > 1)
+                <nav aria-label="Categorías" class="mb-12">
+                    <ul class="flex flex-wrap gap-2">
+                        @foreach($categorias as $categoria)
+                            <li>
+                                <a href="#categoria-{{ $categoria->slug }}"
+                                   class="inline-flex items-center gap-2 px-3.5 py-2 rounded-md bg-white border border-slate-300 text-[15px] font-medium text-slate-700 hover:border-slate-500 hover:text-slate-900 transition-colors">
+                                    {{ $categoria->nombre }}
+                                    <span class="text-xs font-semibold text-slate-500 bg-slate-100 rounded-full px-2 py-0.5">{{ $categoria->cursos->count() }}</span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </nav>
+            @endif
+
             @foreach($categorias as $categoria)
-                <div class="mb-12 last:mb-0">
-                    {{-- Encabezado de categoría --}}
-                    <div class="flex items-center justify-between mb-6 pb-3 border-b-2 border-amber-400 reveal">
+                <section id="categoria-{{ $categoria->slug }}" class="mb-16 last:mb-0 scroll-mt-28" aria-labelledby="titulo-{{ $categoria->slug }}">
+                    <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 pb-5 mb-8 border-b border-slate-300">
                         <div>
-                            <h2 class="text-2xl font-bold text-blue-900 section-title">{{ $categoria->nombre }}</h2>
+                            <h2 id="titulo-{{ $categoria->slug }}" class="text-2xl sm:text-3xl font-bold text-slate-900">{{ $categoria->nombre }}</h2>
                             @if($categoria->descripcion)
-                                <p class="text-sm text-gray-600 mt-2">{{ $categoria->descripcion }}</p>
+                                <p class="text-slate-600 mt-2 max-w-3xl">{{ $categoria->descripcion }}</p>
                             @endif
                         </div>
-                        <span class="badge-gold">
+                        <span class="text-slate-500">
                             {{ $categoria->cursos->count() }} {{ Str::plural('curso', $categoria->cursos->count()) }}
                         </span>
                     </div>
 
-                    {{-- Cursos de esa categoría --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach($categoria->cursos as $curso)
-                            {{-- Tarjeta con efecto flip: cara frontal (resumen) y trasera (detalle) --}}
-                            <div class="reveal delay-{{ min(($loop->index % 6) + 1, 6) }} [perspective:1500px]" x-data="{ flipped: false }">
-                                <div class="relative h-[26rem] w-full transition-transform duration-700 [transform-style:preserve-3d] cursor-pointer"
-                                     :class="flipped ? '[transform:rotateY(180deg)]' : ''"
-                                     @click="flipped = !flipped">
-
-                                    {{-- Cara frontal --}}
-                                    <article class="absolute inset-0 [backface-visibility:hidden] bg-white rounded-xl shadow-sm hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col">
-                                        <div class="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 relative overflow-hidden">
-                                            @if($curso->imagen)
-                                                <img src="{{ $curso->imagen_url }}" alt="{{ $curso->nombre }}" loading="lazy" class="w-full h-full object-cover">
-                                            @else
-                                                <div class="w-full h-full flex items-center justify-center">
-                                                    <svg class="w-16 h-16 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                                                </div>
-                                            @endif
-                                            @if($curso->destacado)
-                                                <span class="absolute top-3 right-3 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-semibold flex items-center">
-                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                                    Destacado
-                                                </span>
-                                            @endif
+                            <article class="bg-white rounded-lg overflow-hidden border border-slate-200 flex flex-col card-gold-hover reveal delay-{{ min(($loop->index % 6) + 1, 6) }}">
+                                <div class="aspect-video bg-marca-navy relative overflow-hidden">
+                                    @if($curso->imagen)
+                                        <img src="{{ $curso->imagen_url }}" alt="" loading="lazy" decoding="async" width="640" height="360"
+                                             class="w-full h-full object-cover">
+                                    @else
+                                        {{-- Sin foto: portada tipográfica con el nombre del curso --}}
+                                        <div class="w-full h-full flex items-end p-5 border-b-4 border-amber-400" aria-hidden="true">
+                                            <span class="font-titulo text-lg font-semibold text-white leading-snug line-clamp-3">{{ $curso->nombre }}</span>
                                         </div>
-                                        <div class="p-6 flex-1 flex flex-col">
-                                            <h3 class="font-bold text-lg text-gray-900 mb-2 line-clamp-2">{{ $curso->nombre }}</h3>
-                                            <div class="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
-                                                <div class="flex items-center text-sm text-gray-500">
-                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                    {{ $curso->duracion }}
-                                                </div>
-                                                <span class="text-sm font-semibold text-blue-700 flex items-center">
-                                                    Más información
-                                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </article>
-
-                                    {{-- Cara trasera: descripción y detalles --}}
-                                    <article class="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] bg-blue-950 text-white rounded-xl shadow-xl overflow-hidden border border-blue-900 flex flex-col p-6">
-                                        <h3 class="font-bold text-lg mb-3 text-amber-400">{{ $curso->nombre }}</h3>
-                                        <p class="text-sm text-blue-100 flex-1 overflow-y-auto">{{ $curso->descripcion_corta }}</p>
-                                        <div class="mt-4 pt-4 border-t border-blue-800 space-y-2 text-sm">
-                                            <div class="flex items-center text-blue-200">
-                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                Duración: {{ $curso->duracion }}
-                                            </div>
-                                            <div class="flex items-center text-blue-200">
-                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                Intensidad: {{ $curso->intensidad_horaria }} horas
-                                            </div>
-                                        </div>
-                                        <a href="{{ route('contacto') }}" @click.stop class="mt-4 inline-flex items-center justify-center px-4 py-2 bg-amber-500 text-blue-950 font-semibold rounded-lg hover:bg-amber-400 transition text-sm">
-                                            Solicitar información
-                                        </a>
-                                    </article>
+                                    @endif
+                                    @if($curso->destacado)
+                                        <span class="absolute top-3 left-3 bg-white text-marca-navy px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1">
+                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                            Destacado
+                                        </span>
+                                    @endif
                                 </div>
-                            </div>
+
+                                <div class="p-6 flex-1 flex flex-col">
+                                    <h3 class="font-semibold text-lg text-slate-900 leading-snug mb-2">{{ $curso->nombre }}</h3>
+                                    <p class="text-[15px] text-slate-600 mb-5">{{ $curso->descripcion_corta }}</p>
+
+                                    <dl class="mt-auto grid grid-cols-2 gap-3 pt-4 border-t border-slate-100 text-sm">
+                                        <div>
+                                            <dt class="text-slate-500">Duración</dt>
+                                            <dd class="font-semibold text-slate-800">{{ $curso->duracion }}</dd>
+                                        </div>
+                                        <div>
+                                            <dt class="text-slate-500">Intensidad</dt>
+                                            <dd class="font-semibold text-slate-800">{{ $curso->intensidad_horaria }} horas</dd>
+                                        </div>
+                                    </dl>
+
+                                    <a href="{{ route('contacto') }}"
+                                       class="mt-5 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-slate-300 text-[15px] font-semibold text-marca-navy hover:bg-marca-navy hover:text-white hover:border-marca-navy transition-colors">
+                                        Solicitar información
+                                        <span class="sr-only">sobre {{ $curso->nombre }}</span>
+                                    </a>
+                                </div>
+                            </article>
                         @endforeach
                     </div>
-                </div>
+                </section>
             @endforeach
         @endif
     </div>

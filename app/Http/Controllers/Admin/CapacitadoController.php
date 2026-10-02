@@ -8,6 +8,7 @@ use App\Http\Requests\CapacitadoImportRequest;
 use App\Http\Requests\CapacitadoRequest;
 use App\Models\Capacitado;
 use App\Models\Scopes\PropietarioScope;
+use App\Models\SolicitudCertificado;
 use App\Models\User;
 use App\Services\CertificadoPdfService;
 use App\Services\ImportacionCapacitadosService;
@@ -32,21 +33,35 @@ class CapacitadoController extends Controller
     {
         $busqueda = substr(trim((string) $request->query('busqueda', '')), 0, 100);
         $instructorId = (int) $request->query('instructor', 0) ?: null;
+        $estado = in_array($request->query('estado'), ['con_certificados', 'sin_certificados', 'por_vencer', 'vencidos', 'pendientes', 'nuevos'], true)
+            ? $request->query('estado')
+            : null;
 
         $gestores = $request->user()->isAdmin() ? User::gestores()->orderBy('name')->get() : collect();
 
         $capacitados = Capacitado::query()
+            // La búsqueda va agrupada: sin el paréntesis, los orWhere se "comerían" los demás filtros.
             ->when($busqueda, fn ($query) =>
-                $query->where('nombre_completo', 'like', "%{$busqueda}%")
+                $query->where(fn ($q) =>
+                    $q->where('nombre_completo', 'like', "%{$busqueda}%")
                       ->orWhere('documento', 'like', "%{$busqueda}%")
                       ->orWhere('correo', 'like', "%{$busqueda}%")
+                )
             )
+            ->when($estado === 'con_certificados', fn ($query) => $query->has('certificados'))
+            ->when($estado === 'sin_certificados', fn ($query) => $query->doesntHave('certificados'))
+            ->when($estado === 'por_vencer', fn ($query) => $query->whereHas('certificados', fn ($c) => $c->where('activo', true)
+                ->whereBetween('fecha_vencimiento', [today()->toDateString(), today()->addDays(30)->toDateString()])))
+            ->when($estado === 'vencidos', fn ($query) => $query->whereHas('certificados', fn ($c) => $c->where('activo', true)
+                ->where('fecha_vencimiento', '<', today()->toDateString())))
+            ->when($estado === 'pendientes', fn ($query) => $query->whereIn('id', SolicitudCertificado::pendientes()->select('capacitado_id')))
+            ->when($estado === 'nuevos', fn ($query) => $query->where('created_at', '>=', now()->startOfMonth()))
             ->when($instructorId && $request->user()->isAdmin(), fn ($query) => $query->where('user_id', $instructorId))
             ->orderBy('nombre_completo')
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.capacitados.index', compact('capacitados', 'busqueda', 'gestores', 'instructorId'));
+        return view('admin.capacitados.index', compact('capacitados', 'busqueda', 'gestores', 'instructorId', 'estado'));
     }
 
     /**

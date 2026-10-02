@@ -33,6 +33,13 @@ class CertificadoController extends Controller
         $busqueda = substr(trim((string) $request->query('busqueda', '')), 0, 100);
         $cursoId  = (int) $request->query('curso_id', 0) ?: null;
         $instructorId = (int) $request->query('instructor', 0) ?: null;
+        // Estado: vigentes | por_vencer (próximos 30 días) | vencidos | inactivos.
+        // `?vence=30` se mantiene por compatibilidad con el enlace del dashboard.
+        $estado = $request->query('estado');
+        if ($request->query('vence') === '30') {
+            $estado = 'por_vencer';
+        }
+        $estado = in_array($estado, ['vigentes', 'por_vencer', 'vencidos', 'inactivos'], true) ? $estado : null;
 
         $cursos   = Curso::orderBy('nombre')->get();
         $gestores = $request->user()->isAdmin() ? User::gestores()->orderBy('name')->get() : collect();
@@ -48,12 +55,19 @@ class CertificadoController extends Controller
                 )
             )
             ->when($cursoId, fn ($query) => $query->where('curso_id', $cursoId))
+            ->when($estado === 'vigentes', fn ($query) => $query->vigentes())
+            ->when($estado === 'por_vencer', fn ($query) => $query->where('activo', true)
+                ->whereBetween('fecha_vencimiento', [today()->toDateString(), today()->addDays(30)->toDateString()]))
+            ->when($estado === 'vencidos', fn ($query) => $query->vencidos())
+            ->when($estado === 'inactivos', fn ($query) => $query->where('activo', false))
             ->when($instructorId && $request->user()->isAdmin(), fn ($query) => $query->where('user_id', $instructorId))
-            ->latest('fecha_emision')
+            ->when($estado === 'por_vencer',
+                fn ($query) => $query->orderBy('fecha_vencimiento'),
+                fn ($query) => $query->latest('fecha_emision'))
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.certificados.index', compact('certificados', 'cursos', 'busqueda', 'cursoId', 'gestores', 'instructorId'));
+        return view('admin.certificados.index', compact('certificados', 'cursos', 'busqueda', 'cursoId', 'gestores', 'instructorId', 'estado'));
     }
 
     /** Formulario para registrar un nuevo certificado. */

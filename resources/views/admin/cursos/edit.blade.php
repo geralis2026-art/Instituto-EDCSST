@@ -1,20 +1,13 @@
 @extends('layouts.admin')
 
-@section('titulo', 'Editar Curso')
+@section('titulo', 'Editar curso')
 @section('titulo_topbar', 'Cursos')
 
 @section('contenido')
 <div class="max-w-3xl mx-auto space-y-6">
-    <div>
-        <a href="{{ route('admin.cursos.index') }}" class="text-blue-600 hover:text-blue-900 flex items-center gap-2 mb-4">
-            <span>&larr;</span>
-            Volver al listado
-        </a>
-        <h1 class="text-3xl font-bold text-gray-900">Editar Curso</h1>
-        <p class="text-gray-600 mt-2">Actualiza la informacion de: <strong>{{ $curso->nombre }}</strong></p>
-    </div>
+    <x-admin.encabezado titulo="Editar curso" :subtitulo="'Actualiza la información de ' . $curso->nombre" :volver="route('admin.cursos.index')" />
 
-    <div class="bg-white rounded-lg shadow p-8">
+    <div class="tarjeta-admin p-6 sm:p-8">
         @include('admin.cursos._form', ['curso' => $curso, 'categorias' => $categorias])
     </div>
 </div>

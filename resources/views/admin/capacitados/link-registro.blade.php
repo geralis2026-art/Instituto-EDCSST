@@ -6,7 +6,7 @@
 @section('contenido')
 <div class="max-w-2xl mx-auto space-y-6">
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
         <div class="flex items-start gap-4 mb-6">
             <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
                 <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -14,8 +14,8 @@
                 </svg>
             </div>
             <div>
-                <h2 class="text-lg font-semibold text-gray-900">Link generado exitosamente</h2>
-                <p class="text-sm text-gray-500 mt-1">
+                <h2 class="text-lg font-semibold text-slate-900">Link generado exitosamente</h2>
+                <p class="text-sm text-slate-500 mt-1">
                     Este link expira a las <span class="font-semibold text-amber-600">{{ $expira }}</span>
                     (20 minutos). Compártelo con los capacitados para que se registren.
                 </p>
@@ -24,20 +24,20 @@
 
         {{-- Link para copiar --}}
         <div class="space-y-3">
-            <label class="block text-sm font-medium text-gray-700">Link de registro</label>
+            <label for="link-registro" class="block text-sm font-medium text-slate-700">Link de registro</label>
             <div class="flex gap-2">
                 <input id="link-registro"
                        type="text"
                        value="{{ $url }}"
                        readonly
-                       class="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-400">
-                <button onclick="copiarLink()"
+                       class="flex-1 border border-slate-300 rounded-lg px-3 py-2.5 text-sm bg-slate-50 text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                <button type="button"
                         id="btn-copiar"
-                        class="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-lg transition flex items-center gap-2 whitespace-nowrap">
+                        class="px-4 py-2.5 bg-amber-400 hover:bg-amber-300 text-marca-navy text-sm font-semibold rounded-lg transition flex items-center gap-2 whitespace-nowrap">
                     <svg id="icon-copiar" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
-                    <span id="texto-copiar">Copiar</span>
+                    <span id="texto-copiar" aria-live="polite">Copiar</span>
                 </button>
             </div>
         </div>
@@ -58,11 +58,11 @@
     {{-- Acciones --}}
     <div class="flex justify-between">
         <a href="{{ route('admin.capacitados.index') }}"
-           class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+           class="btn-secundario">
             ← Volver a capacitados
         </a>
         <a href="{{ route('admin.capacitados.link-registro') }}"
-           class="px-4 py-2 text-sm font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition">
+           class="px-4 py-2 text-sm font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition">
             Generar nuevo link
         </a>
     </div>
@@ -79,18 +79,17 @@ function copiarLink() {
 
     navigator.clipboard.writeText(input.value).then(() => {
         texto.textContent = '¡Copiado!';
-        btn.classList.replace('bg-amber-500', 'bg-green-500');
-        btn.classList.replace('hover:bg-amber-600', 'hover:bg-green-600');
+        btn.classList.replace('bg-amber-400', 'bg-green-200');
 
         setTimeout(() => {
             texto.textContent = 'Copiar';
-            btn.classList.replace('bg-green-500', 'bg-amber-500');
-            btn.classList.replace('hover:bg-green-600', 'hover:bg-amber-600');
+            btn.classList.replace('bg-green-200', 'bg-amber-400');
         }, 2500);
     }).catch(() => {
         input.select();
         document.execCommand('copy');
     });
 }
+document.getElementById('btn-copiar')?.addEventListener('click', copiarLink);
 </script>
 @endpush

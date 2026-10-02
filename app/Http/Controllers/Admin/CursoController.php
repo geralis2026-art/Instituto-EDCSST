@@ -24,6 +24,9 @@ class CursoController extends Controller
         $busqueda    = substr(trim((string) $request->query('busqueda', '')), 0, 100);
         $categoriaId = (int) $request->query('categoria_id', 0) ?: null;
         $instructorId = (int) $request->query('instructor', 0) ?: null;
+        $estado = in_array($request->query('estado'), ['activos', 'inactivos', 'destacados', 'sin_certificados'], true)
+            ? $request->query('estado')
+            : null;
 
         $categorias = Categoria::orderBy('nombre')->get();
         $gestores   = $request->user()->isAdmin() ? User::gestores()->orderBy('name')->get() : collect();
@@ -37,13 +40,17 @@ class CursoController extends Controller
                 )
             )
             ->when($categoriaId, fn ($query) => $query->where('categoria_id', $categoriaId))
+            ->when($estado === 'activos', fn ($query) => $query->where('activo', true))
+            ->when($estado === 'inactivos', fn ($query) => $query->where('activo', false))
+            ->when($estado === 'destacados', fn ($query) => $query->where('destacado', true))
+            ->when($estado === 'sin_certificados', fn ($query) => $query->doesntHave('certificados'))
             // Filtro manual solo para admin: el scope de propietario no filtra su sesión por defecto.
             ->when($instructorId && $request->user()->isAdmin(), fn ($query) => $query->where('user_id', $instructorId))
             ->orderBy('nombre')
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.cursos.index', compact('cursos', 'categorias', 'busqueda', 'categoriaId', 'gestores', 'instructorId'));
+        return view('admin.cursos.index', compact('cursos', 'categorias', 'busqueda', 'categoriaId', 'gestores', 'instructorId', 'estado'));
     }
 
     /** Formulario para crear un nuevo curso. */

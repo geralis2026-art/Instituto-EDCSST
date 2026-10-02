@@ -4,58 +4,55 @@
 @section('titulo_topbar', 'Usuarios')
 
 @section('contenido')
-<div class="max-w-lg space-y-6">
-    <div>
-        <h1 class="text-3xl font-bold text-gray-900">Editar usuario</h1>
-        <p class="text-gray-600 mt-1">Deja la contraseña en blanco si no quieres cambiarla.</p>
-    </div>
+<div class="max-w-xl mx-auto space-y-6">
+    <x-admin.encabezado titulo="Editar usuario" subtitulo="Deja la contraseña en blanco si no quieres cambiarla." :volver="route('admin.usuarios.index')" />
 
-    <div class="bg-white rounded-lg shadow p-6">
+    <div class="tarjeta-admin p-6 sm:p-8">
         <form method="POST" action="{{ route('admin.usuarios.update', $usuario) }}" class="space-y-5">
             @csrf
             @method('PUT')
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                <input type="text" name="name" value="{{ old('name', $usuario->name) }}" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('name') border-red-400 @enderror">
-                @error('name') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                <label class="etiqueta-admin" for="campo-name">Nombre</label>
+                <input id="campo-name" type="text" name="name" value="{{ old('name', $usuario->name) }}" required
+                    class="campo-admin @error('name') border-red-500 @enderror">
+                @error('name') <p class="text-red-700 text-sm mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" name="email" value="{{ old('email', $usuario->email) }}" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('email') border-red-400 @enderror">
-                @error('email') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                <label class="etiqueta-admin" for="campo-email">Email</label>
+                <input id="campo-email" type="email" name="email" value="{{ old('email', $usuario->email) }}" required
+                    class="campo-admin @error('email') border-red-500 @enderror">
+                @error('email') <p class="text-red-700 text-sm mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nueva contraseña (opcional)</label>
-                <input type="password" name="password"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('password') border-red-400 @enderror">
-                @error('password') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                <label class="etiqueta-admin" for="campo-password">Nueva contraseña (opcional)</label>
+                <input id="campo-password" type="password" name="password"
+                    class="campo-admin @error('password') border-red-500 @enderror">
+                @error('password') <p class="text-red-700 text-sm mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar nueva contraseña</label>
-                <input type="password" name="password_confirmation"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label class="etiqueta-admin" for="campo-password_confirmation">Confirmar nueva contraseña</label>
+                <input id="campo-password_confirmation" type="password" name="password_confirmation"
+                    class="campo-admin">
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Rol</label>
-                <select name="rol" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('rol') border-red-400 @enderror">
+                <label class="etiqueta-admin" for="campo-rol">Rol</label>
+                <select id="campo-rol" name="rol" required
+                    class="campo-admin @error('rol') border-red-500 @enderror">
                     <option value="capacitador" @selected(old('rol', $usuario->rol) === 'capacitador')>Capacitador — solo subir certificados</option>
                     <option value="instructor"  @selected(old('rol', $usuario->rol) === 'instructor')>Instructor — gestiona solo sus propios cursos, capacitados y certificados</option>
                     <option value="admin"       @selected(old('rol', $usuario->rol) === 'admin')>Administrador — acceso completo</option>
                 </select>
-                @error('rol') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                @error('rol') <p class="text-red-700 text-sm mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div class="flex justify-end space-x-3 pt-2">
-                <a href="{{ route('admin.usuarios.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Cancelar</a>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Guardar cambios</button>
+                <a href="{{ route('admin.usuarios.index') }}" class="btn-secundario">Cancelar</a>
+                <button type="submit" class="btn-primario">Guardar cambios</button>
             </div>
         </form>
     </div>

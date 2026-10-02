@@ -8,6 +8,7 @@ use App\Models\Categoria;
 use App\Models\Certificado;
 use App\Models\Curso;
 use App\Models\Mensaje;
+use App\Models\SolicitudCertificado;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -33,7 +34,7 @@ class DashboardController extends Controller
         // compartida haría que el primero en cargar el dashboard dentro de esos 60 s
         // le "prestara" sus números (todos o solo los propios) a cualquier otro
         // usuario que entrara después, mezclando datos entre instructores/admin.
-        $stats = Cache::remember("dashboard_stats:{$user->id}", 60, function () use ($now, $user) {
+        $stats = Cache::remember("dashboard_stats_v2:{$user->id}", 60, function () use ($now, $user) {
             return [
                 'totalCapacitados'      => Capacitado::count(),
                 'totalCertificados'     => Certificado::where('activo', true)->count(),
@@ -43,6 +44,10 @@ class DashboardController extends Controller
                 'horasCapacitadasTotal' => Certificado::where('activo', true)->sum('intensidad_horaria'),
                 'certificadosPorMes'    => $this->certificadosPorMes(),
                 'certificadosHoy'       => Certificado::whereDate('created_at', today())->count(),
+                'totalPorVencer'        => $this->porVencer()->count(),
+                // whereHas respeta el scope de propietario de Capacitado: un instructor
+                // solo cuenta las solicitudes de sus propios capacitados.
+                'solicitudesPendientes' => SolicitudCertificado::pendientes()->whereHas('capacitado')->count(),
                 'certificadosMesActual' => Certificado::whereBetween('fecha_emision', [
                     $now->copy()->startOfMonth(),
                     $now->copy()->endOfMonth(),
@@ -58,6 +63,13 @@ class DashboardController extends Controller
         $ultimosCertificados = Certificado::with(['capacitado', 'curso', 'emitidoPor'])
             ->where('activo', true)
             ->latest()
+            ->take(5)
+            ->get();
+
+        // Certificados activos que vencen en los próximos 30 días (los más próximos primero).
+        $porVencer = $this->porVencer()
+            ->with(['capacitado', 'curso'])
+            ->orderBy('fecha_vencimiento')
             ->take(5)
             ->get();
 
@@ -83,7 +95,15 @@ class DashboardController extends Controller
             'topCapacitados'      => $topCapacitados,
             'cursosMasUsados'     => $cursosMasUsados,
             'mensajesRecientes'   => $mensajesRecientes,
+            'porVencer'           => $porVencer,
         ]);
+    }
+
+    /** Certificados activos cuya vigencia termina dentro de los próximos 30 días. */
+    private function porVencer()
+    {
+        return Certificado::where('activo', true)
+            ->whereBetween('fecha_vencimiento', [today()->toDateString(), today()->addDays(30)->toDateString()]);
     }
 
     /**

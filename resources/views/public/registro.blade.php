@@ -3,171 +3,176 @@
 @section('titulo', 'Registro de Capacitado')
 @section('descripcion', 'Formulario de registro para capacitados del Instituto EDCSST.')
 
+@push('preload')
+<meta name="robots" content="noindex, nofollow">
+@endpush
+
 @section('contenido')
-<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+@php
+    $campo = 'w-full min-h-[48px] px-4 py-2.5 text-base bg-white border rounded-lg focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition';
+    $err = fn (string $nombre) => $errors->has($nombre) ? 'border-red-500' : 'border-slate-300';
+@endphp
 
-    {{-- Encabezado --}}
-    <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 mb-4">
-            <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-            </svg>
-        </div>
-        <h1 class="text-2xl font-bold text-gray-900">Registro de Capacitado</h1>
-        <p class="text-gray-500 mt-2 text-sm">Completa tus datos para registrarte en el Instituto EDCSST.</p>
-    </div>
+<x-public.encabezado
+    titulo="Registro de capacitado"
+    subtitulo="Completa tus datos y elige los cursos que vas a tomar. Los campos con * son obligatorios." />
 
-    {{-- Errores --}}
-    @if($errors->any())
-        <div class="bg-red-50 border-l-4 border-red-500 text-red-800 p-4 rounded-lg mb-6">
-            <ul class="list-disc list-inside space-y-1 text-sm">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+<div class="relative -mt-6 sm:-mt-8 pb-4">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
 
-    <form method="POST" action="{{ route('registro.guardar', ['token' => $token]) }}" class="space-y-6">
-        @csrf
+        {{-- Resumen de errores --}}
+        @if($errors->any())
+            <div id="resumen-errores" tabindex="-1" role="alert"
+                 class="bg-red-50 border border-red-200 text-red-900 p-4 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-red-400">
+                <p class="font-semibold mb-1">Revisa {{ $errors->count() === 1 ? 'el siguiente campo' : 'los siguientes ' . $errors->count() . ' campos' }}:</p>
+                <ul class="list-disc pl-5 space-y-1 text-sm">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-        {{-- Datos personales --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 class="text-base font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">Datos personales</h2>
+        <form method="POST" action="{{ route('registro.guardar', ['token' => $token]) }}" class="space-y-6">
+            @csrf
 
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Nombre completo <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" name="nombre_completo" value="{{ old('nombre_completo') }}"
-                           placeholder="Ej: Juan Carlos Pérez Gómez"
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('nombre_completo') border-red-400 @enderror">
-                    @error('nombre_completo') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                </div>
+            {{-- Datos personales --}}
+            <fieldset class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 sm:p-8">
+                <legend class="sr-only">Datos personales</legend>
+                <h2 class="text-xl font-semibold text-slate-900 pb-3 mb-5 border-b border-slate-200">Datos personales</h2>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="space-y-5">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Tipo <span class="text-red-500">*</span>
-                        </label>
-                        <select name="tipo_documento"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('tipo_documento') border-red-400 @enderror">
-                            @foreach(\App\Models\Capacitado::TIPOS_DOCUMENTO as $codigo => $etiqueta)
-                                <option value="{{ $codigo }}" {{ old('tipo_documento', 'CC') === $codigo ? 'selected' : '' }}>{{ $codigo }}</option>
+                        <label for="nombre_completo" class="block text-sm font-semibold text-slate-700 mb-1.5">Nombre completo <span class="text-red-600" aria-hidden="true">*</span></label>
+                        <input type="text" id="nombre_completo" name="nombre_completo" value="{{ old('nombre_completo') }}" required
+                               autocomplete="name" placeholder="Ej: Juan Carlos Pérez Gómez"
+                               @error('nombre_completo') aria-invalid="true" aria-describedby="error-nombre_completo" @enderror
+                               class="{{ $campo }} {{ $err('nombre_completo') }}">
+                        @error('nombre_completo') <p id="error-nombre_completo" class="text-red-700 text-sm mt-1.5">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                        <div>
+                            <label for="tipo_documento" class="block text-sm font-semibold text-slate-700 mb-1.5">Tipo <span class="text-red-600" aria-hidden="true">*</span></label>
+                            <select id="tipo_documento" name="tipo_documento" required
+                                    @error('tipo_documento') aria-invalid="true" aria-describedby="error-tipo_documento" @enderror
+                                    class="{{ $campo }} {{ $err('tipo_documento') }}">
+                                @foreach(\App\Models\Capacitado::TIPOS_DOCUMENTO as $codigo => $etiqueta)
+                                    <option value="{{ $codigo }}" {{ old('tipo_documento', 'CC') === $codigo ? 'selected' : '' }}>{{ $codigo }} — {{ $etiqueta }}</option>
+                                @endforeach
+                            </select>
+                            @error('tipo_documento') <p id="error-tipo_documento" class="text-red-700 text-sm mt-1.5">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label for="documento" class="block text-sm font-semibold text-slate-700 mb-1.5">Número de documento <span class="text-red-600" aria-hidden="true">*</span></label>
+                            <input type="text" id="documento" name="documento" value="{{ old('documento') }}" required
+                                   inputmode="numeric" autocomplete="off" placeholder="Ej: 1234567890"
+                                   @error('documento') aria-invalid="true" aria-describedby="error-documento" @enderror
+                                   class="{{ $campo }} tabular-nums {{ $err('documento') }}">
+                            @error('documento') <p id="error-documento" class="text-red-700 text-sm mt-1.5">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label for="correo" class="block text-sm font-semibold text-slate-700 mb-1.5">Correo electrónico</label>
+                            <input type="email" id="correo" name="correo" value="{{ old('correo') }}"
+                                   autocomplete="email" inputmode="email" placeholder="ejemplo@correo.com"
+                                   @error('correo') aria-invalid="true" aria-describedby="error-correo" @enderror
+                                   class="{{ $campo }} {{ $err('correo') }}">
+                            @error('correo') <p id="error-correo" class="text-red-700 text-sm mt-1.5">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div>
+                            <label for="telefono" class="block text-sm font-semibold text-slate-700 mb-1.5">Teléfono / celular</label>
+                            <input type="tel" id="telefono" name="telefono" value="{{ old('telefono') }}"
+                                   autocomplete="tel" inputmode="tel" placeholder="Ej: 3001234567"
+                                   @error('telefono') aria-invalid="true" aria-describedby="error-telefono" @enderror
+                                   class="{{ $campo }} tabular-nums {{ $err('telefono') }}">
+                            @error('telefono') <p id="error-telefono" class="text-red-700 text-sm mt-1.5">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    <div class="sm:max-w-xs">
+                        <label for="rh" class="block text-sm font-semibold text-slate-700 mb-1.5">Grupo sanguíneo (RH)</label>
+                        <select id="rh" name="rh"
+                                @error('rh') aria-invalid="true" aria-describedby="error-rh" @enderror
+                                class="{{ $campo }} {{ $err('rh') }}">
+                            <option value="">— Seleccionar —</option>
+                            @foreach(['O+','O-','A+','A-','B+','B-','AB+','AB-'] as $tipo)
+                                <option value="{{ $tipo }}" {{ old('rh') === $tipo ? 'selected' : '' }}>{{ $tipo }}</option>
                             @endforeach
                         </select>
-                        @error('tipo_documento') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
-
-                    <div class="sm:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Número de documento <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" name="documento" value="{{ old('documento') }}"
-                               placeholder="Ej: 1234567890"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('documento') border-red-400 @enderror">
-                        @error('documento') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        @error('rh') <p id="error-rh" class="text-red-700 text-sm mt-1.5">{{ $message }}</p> @enderror
                     </div>
                 </div>
+            </fieldset>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-                        <input type="email" name="correo" value="{{ old('correo') }}"
-                               placeholder="ejemplo@correo.com"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('correo') border-red-400 @enderror">
-                        @error('correo') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
+            {{-- Cursos --}}
+            <fieldset class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 sm:p-8">
+                <legend class="sr-only">Cursos a realizar</legend>
+                <h2 class="text-xl font-semibold text-slate-900">Cursos a realizar <span class="text-red-600" aria-hidden="true">*</span></h2>
+                <p class="text-[15px] text-slate-600 mt-1 pb-3 mb-5 border-b border-slate-200">Selecciona todos los cursos que vas a tomar.</p>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono / Celular</label>
-                        <input type="text" name="telefono" value="{{ old('telefono') }}"
-                               placeholder="Ej: 3001234567"
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('telefono') border-red-400 @enderror">
-                        @error('telefono') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
-                </div>
+                @foreach(['cursos', 'cursos.*', 'modalidades', 'modalidades.*'] as $campoCursos)
+                    @error($campoCursos) <p class="text-red-700 text-sm mb-3">{{ $message }}</p> @enderror
+                @endforeach
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Grupo sanguíneo (RH)</label>
-                    <select name="rh" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('rh') border-red-400 @enderror">
-                        <option value="">— Seleccionar —</option>
-                        @foreach(['O+','O-','A+','A-','B+','B-','AB+','AB-'] as $tipo)
-                            <option value="{{ $tipo }}" {{ old('rh') === $tipo ? 'selected' : '' }}>{{ $tipo }}</option>
-                        @endforeach
-                    </select>
-                    @error('rh') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                </div>
-            </div>
-        </div>
-
-        {{-- Cursos --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 class="text-base font-semibold text-gray-800 mb-1 pb-2 border-b border-gray-100">
-                Cursos a realizar <span class="text-red-500">*</span>
-            </h2>
-            <p class="text-xs text-gray-500 mb-4">Selecciona todos los cursos que vas a tomar.</p>
-
-            @error('cursos') <p class="text-red-500 text-sm mb-3">{{ $message }}</p> @enderror
-            @error('cursos.*') <p class="text-red-500 text-sm mb-3">{{ $message }}</p> @enderror
-            @error('modalidades') <p class="text-red-500 text-sm mb-3">{{ $message }}</p> @enderror
-            @error('modalidades.*') <p class="text-red-500 text-sm mb-3">{{ $message }}</p> @enderror
-
-            @if($cursos->isEmpty())
-                <p class="text-gray-500 text-sm">No hay cursos disponibles en este momento.</p>
-            @else
-                <div class="space-y-5">
-                    @foreach($cursos as $categoria => $listaCursos)
-                        <div>
-                            <p class="text-xs font-semibold text-amber-700 uppercase tracking-wider mb-2">{{ $categoria }}</p>
-                            <div class="space-y-2">
-                                @foreach($listaCursos as $curso)
-                                    @php $oldModal = old("modalidades.{$curso->id}"); @endphp
-                                    <div x-data="{ marcado: {{ in_array($curso->id, old('cursos', [])) ? 'true' : 'false' }} }"
-                                         class="rounded-lg border transition"
-                                         :class="marcado ? 'border-amber-400 bg-amber-50' : 'border-gray-200'">
-                                        <label class="flex items-start gap-3 p-3 cursor-pointer group">
-                                            <input type="checkbox"
-                                                   name="cursos[]"
-                                                   value="{{ $curso->id }}"
-                                                   x-model="marcado"
-                                                   class="mt-0.5 w-4 h-4 text-amber-500 border-gray-300 rounded focus:ring-amber-400">
-                                            <div class="flex-1 min-w-0">
-                                                <span class="text-sm font-medium text-gray-800 group-hover:text-amber-700 transition">{{ $curso->nombre }}</span>
-                                                @if($curso->intensidad_horaria)
-                                                    <span class="ml-2 text-xs text-gray-400">{{ $curso->intensidad_horaria }}h</span>
-                                                @endif
-                                            </div>
-                                        </label>
-                                        <div x-show="marcado" x-cloak class="px-3 pb-3">
-                                            <label class="text-xs font-medium text-gray-600 mb-1 block">
-                                                Modalidad <span class="text-red-500">*</span>
+                @if($cursos->isEmpty())
+                    <p class="text-slate-600">No hay cursos disponibles en este momento.</p>
+                @else
+                    <div class="space-y-7">
+                        @foreach($cursos as $categoria => $listaCursos)
+                            <div>
+                                <h3 class="text-sm font-semibold uppercase tracking-wider mb-3" style="color:#8A6408">{{ $categoria }}</h3>
+                                <div class="space-y-3">
+                                    @foreach($listaCursos as $curso)
+                                        @php $oldModal = old("modalidades.{$curso->id}"); @endphp
+                                        <div x-data="{ marcado: {{ in_array($curso->id, old('cursos', [])) ? 'true' : 'false' }} }"
+                                             class="rounded-lg border-2 transition-colors"
+                                             :class="marcado ? 'border-blue-700 bg-blue-50' : 'border-slate-200 hover:border-slate-300'">
+                                            <label class="flex items-start gap-3 p-4 cursor-pointer min-h-[48px]">
+                                                <input type="checkbox" name="cursos[]" value="{{ $curso->id }}" x-model="marcado"
+                                                       class="mt-0.5 w-5 h-5 text-blue-800 border-slate-400 rounded focus:ring-blue-700">
+                                                <span class="flex-1 min-w-0">
+                                                    <span class="font-semibold text-slate-900">{{ $curso->nombre }}</span>
+                                                    @if($curso->intensidad_horaria)
+                                                        <span class="ml-2 text-sm text-slate-600 tabular-nums">{{ $curso->intensidad_horaria }} h</span>
+                                                    @endif
+                                                </span>
                                             </label>
-                                            <select name="modalidades[{{ $curso->id }}]"
-                                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent">
-                                                <option value="presencial" {{ $oldModal === 'presencial' ? 'selected' : '' }}>Presencial</option>
-                                                <option value="virtual"    {{ $oldModal === 'virtual'    ? 'selected' : '' }}>Virtual</option>
-                                            </select>
+                                            <div x-show="marcado" x-cloak class="px-4 pb-4 pl-12">
+                                                <label for="modalidad-{{ $curso->id }}" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                                                    Modalidad <span class="text-red-600" aria-hidden="true">*</span>
+                                                </label>
+                                                <select id="modalidad-{{ $curso->id }}" name="modalidades[{{ $curso->id }}]"
+                                                        class="w-full sm:max-w-xs min-h-[44px] px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-700 focus:border-blue-700">
+                                                    <option value="presencial" {{ $oldModal === 'presencial' ? 'selected' : '' }}>Presencial</option>
+                                                    <option value="virtual"    {{ $oldModal === 'virtual'    ? 'selected' : '' }}>Virtual</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
-                                @endforeach
+                                    @endforeach
+                                </div>
                             </div>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </div>
+                        @endforeach
+                    </div>
+                @endif
+            </fieldset>
 
-        {{-- Botón --}}
-        <button type="submit"
-                class="w-full btn-gold py-3 text-base font-semibold rounded-xl">
-            Enviar registro
-        </button>
+            <button type="submit" class="w-full min-h-[52px] btn-gold text-base rounded-lg">
+                Enviar registro
+            </button>
 
-        <p class="text-center text-xs text-gray-400">
-            Al enviar confirmas que los datos ingresados son correctos.
-        </p>
-    </form>
+            <p class="text-center text-sm text-slate-500">
+                Al enviar confirmas que los datos ingresados son correctos.
+            </p>
+        </form>
+    </div>
 </div>
+
+@push('scripts')
+<script nonce="{{ $cspNonce }}">document.getElementById('resumen-errores')?.focus();</script>
+@endpush
 @endsection

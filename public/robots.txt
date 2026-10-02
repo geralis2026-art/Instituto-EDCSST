@@ -1,2 +1,12 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /login
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /profile
+Disallow: /aula
+Disallow: /registro/
+Disallow: /consulta/descargar
+Allow: /
+
+# Sitemap: se puede agregar aquí cuando exista (https://institutoedcsst.com/sitemap.xml)

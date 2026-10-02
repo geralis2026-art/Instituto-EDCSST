@@ -3,210 +3,150 @@
 @section('titulo', 'Verificar Certificado')
 @section('descripcion', 'Verifica la autenticidad de un certificado emitido por el Instituto EDCSST.')
 
-@push('preload')
-<link rel="preload" as="image" href="{{ asset('img/capacitacion-grupal-docencia.jpg') }}" fetchpriority="high">
-@endpush
-
-@push('styles')
-<style>#site-footer { margin-top: 0; }</style>
-@endpush
-
 @section('contenido')
 
-{{-- Fondo con foto para toda la página (hero + contenido) --}}
-<section class="relative text-white min-h-screen"
-    style="background-image: linear-gradient(to bottom, rgba(15,23,42,0.72) 0%, rgba(30,58,138,0.55) 20%, rgba(30,58,138,0.30) 45%, rgba(226,232,240,0.35) 100%), url('{{ asset('img/capacitacion-grupal-docencia.jpg') }}'); background-size: cover; background-position: center 35%; background-attachment: fixed;">
+<x-public.encabezado
+    titulo="Verificar autenticidad"
+    subtitulo="Confirma que un certificado fue emitido oficialmente por el Instituto EDCSST."
+    :imagen="asset('img/capacitacion-grupal-docencia.jpg')" />
 
-    {{-- Línea dorada superior --}}
-    <div class="absolute top-0 left-0 right-0 h-1"
-         style="background: linear-gradient(90deg, transparent, #F59E0B 40%, #D4A017 60%, transparent);"></div>
-
-    {{-- HERO --}}
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl sm:text-4xl font-bold mb-3">Verificar autenticidad</h1>
-            <p class="text-blue-100 text-lg">Confirma que un certificado fue emitido oficialmente por el Instituto EDCSST</p>
-        </div>
-    </div>
-
-    <div class="py-12 text-gray-800">
+<section class="relative -mt-6 sm:-mt-8 pb-4">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- Formulario --}}
-        <div class="bg-white rounded-xl shadow-sm p-6 sm:p-8 border border-gray-100 mb-8">
-            <div class="text-center mb-6">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-3">
-                    <svg class="w-8 h-8 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        <div class="bg-white rounded-lg shadow-sm p-6 sm:p-8 border border-slate-200 mb-8">
+            <div class="flex items-start gap-4 mb-6">
+                <span class="w-12 h-12 icon-gold rounded-xl flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </span>
+                <div>
+                    <h2 class="text-xl font-semibold text-slate-900">Ingresa el código del certificado</h2>
+                    <p class="text-[15px] text-slate-600 mt-1">Está impreso en el documento, con el formato EDCSST-AÑO-NÚMERO.</p>
                 </div>
-                <h2 class="text-xl font-bold text-gray-900">Ingresa el código del certificado</h2>
-                <p class="text-sm text-gray-600 mt-1">Encontrarás el código impreso en el documento del certificado</p>
             </div>
 
             <form method="POST" action="{{ route('verificar.verificar') }}" class="space-y-4">
                 @csrf
 
                 <div>
-                    <label for="codigo" class="block text-sm font-semibold text-gray-700 mb-1">Código del certificado *</label>
+                    <label for="codigo" class="block text-sm font-semibold text-slate-700 mb-1.5">Código del certificado <span class="text-red-600" aria-hidden="true">*</span></label>
                     <input type="text" id="codigo" name="codigo" value="{{ old('codigo', $codigoBuscado ?? '') }}" required
-                        placeholder="Ej: EDCSST-2026-00001"
-                        class="w-full px-4 py-3 text-lg font-mono uppercase border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition tracking-wider @error('codigo') border-red-500 @enderror">
+                        autocomplete="off" autocapitalize="characters" spellcheck="false"
+                        placeholder="EDCSST-2026-00001"
+                        @error('codigo') aria-invalid="true" aria-describedby="codigo-error" @enderror
+                        class="w-full min-h-[52px] px-4 py-3 text-lg font-mono uppercase tracking-wider border rounded-lg focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition @error('codigo') border-red-500 @else border-slate-300 @enderror">
                     @error('codigo')
-                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                        <p id="codigo-error" class="text-red-700 text-sm mt-1.5" role="alert">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <button type="submit" class="w-full inline-flex items-center justify-center px-6 py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition shadow-sm">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 min-h-[48px] px-6 py-3 bg-marca-navy text-white font-semibold rounded-lg hover:bg-marca-navy-claro transition-colors">
                     Verificar certificado
                 </button>
             </form>
         </div>
 
-        {{-- ============ RESULTADO DE VERIFICACIÓN ============ --}}
+        {{-- ============ RESULTADO ============ --}}
         @if(isset($verificacionRealizada) && $verificacionRealizada)
+            <div role="status" aria-live="polite">
+            @if($certificado)
+                @php
+                    $estilo = $vencido
+                        ? ['borde' => 'border-amber-300', 'cabecera' => 'bg-amber-50 text-amber-950', 'icono' => 'bg-amber-500 text-white', 'sub' => 'text-amber-900',
+                           'titulo' => 'Certificado auténtico, pero vencido', 'texto' => 'Fue emitido por el Instituto EDCSST y su vigencia de un año ya expiró.']
+                        : ['borde' => 'border-green-300', 'cabecera' => 'bg-green-50 text-green-950', 'icono' => 'bg-green-600 text-white', 'sub' => 'text-green-900',
+                           'titulo' => 'Certificado válido y vigente', 'texto' => 'Emitido oficialmente por el Instituto EDCSST.'];
+                    $fecha = fn ($f) => $f?->locale('es')->isoFormat('D [de] MMMM [de] YYYY') ?? '—';
+                @endphp
 
-            @if($certificado && !$vencido)
-                {{-- Certificado VÁLIDO Y VIGENTE --}}
-                <div class="bg-white rounded-xl shadow-lg border-2 border-green-500 overflow-hidden">
-                    <div class="bg-green-500 text-white px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
-                                <svg class="w-7 h-7 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-bold">✓ CERTIFICADO VÁLIDO</h3>
-                                <p class="text-green-100 text-sm">Emitido oficialmente por el Instituto EDCSST</p>
-                            </div>
+                <article class="bg-white rounded-lg border-2 {{ $estilo['borde'] }} overflow-hidden shadow-sm">
+                    <header class="flex items-center gap-4 px-6 py-5 {{ $estilo['cabecera'] }}">
+                        <span class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 {{ $estilo['icono'] }}">
+                            @if($vencido)
+                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            @else
+                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            @endif
+                        </span>
+                        <div>
+                            <h3 class="text-xl sm:text-2xl font-bold">{{ $estilo['titulo'] }}</h3>
+                            <p class="text-[15px] {{ $estilo['sub'] }}">{{ $estilo['texto'] }}</p>
                         </div>
-                    </div>
+                    </header>
 
-                    <div class="p-6 sm:p-8">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Otorgado a</p>
-                                <p class="text-lg font-bold text-gray-900">{{ $certificado->capacitado->nombre_completo }}</p>
-                                <p class="text-sm text-gray-600">Documento: {{ $certificado->capacitado->tipo_documento ?? 'CC' }} {{ $certificado->capacitado->documento }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Código del certificado</p>
-                                <p class="text-lg font-bold font-mono text-blue-900">{{ $certificado->codigo_unico }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Curso aprobado</p>
-                                <p class="text-base font-semibold text-gray-900">{{ $certificado->curso->nombre }}</p>
-                                <p class="text-sm text-gray-600">Categoría: {{ $certificado->curso->categoria?->nombre ?? '—' }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Fecha de emisión</p>
-                                <p class="text-base font-semibold text-gray-900">{{ $certificado->fecha_emision->locale('es')->isoFormat('D [de] MMMM [de] YYYY') }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Válido hasta</p>
-                                <p class="text-base font-semibold text-gray-900">{{ $certificado->fecha_vencimiento?->locale('es')->isoFormat('D [de] MMMM [de] YYYY') ?? '—' }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Intensidad horaria</p>
-                                <p class="text-base font-semibold text-gray-900">{{ $certificado->intensidad_horaria }} horas</p>
-                            </div>
+                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5 p-6 sm:p-8">
+                        <div>
+                            <dt class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Otorgado a</dt>
+                            <dd class="mt-1 text-lg font-semibold text-slate-900">{{ $certificado->capacitado->nombre_completo }}</dd>
+                            <dd class="text-sm text-slate-600">{{ $certificado->capacitado->tipo_documento ?? 'CC' }} {{ $certificado->capacitado->documento }}</dd>
                         </div>
+                        <div>
+                            <dt class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Código</dt>
+                            <dd class="mt-1 text-lg font-semibold font-mono text-marca-navy [overflow-wrap:anywhere]">{{ $certificado->codigo_unico }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Curso</dt>
+                            <dd class="mt-1 font-semibold text-slate-900">{{ $certificado->curso->nombre }}</dd>
+                            <dd class="text-sm text-slate-600">{{ $certificado->curso->categoria?->nombre ?? '—' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Intensidad horaria</dt>
+                            <dd class="mt-1 font-semibold text-slate-900">{{ $certificado->intensidad_horaria }} horas</dd>
+                        </div>
+                        <div>
+                            <dt class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Fecha de emisión</dt>
+                            <dd class="mt-1 font-semibold text-slate-900">{{ $fecha($certificado->fecha_emision) }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{{ $vencido ? 'Venció el' : 'Válido hasta' }}</dt>
+                            <dd class="mt-1 font-semibold {{ $vencido ? 'text-red-700' : 'text-slate-900' }}">{{ $fecha($certificado->fecha_vencimiento) }}</dd>
+                        </div>
+                    </dl>
 
-                        <div class="mt-6 pt-6 border-t border-gray-200 text-sm text-gray-600">
-                            <p>Este certificado ha sido verificado contra los registros oficiales del Instituto EDCSST y es auténtico.</p>
-                        </div>
-                    </div>
-                </div>
-
-            @elseif($certificado && $vencido)
-                {{-- Certificado VENCIDO --}}
-                <div class="bg-white rounded-xl shadow-lg border-2 border-orange-400 overflow-hidden">
-                    <div class="bg-orange-400 text-white px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
-                                <svg class="w-7 h-7 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-bold">⚠ CERTIFICADO VENCIDO</h3>
-                                <p class="text-orange-100 text-sm">El certificado existió pero su vigencia ha expirado</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-6 sm:p-8">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Otorgado a</p>
-                                <p class="text-lg font-bold text-gray-900">{{ $certificado->capacitado->nombre_completo }}</p>
-                                <p class="text-sm text-gray-600">Documento: {{ $certificado->capacitado->tipo_documento ?? 'CC' }} {{ $certificado->capacitado->documento }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Código del certificado</p>
-                                <p class="text-lg font-bold font-mono text-blue-900">{{ $certificado->codigo_unico }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Curso</p>
-                                <p class="text-base font-semibold text-gray-900">{{ $certificado->curso->nombre }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Fecha de emisión</p>
-                                <p class="text-base font-semibold text-gray-900">{{ $certificado->fecha_emision->locale('es')->isoFormat('D [de] MMMM [de] YYYY') }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Venció el</p>
-                                <p class="text-base font-semibold text-red-600">{{ $certificado->fecha_vencimiento->locale('es')->isoFormat('D [de] MMMM [de] YYYY') }}</p>
-                            </div>
-                        </div>
-
-                        <div class="mt-6 pt-6 border-t border-gray-200">
-                            <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 text-sm text-gray-700">
-                                Este certificado fue emitido oficialmente por el Instituto EDCSST pero su vigencia de un (1) año ha expirado. Para renovarlo, comunícate con el instituto.
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    <p class="mx-6 sm:mx-8 mb-6 sm:mb-8 pt-5 border-t border-slate-200 text-[15px] text-slate-600">
+                        @if($vencido)
+                            Para renovarlo, el titular puede <a href="{{ route('contacto') }}" class="text-blue-800 font-semibold underline underline-offset-2">comunicarse con el instituto</a>.
+                        @else
+                            Verificado contra los registros oficiales del Instituto EDCSST.
+                        @endif
+                    </p>
+                </article>
             @else
-                {{-- Certificado NO VÁLIDO --}}
-                <div class="bg-white rounded-xl shadow-lg border-2 border-red-500 overflow-hidden">
-                    <div class="bg-red-500 text-white px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
-                                <svg class="w-7 h-7 text-red-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-bold">✗ CERTIFICADO NO VÁLIDO</h3>
-                                <p class="text-red-100 text-sm">No encontramos este código en nuestros registros</p>
-                            </div>
+                {{-- NO VÁLIDO --}}
+                <article class="bg-white rounded-lg border-2 border-red-300 overflow-hidden shadow-sm">
+                    <header class="flex items-center gap-4 px-6 py-5 bg-red-50 text-red-950">
+                        <span class="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-red-600 text-white">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </span>
+                        <div>
+                            <h3 class="text-xl sm:text-2xl font-bold">Certificado no encontrado</h3>
+                            <p class="text-[15px] text-red-900">Este código no existe en nuestros registros.</p>
                         </div>
-                    </div>
-
+                    </header>
                     <div class="p-6 sm:p-8">
-                        <p class="text-gray-700 mb-4">
-                            El código <strong class="font-mono">{{ $codigoBuscado }}</strong> no corresponde a ningún certificado emitido por el Instituto EDCSST.
+                        <p class="text-slate-700 mb-4">
+                            El código <strong class="font-mono [overflow-wrap:anywhere]">{{ $codigoBuscado }}</strong> no corresponde a ningún certificado emitido por el Instituto EDCSST.
                         </p>
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-gray-700">
-                            <p class="font-semibold mb-2">Posibles razones:</p>
-                            <ul class="list-disc list-inside space-y-1">
-                                <li>El código fue digitado incorrectamente</li>
-                                <li>El certificado no fue emitido por nuestro instituto</li>
-                                <li>El certificado puede haber sido invalidado</li>
-                            </ul>
-                            <p class="mt-3">Si tienes dudas, <a href="{{ route('contacto') }}" class="text-blue-700 font-semibold underline">contacta al instituto</a>.</p>
-                        </div>
+                        <p class="font-semibold text-slate-800 mb-2">Posibles razones:</p>
+                        <ul class="list-disc pl-5 space-y-1 text-[15px] text-slate-700">
+                            <li>El código fue digitado incorrectamente.</li>
+                            <li>El certificado no fue emitido por nuestro instituto.</li>
+                            <li>El certificado fue invalidado.</li>
+                        </ul>
+                        <p class="mt-4 text-[15px] text-slate-700">Si tienes dudas, <a href="{{ route('contacto') }}" class="text-blue-800 font-semibold underline underline-offset-2">contacta al instituto</a>.</p>
                     </div>
-                </div>
+                </article>
             @endif
+            </div>
         @endif
 
         {{-- Info --}}
-        <div class="mt-8 bg-blue-50 border border-blue-100 rounded-xl p-6">
-            <h3 class="font-bold text-blue-900 mb-2 flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                Sobre la verificación
-            </h3>
-            <p class="text-sm text-blue-900">
-                Esta página permite a empresas, empleadores y terceros validar la autenticidad de cualquier certificado emitido por el Instituto EDCSST. Si eres el titular de un certificado y quieres consultarlo o descargarlo, utiliza la <a href="{{ route('consulta') }}" class="underline font-semibold">página de consulta</a>.
+        <aside class="mt-10 bg-white border border-slate-200 rounded-xl p-5">
+            <h3 class="font-semibold text-slate-900">Sobre la verificación</h3>
+            <p class="text-[15px] text-slate-600 mt-1">
+                Empresas, empleadores y terceros pueden validar aquí cualquier certificado emitido por el instituto. Si eres el titular y quieres descargarlo, usa la <a href="{{ route('consulta') }}" class="text-blue-800 font-semibold underline underline-offset-2">página de consulta</a>.
             </p>
-        </div>
-    </div>
+        </aside>
     </div>
 </section>
 

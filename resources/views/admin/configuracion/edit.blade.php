@@ -11,98 +11,98 @@
         @method('PUT')
 
         {{-- Datos del instituto --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 reveal">
-            <h2 class="text-base font-semibold text-gray-800 mb-5 pb-3 border-b border-gray-100">Datos del instituto</h2>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 reveal">
+            <h2 class="text-base font-semibold text-slate-800 mb-5 pb-3 border-b border-slate-100">Datos del instituto</h2>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del instituto <span class="text-red-500">*</span></label>
-                    <input type="text" name="nombre_instituto" value="{{ old('nombre_instituto', $config->nombre_instituto) }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('nombre_instituto') border-red-400 @enderror">
-                    @error('nombre_instituto') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    <label class="etiqueta-admin" for="campo-nombre_instituto">Nombre del instituto <span class="text-red-700">*</span></label>
+                    <input id="campo-nombre_instituto" type="text" name="nombre_instituto" value="{{ old('nombre_instituto', $config->nombre_instituto) }}"
+                        class="campo-admin @error('nombre_instituto') border-red-500 @enderror">
+                    @error('nombre_instituto') <p class="text-red-700 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-                    <textarea name="descripcion" rows="3"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('descripcion') border-red-400 @enderror">{{ old('descripcion', $config->descripcion) }}</textarea>
-                    @error('descripcion') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    <label class="etiqueta-admin" for="campo-descripcion">Descripción</label>
+                    <textarea id="campo-descripcion" name="descripcion" rows="3"
+                        class="campo-admin @error('descripcion') border-red-500 @enderror">{{ old('descripcion', $config->descripcion) }}</textarea>
+                    @error('descripcion') <p class="text-red-700 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-                        <input type="text" name="telefono" value="{{ old('telefono', $config->telefono) }}"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('telefono') border-red-400 @enderror">
-                        @error('telefono') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        <label class="etiqueta-admin" for="campo-telefono">Teléfono</label>
+                        <input id="campo-telefono" type="text" name="telefono" value="{{ old('telefono', $config->telefono) }}"
+                            class="campo-admin @error('telefono') border-red-500 @enderror">
+                        @error('telefono') <p class="text-red-700 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Correo de contacto</label>
-                        <input type="email" name="correo_contacto" value="{{ old('correo_contacto', $config->correo_contacto) }}"
-                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('correo_contacto') border-red-400 @enderror">
-                        @error('correo_contacto') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        <label class="etiqueta-admin" for="campo-correo_contacto">Correo de contacto</label>
+                        <input id="campo-correo_contacto" type="email" name="correo_contacto" value="{{ old('correo_contacto', $config->correo_contacto) }}"
+                            class="campo-admin @error('correo_contacto') border-red-500 @enderror">
+                        @error('correo_contacto') <p class="text-red-700 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
-                    <input type="text" name="direccion" value="{{ old('direccion', $config->direccion) }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('direccion') border-red-400 @enderror">
-                    @error('direccion') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    <label class="etiqueta-admin" for="campo-direccion">Dirección</label>
+                    <input id="campo-direccion" type="text" name="direccion" value="{{ old('direccion', $config->direccion) }}"
+                        class="campo-admin @error('direccion') border-red-500 @enderror">
+                    @error('direccion') <p class="text-red-700 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
         </div>
 
         {{-- Redes sociales --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 reveal delay-1">
-            <h2 class="text-base font-semibold text-gray-800 mb-5 pb-3 border-b border-gray-100">Redes sociales</h2>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 reveal delay-1">
+            <h2 class="text-base font-semibold text-slate-800 mb-5 pb-3 border-b border-slate-100">Redes sociales</h2>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">WhatsApp <span class="text-gray-400 font-normal">(número con código de país, ej: 573001234567)</span></label>
-                    <input type="text" name="whatsapp" value="{{ old('whatsapp', $config->whatsapp) }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('whatsapp') border-red-400 @enderror">
-                    @error('whatsapp') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    <label class="etiqueta-admin" for="campo-whatsapp">WhatsApp <span class="text-slate-500 font-normal">(número con código de país, ej: 573001234567)</span></label>
+                    <input id="campo-whatsapp" type="text" name="whatsapp" value="{{ old('whatsapp', $config->whatsapp) }}"
+                        class="campo-admin @error('whatsapp') border-red-500 @enderror">
+                    @error('whatsapp') <p class="text-red-700 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Facebook <span class="text-gray-400 font-normal">(URL completa)</span></label>
-                    <input type="url" name="facebook" value="{{ old('facebook', $config->facebook) }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('facebook') border-red-400 @enderror">
-                    @error('facebook') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    <label class="etiqueta-admin" for="campo-facebook">Facebook <span class="text-slate-500 font-normal">(URL completa)</span></label>
+                    <input id="campo-facebook" type="url" name="facebook" value="{{ old('facebook', $config->facebook) }}"
+                        class="campo-admin @error('facebook') border-red-500 @enderror">
+                    @error('facebook') <p class="text-red-700 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Instagram <span class="text-gray-400 font-normal">(URL completa)</span></label>
-                    <input type="url" name="instagram" value="{{ old('instagram', $config->instagram) }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-400 focus:border-transparent @error('instagram') border-red-400 @enderror">
-                    @error('instagram') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    <label class="etiqueta-admin" for="campo-instagram">Instagram <span class="text-slate-500 font-normal">(URL completa)</span></label>
+                    <input id="campo-instagram" type="url" name="instagram" value="{{ old('instagram', $config->instagram) }}"
+                        class="campo-admin @error('instagram') border-red-500 @enderror">
+                    @error('instagram') <p class="text-red-700 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
         </div>
 
         {{-- Plantilla de certificado --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 reveal delay-2">
-            <h2 class="text-base font-semibold text-gray-800 mb-5 pb-3 border-b border-gray-100">Plantilla de certificado</h2>
+        <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 reveal delay-2">
+            <h2 class="text-base font-semibold text-slate-800 mb-5 pb-3 border-b border-slate-100">Plantilla de certificado</h2>
 
             <div class="space-y-3">
                 @if($config->plantilla_certificado)
-                    <p class="text-sm text-gray-600">
-                        Plantilla actual: <span class="font-medium text-gray-800">{{ basename($config->plantilla_certificado) }}</span>
+                    <p class="text-sm text-slate-600">
+                        Plantilla actual: <span class="font-medium text-slate-800">{{ basename($config->plantilla_certificado) }}</span>
                     </p>
                 @else
                     <p class="text-sm text-amber-600 font-medium">No hay plantilla configurada. Los certificados se generarán con la plantilla por defecto.</p>
                 @endif
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                    <label class="etiqueta-admin" for="campo-plantilla_certificado_archivo">
                         {{ $config->plantilla_certificado ? 'Reemplazar plantilla (PDF)' : 'Subir plantilla (PDF)' }}
                     </label>
-                    <input type="file" name="plantilla_certificado_archivo" accept="application/pdf"
-                        class="block text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400 file:mr-3 file:py-2 file:px-4 file:border-0 file:bg-amber-500 file:text-white file:rounded-l-lg file:cursor-pointer hover:file:bg-amber-600 @error('plantilla_certificado_archivo') border-red-400 @enderror">
-                    @error('plantilla_certificado_archivo') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    <p class="text-xs text-gray-500 mt-1">PDF, máx. 10 MB. Se guardará como <code>plantillas/certificado.pdf</code>.</p>
+                    <input id="campo-plantilla_certificado_archivo" type="file" name="plantilla_certificado_archivo" accept="application/pdf"
+                        class="block text-sm text-slate-700 border border-slate-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400 file:mr-3 file:py-2 file:px-4 file:border-0 file:bg-amber-400 file:text-marca-navy file:rounded-l-lg file:cursor-pointer hover:file:bg-amber-600 @error('plantilla_certificado_archivo') border-red-500 @enderror">
+                    @error('plantilla_certificado_archivo') <p class="text-red-700 text-sm mt-1">{{ $message }}</p> @enderror
+                    <p class="text-xs text-slate-500 mt-1">PDF, máx. 10 MB. Se guardará como <code>plantillas/certificado.pdf</code>.</p>
                 </div>
             </div>
         </div>

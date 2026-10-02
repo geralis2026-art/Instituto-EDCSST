@@ -107,7 +107,7 @@ class User extends Authenticatable
     public static function limpiarCacheDashboard(): void
     {
         static::query()->pluck('id')->each(
-            fn ($id) => Cache::forget("dashboard_stats:{$id}")
+            fn ($id) => Cache::forget("dashboard_stats_v2:{$id}")
         );
     }
 }
