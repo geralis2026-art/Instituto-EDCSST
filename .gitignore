@@ -25,3 +25,17 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Herramientas de IA (Claude): configuración, permisos, skills y notas locales. No se versionan.
+/.claude/
+/CLAUDE.md
+/.mcp.json
+/design-system/
+
+# Secretos y llaves: nunca al repositorio
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa*
+id_ed25519*
