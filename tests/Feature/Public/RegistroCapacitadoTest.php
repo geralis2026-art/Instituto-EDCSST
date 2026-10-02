@@ -42,6 +42,7 @@ class RegistroCapacitadoTest extends TestCase
             'documento'       => '900123456',
             'cursos'          => [$curso->id],
             'modalidades'     => [$curso->id => 'virtual'],
+            'acepta_politica' => '1',
         ]);
 
         $response->assertOk();
@@ -78,6 +79,7 @@ class RegistroCapacitadoTest extends TestCase
             'documento'       => '900123456',
             'cursos'          => [$curso->id],
             'modalidades'     => [$curso->id => 'presencial'],
+            'acepta_politica' => '1',
         ]);
 
         $response->assertOk();
@@ -106,6 +108,7 @@ class RegistroCapacitadoTest extends TestCase
             'documento'       => '900999888',
             'cursos'          => [$curso->id],
             'modalidades'     => [$curso->id => 'virtual'],
+            'acepta_politica' => '1',
         ])->assertOk();
 
         $this->assertDatabaseHas('capacitados', [
@@ -126,6 +129,7 @@ class RegistroCapacitadoTest extends TestCase
         $this->post("/registro/{$token}", [
             'nombre_completo' => 'Ana Pérez',
             'documento'       => '900123456',
+            'acepta_politica' => '1',
         ])->assertSessionHasErrors('cursos');
     }
 }

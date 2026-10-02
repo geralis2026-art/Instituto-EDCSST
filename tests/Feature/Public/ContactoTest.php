@@ -18,7 +18,7 @@ class ContactoTest extends TestCase
     public function test_contacto_valida_campos_requeridos(): void
     {
         $this->post('/contacto', [])
-            ->assertSessionHasErrors(['nombre', 'correo', 'mensaje', 'g-recaptcha-response']);
+            ->assertSessionHasErrors(['nombre', 'correo', 'mensaje', 'acepta_politica', 'g-recaptcha-response']);
     }
 
     public function test_contacto_valida_longitud_minima_de_mensaje(): void
@@ -27,6 +27,7 @@ class ContactoTest extends TestCase
             'nombre'               => 'Test',
             'correo'               => 'test@ejemplo.com',
             'mensaje'              => 'Corto',
+            'acepta_politica' => '1',
             'g-recaptcha-response' => 'token',
         ])->assertSessionHasErrors('mensaje');
     }
@@ -37,6 +38,7 @@ class ContactoTest extends TestCase
             'nombre'               => 'Test',
             'correo'               => 'no-es-email',
             'mensaje'              => 'Este es un mensaje lo suficientemente largo.',
+            'acepta_politica' => '1',
             'g-recaptcha-response' => 'token',
         ])->assertSessionHasErrors('correo');
     }
@@ -51,6 +53,7 @@ class ContactoTest extends TestCase
             'nombre'               => 'Juan Pérez',
             'correo'               => 'juan@ejemplo.com',
             'mensaje'              => 'Este es mi mensaje de consulta con suficientes caracteres.',
+            'acepta_politica' => '1',
             'g-recaptcha-response' => 'valid-token',
         ]);
 
@@ -69,6 +72,7 @@ class ContactoTest extends TestCase
             'nombre'               => 'Juan Pérez',
             'correo'               => 'juan@ejemplo.com',
             'mensaje'              => 'Mensaje de prueba con caracteres suficientes.',
+            'acepta_politica' => '1',
             'g-recaptcha-response' => 'invalid-token',
         ])->assertSessionHasErrors('g-recaptcha-response');
 
@@ -92,6 +96,7 @@ class ContactoTest extends TestCase
             'nombre'               => 'Test',
             'correo'               => 'test@ejemplo.com',
             'mensaje'              => 'Mensaje de prueba con caracteres suficientes.',
+            'acepta_politica' => '1',
             'g-recaptcha-response' => 'token',
         ]);
 

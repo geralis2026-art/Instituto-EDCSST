@@ -93,19 +93,6 @@
                             @error('telefono') <p id="error-telefono" class="text-red-700 text-sm mt-1.5">{{ $message }}</p> @enderror
                         </div>
                     </div>
-
-                    <div class="sm:max-w-xs">
-                        <label for="rh" class="block text-sm font-semibold text-slate-700 mb-1.5">Grupo sanguíneo (RH)</label>
-                        <select id="rh" name="rh"
-                                @error('rh') aria-invalid="true" aria-describedby="error-rh" @enderror
-                                class="{{ $campo }} {{ $err('rh') }}">
-                            <option value="">— Seleccionar —</option>
-                            @foreach(['O+','O-','A+','A-','B+','B-','AB+','AB-'] as $tipo)
-                                <option value="{{ $tipo }}" {{ old('rh') === $tipo ? 'selected' : '' }}>{{ $tipo }}</option>
-                            @endforeach
-                        </select>
-                        @error('rh') <p id="error-rh" class="text-red-700 text-sm mt-1.5">{{ $message }}</p> @enderror
-                    </div>
                 </div>
             </fieldset>
 
@@ -160,6 +147,10 @@
                     </div>
                 @endif
             </fieldset>
+
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 sm:p-8">
+                @include('public.partials.autorizacion-datos', ['finalidad' => 'gestionar mi inscripción, emitir mis certificados y permitir su verificación'])
+            </div>
 
             <button type="submit" class="w-full min-h-[52px] btn-gold text-base rounded-lg">
                 Enviar registro

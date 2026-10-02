@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\UploadsController;
 use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\PoliticasController;
 use App\Http\Controllers\Public\CatalogoController;
 use App\Http\Controllers\Public\ContactoController;
 use App\Http\Controllers\Public\ConsultaCertificadoController;
@@ -51,6 +52,11 @@ Route::get('/nosotros', [HomeController::class, 'nosotros'])->name('nosotros');
 
 // Catálogo de cursos
 Route::get('/cursos', [CatalogoController::class, 'index'])->name('catalogo');
+
+// Políticas legales: tratamiento de datos personales, términos de uso y cookies
+Route::get('/politica-de-privacidad', [PoliticasController::class, 'privacidad'])->name('politica.privacidad');
+Route::get('/terminos-y-condiciones', [PoliticasController::class, 'terminos'])->name('terminos');
+Route::get('/politica-de-cookies', [PoliticasController::class, 'cookies'])->name('politica.cookies');
 
 // Formulario de contacto
 Route::get('/contacto', [ContactoController::class, 'index'])->name('contacto');

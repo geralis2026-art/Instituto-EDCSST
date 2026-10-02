@@ -18,6 +18,7 @@ class ContactoRequest extends FormRequest
             'nombre'               => ['required', 'string', 'max:150'],
             'correo'               => ['required', 'email', 'max:150'],
             'mensaje'              => ['required', 'string', 'min:10', 'max:2000'],
+            'acepta_politica'      => ['accepted'],
             'g-recaptcha-response' => ['required', 'string'],
         ];
     }
@@ -30,7 +31,8 @@ class ContactoRequest extends FormRequest
             'correo.email'                  => 'El correo no tiene un formato válido.',
             'mensaje.required'              => 'Por favor escribe tu mensaje.',
             'mensaje.min'                   => 'El mensaje debe tener al menos 10 caracteres.',
-            'g-recaptcha-response.required' => 'Por favor completa el captcha.',
+            'acepta_politica.accepted'      => 'Debes autorizar el tratamiento de tus datos personales para poder enviar el mensaje.',
+            'g-recaptcha-response.required' => 'Por favor completa el captcha. Si no lo ves, activa la verificación de seguridad.',
         ];
     }
 }

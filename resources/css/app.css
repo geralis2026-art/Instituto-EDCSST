@@ -109,5 +109,20 @@
     /* Tarjeta con un velo suave del color de su sección en la parte superior */
     .tarjeta-tinte { background-image: linear-gradient(180deg, var(--acento-suave, #F8FAFC) 0%, #fff 70%); }
     .insignia-acento { @apply inline-flex items-center justify-center w-10 h-10 rounded-lg; color: var(--acento); background-color: var(--acento-suave); }
+
+    /* ----- Documentos legales del sitio público (privacidad, términos, cookies) ----- */
+    .documento-legal { @apply text-[17px] leading-[1.75] text-slate-700; }
+    .documento-legal h2 { @apply font-display text-2xl font-semibold text-slate-900 mt-12 mb-4 scroll-mt-24; }
+    .documento-legal h3 { @apply font-display text-lg font-semibold text-slate-900 mt-7 mb-2; }
+    .documento-legal p { @apply mb-4; }
+    .documento-legal ul { @apply list-disc pl-6 mb-4 space-y-1.5; }
+    .documento-legal ol { @apply list-decimal pl-6 mb-4 space-y-1.5; }
+    .documento-legal a { @apply font-semibold text-blue-800 underline underline-offset-2 hover:text-marca-navy; }
+    .documento-legal strong { @apply font-semibold text-slate-900; }
+    .documento-legal .tabla-legal { @apply overflow-x-auto mb-6 border border-slate-300 rounded-lg; }
+    .documento-legal table { @apply w-full text-left text-[15px] leading-snug border-collapse; }
+    .documento-legal th { @apply bg-slate-100 font-semibold text-slate-900 px-4 py-3 border-b border-slate-300; }
+    .documento-legal td { @apply px-4 py-3 align-top border-b border-slate-200; }
+    .documento-legal tr:last-child td { @apply border-b-0; }
 }
 

@@ -25,6 +25,12 @@ class Mensaje extends Model
         'estado',
         'notas_internas',
         'ip',
+        'autorizacion_datos_at',
+        'autorizacion_datos_version',
+    ];
+
+    protected $casts = [
+        'autorizacion_datos_at' => 'datetime',
     ];
 
     public const ESTADO_NUEVO       = 'nuevo';

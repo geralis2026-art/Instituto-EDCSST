@@ -53,11 +53,11 @@ class RegistroCapacitadoController extends Controller
             'documento'       => 'required|string|max:50',
             'correo'          => 'nullable|email|max:255',
             'telefono'        => 'nullable|string|max:30',
-            'rh'              => 'nullable|string|max:10',
             'cursos'          => 'required|array|min:1',
             'cursos.*'        => 'required|integer|exists:cursos,id',
             'modalidades'     => 'required|array|min:1',
             'modalidades.*'   => 'required|in:virtual,presencial',
+            'acepta_politica' => 'accepted',
         ], [
             'nombre_completo.required' => 'El nombre completo es requerido.',
             'tipo_documento.in'        => 'El tipo de documento no es válido.',
@@ -68,6 +68,7 @@ class RegistroCapacitadoController extends Controller
             'modalidades.required'     => 'Debes seleccionar la modalidad de cada curso.',
             'modalidades.*.required'   => 'Selecciona la modalidad de cada curso marcado.',
             'modalidades.*.in'         => 'La modalidad debe ser presencial o virtual.',
+            'acepta_politica.accepted' => 'Debes autorizar el tratamiento de tus datos personales para poder inscribirte.',
         ]);
 
         // Búsqueda sin scope de propietario: el documento es único globalmente
@@ -85,7 +86,10 @@ class RegistroCapacitadoController extends Controller
             'tipo_documento'  => $datos['tipo_documento'] ?? 'CC',
             'correo'          => $datos['correo'] ?? null,
             'telefono'        => $datos['telefono'] ?? null,
-            'rh'              => $datos['rh'] ?? null,
+            // El grupo sanguíneo (dato de salud, sensible) ya no se pide en el registro público: no se
+            // usa para certificar. Tampoco se toca aquí, para no borrar el de quien ya lo tenga.
+            'autorizacion_datos_at'      => now(),
+            'autorizacion_datos_version' => config('politicas.version'),
         ];
 
         if ($capacitado) {

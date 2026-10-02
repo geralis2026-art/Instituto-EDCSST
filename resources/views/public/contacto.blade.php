@@ -110,15 +110,33 @@
                         </div>
 
                         <div>
-                            <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site') }}"></div>
+                            {{-- Google reCAPTCHA no se carga hasta que la persona lo permite (ver aviso de cookies) --}}
+                            <div id="captcha-zona" data-sitekey="{{ config('services.recaptcha.site') }}">
+                                <div id="captcha-aviso" class="rounded-lg border border-slate-300 bg-slate-50 p-4 text-[15px] text-slate-700">
+                                    <p class="font-semibold text-slate-900">Verificación de seguridad</p>
+                                    <p class="mt-1">
+                                        Para evitar mensajes automáticos usamos Google reCAPTCHA. Al activarlo, Google carga contenido en esta página
+                                        y puede guardar cookies en tu navegador.
+                                        <a href="{{ route('politica.cookies') }}" class="font-semibold text-marca-navy underline underline-offset-2">Más información</a>.
+                                    </p>
+                                    <button type="button" id="captcha-activar"
+                                            class="mt-3 inline-flex items-center justify-center min-h-[44px] px-5 rounded-lg border-2 border-marca-navy text-marca-navy font-semibold hover:bg-white transition-colors">
+                                        Activar verificación
+                                    </button>
+                                    <p class="mt-3 text-sm text-slate-600">
+                                        Si prefieres no activarla, puedes escribirnos
+                                        @if($configSitio->correo_contacto) a <a href="mailto:{{ $configSitio->correo_contacto }}" class="underline underline-offset-2">{{ $configSitio->correo_contacto }}</a>@endif
+                                        @if($configSitio->whatsapp) o por <a href="https://wa.me/{{ preg_replace('/\D/', '', $configSitio->whatsapp) }}" target="_blank" rel="noopener" class="underline underline-offset-2">WhatsApp</a>@endif.
+                                    </p>
+                                </div>
+                            </div>
+                            <noscript><p class="text-sm text-red-700 mt-2">Este formulario necesita JavaScript para la verificación de seguridad. Puedes contactarnos por correo o WhatsApp.</p></noscript>
                             @error('g-recaptcha-response')
                                 <p class="text-red-700 text-sm mt-1.5" role="alert">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <p class="text-sm text-slate-500">
-                            Al enviar este formulario aceptas que tus datos sean utilizados para responder tu consulta, conforme a la Ley 1581 de 2012 (Habeas Data).
-                        </p>
+                        @include('public.partials.autorizacion-datos', ['finalidad' => 'responder mi consulta'])
 
                         <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 min-h-[48px] px-7 py-3 bg-marca-navy text-white font-semibold rounded-lg hover:bg-marca-navy-claro transition-colors">
                             Enviar mensaje
@@ -132,7 +150,34 @@
 </section>
 
 @push('scripts')
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script nonce="{{ $cspNonce }}">
+    (function () {
+        const zona = document.getElementById('captcha-zona');
+        const activar = document.getElementById('captcha-activar');
+        let cargado = false;
+
+        function cargar() {
+            if (cargado) return;
+            cargado = true;
+            document.getElementById('captcha-aviso')?.remove();
+
+            const widget = document.createElement('div');
+            widget.className = 'g-recaptcha';
+            widget.dataset.sitekey = zona.dataset.sitekey;
+            zona.appendChild(widget);
+
+            const script = document.createElement('script');
+            script.src = 'https://www.google.com/recaptcha/api.js';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
+
+        activar?.addEventListener('click', () => { window.edcsstCookies?.set('todas'); cargar(); });
+        document.addEventListener('edcsst:cookies', (e) => { if (e.detail === 'todas') cargar(); });
+        if (window.edcsstCookies?.get() === 'todas') cargar();
+    })();
+</script>
 @endpush
 
 @endsection

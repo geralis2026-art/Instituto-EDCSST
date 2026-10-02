@@ -78,7 +78,7 @@
                         <div>
                             <dt class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Otorgado a</dt>
                             <dd class="mt-1 text-lg font-semibold text-slate-900">{{ $certificado->capacitado->nombre_completo }}</dd>
-                            <dd class="text-sm text-slate-600">{{ $certificado->capacitado->tipo_documento ?? 'CC' }} {{ $certificado->capacitado->documento }}</dd>
+                            <dd class="text-sm text-slate-600">{{ $certificado->capacitado->tipo_documento ?? 'CC' }} {{ $certificado->capacitado->documentoEnmascarado() }}</dd>
                         </div>
                         <div>
                             <dt class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Código</dt>

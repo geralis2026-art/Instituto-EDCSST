@@ -86,6 +86,7 @@ class FeatureFlagsTest extends TestCase
             'nombre'                => 'Juan Pérez',
             'correo'                => 'juan@example.com',
             'mensaje'               => 'Hola, quiero información.',
+            'acepta_politica'       => '1',
             'g-recaptcha-response'  => 'token-de-prueba',
         ]);
 

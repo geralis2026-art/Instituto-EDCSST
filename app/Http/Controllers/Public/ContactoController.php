@@ -61,6 +61,8 @@ class ContactoController extends Controller
             'mensaje' => $datos['mensaje'],
             'estado'  => Mensaje::ESTADO_NUEVO,
             'ip'      => $request->ip(),
+            'autorizacion_datos_at'      => now(),
+            'autorizacion_datos_version' => config('politicas.version'),
         ]);
 
         $this->notificarAlInstituto($mensaje);

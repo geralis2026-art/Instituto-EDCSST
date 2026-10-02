@@ -54,6 +54,19 @@ class Capacitado extends Authenticatable implements CanResetPasswordContract
         return self::TIPOS_DOCUMENTO_ABREVIADO[$this->tipo_documento] ?? 'C.C.';
     }
 
+    /**
+     * Documento para mostrar al público: solo los últimos 3 caracteres (ej. "••••••453").
+     * Los códigos de certificado son consecutivos y se pueden adivinar, así que el número
+     * completo no debe quedar al alcance de quien solo conoce un código.
+     */
+    public function documentoEnmascarado(): string
+    {
+        $documento = (string) $this->documento;
+        $visibles  = min(3, mb_strlen($documento));
+
+        return str_repeat('•', max(0, mb_strlen($documento) - $visibles)) . mb_substr($documento, -$visibles);
+    }
+
     protected $fillable = [
         'user_id',
         'nombre_completo',
@@ -65,6 +78,8 @@ class Capacitado extends Authenticatable implements CanResetPasswordContract
         'horas_capacitadas',
         'password',
         'debe_cambiar_password',
+        'autorizacion_datos_at',
+        'autorizacion_datos_version',
     ];
 
     protected $hidden = [
@@ -76,6 +91,7 @@ class Capacitado extends Authenticatable implements CanResetPasswordContract
         'horas_capacitadas'     => 'integer',
         'password'              => 'hashed',
         'debe_cambiar_password' => 'boolean',
+        'autorizacion_datos_at' => 'datetime',
     ];
 
     protected static function booted(): void
