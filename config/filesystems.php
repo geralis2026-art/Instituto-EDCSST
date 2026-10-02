@@ -51,7 +51,9 @@ return [
         // En producción: UPLOADS_DISK_ROOT=/home/u123456789/uploads_edcsst
         'uploads' => [
             'driver' => 'local',
-            'root' => env('UPLOADS_DISK_ROOT', storage_path('app/uploads')),
+            // `?:` y no el default de env(): una variable presente pero vacía (UPLOADS_DISK_ROOT=)
+            // llega como '' y dejaría el disco sin ruta.
+            'root' => env('UPLOADS_DISK_ROOT') ?: storage_path('app/uploads'),
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
@@ -64,7 +66,8 @@ return [
         // y mover ~/public_html/storage/app/private/certificados/ a ese directorio.
         'certificados' => [
             'driver' => 'local',
-            'root' => env('CERTIFICADOS_DISK_ROOT', storage_path('app/private')),
+            // Mismo motivo que en 'uploads': CERTIFICADOS_DISK_ROOT= vacío no debe anular el valor por defecto.
+            'root' => env('CERTIFICADOS_DISK_ROOT') ?: storage_path('app/private'),
             'throw' => false,
             'report' => false,
         ],
