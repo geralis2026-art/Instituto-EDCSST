@@ -9,11 +9,12 @@
     <title>@yield('titulo', 'Instituto EDCSST') - Instituto EDCSST</title>
     <meta name="description" content="@yield('descripcion', 'Instituto EDCSST - Capacitación y certificación profesional en seguridad y salud en el trabajo.')">
 
-    {{-- Vista previa al compartir (WhatsApp, Facebook, X, LinkedIn…) --}}
+    {{-- Vista previa al compartir (WhatsApp, Facebook, X, LinkedIn…). Imagen CUADRADA y pequeña a propósito:
+         así se muestra como miniatura con el escudo junto al título, y no como banner grande. --}}
     @php
         $ogTitulo = trim($__env->yieldContent('titulo', 'Instituto EDCSST')) . ' - Instituto EDCSST';
         $ogDescripcion = trim($__env->yieldContent('descripcion', 'Instituto EDCSST - Capacitación y certificación profesional en seguridad y salud en el trabajo.'));
-        $ogImagen = asset('img/og-edcsst.jpg');
+        $ogImagen = asset('img/og-edcsst-escudo.png');
     @endphp
     <link rel="canonical" href="{{ url()->current() }}">
     <meta property="og:type" content="website">
@@ -23,10 +24,10 @@
     <meta property="og:title" content="{{ $ogTitulo }}">
     <meta property="og:description" content="{{ $ogDescripcion }}">
     <meta property="og:image" content="{{ $ogImagen }}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Instituto EDCSST - Capacitación en seguridad y salud en el trabajo">
-    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:image:alt" content="Logo del Instituto EDCSST">
+    <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="{{ $ogTitulo }}">
     <meta name="twitter:description" content="{{ $ogDescripcion }}">
     <meta name="twitter:image" content="{{ $ogImagen }}">

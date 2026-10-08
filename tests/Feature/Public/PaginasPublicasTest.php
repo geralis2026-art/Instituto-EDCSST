@@ -68,18 +68,18 @@ class PaginasPublicasTest extends TestCase
             ->assertStatus(200)
             ->assertSee('property="og:title"', false)
             ->assertSee('property="og:description"', false)
-            ->assertSee('img/og-edcsst.jpg', false)
-            ->assertSee('name="twitter:card" content="summary_large_image"', false)
+            ->assertSee('img/og-edcsst-escudo.png', false)
+            ->assertSee('name="twitter:card" content="summary"', false)
             ->assertSee('rel="canonical"', false);
     }
 
-    public function test_la_imagen_de_vista_previa_existe_y_pesa_menos_de_300_kb(): void
+    public function test_la_imagen_de_vista_previa_es_cuadrada_y_liviana(): void
     {
-        $ruta = public_path('img/og-edcsst.jpg');
+        $ruta = public_path('img/og-edcsst-escudo.png');
 
         $this->assertFileExists($ruta);
         $this->assertLessThan(300 * 1024, filesize($ruta));
-        $this->assertSame([1200, 630], array_slice(getimagesize($ruta), 0, 2));
+        $this->assertSame([512, 512], array_slice(getimagesize($ruta), 0, 2));
     }
 
     public function test_robots_bloquea_las_zonas_privadas(): void
